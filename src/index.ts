@@ -1,4 +1,4 @@
-﻿import config from './config/config';
+﻿import config from './config';
 
 import express from "express";
 import cors from "cors";
