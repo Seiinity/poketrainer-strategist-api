@@ -1,8 +1,9 @@
-﻿import dotenv from 'dotenv';
+﻿import dotenv from "dotenv";
 
 dotenv.config();
 
-interface Config {
+interface Config
+{
     port: number;
     dbName: string;
     dbHost: string;
@@ -11,7 +12,8 @@ interface Config {
     dbPass: string;
 }
 
-const config: Config = {
+const config: Config =
+{
     port: Number(process.env.APP_PORT),
     dbName: String(process.env.DB_NAME),
     dbHost: String(process.env.DB_HOST),

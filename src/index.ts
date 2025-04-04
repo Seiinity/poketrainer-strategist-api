@@ -1,4 +1,4 @@
-﻿import config from './config';
+﻿import config from "./config";
 
 import express from "express";
 import cors from "cors";
@@ -11,6 +11,7 @@ index.use(express.json());
 
 index.use("/api", routes);
 
-index.listen(config.port, () => {
+index.listen(config.port, () =>
+{
     console.log(`Listening on port ${config.port}!`);
 });
