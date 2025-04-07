@@ -15,3 +15,8 @@ async function getTypeIdByName(name: string): Promise<number | null>
         throw new Error("Could not fetch type ID.");
     }
 }
+
+export default
+{
+    getTypeIdByName
+}

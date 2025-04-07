@@ -1,5 +1,5 @@
 ﻿import { Request, Response } from "express";
-import { Species } from "../models/species";
+import { Species, SpeciesBody } from "../models/species";
 import speciesService from "../services/species-service";
 
 async function index(_req: Request, res: Response)
@@ -37,9 +37,10 @@ async function store(req: Request, res: Response)
 {
     try
     {
-        const newSpecies: Species =
+        const newSpecies: SpeciesBody =
         {
             name: req.body.name,
+            types: req.body.types,
         };
 
         const insertedSpecies = await speciesService.createSpecies(newSpecies);
@@ -57,9 +58,10 @@ async function update(req: Request, res: Response)
     try
     {
         const id = parseInt(req.params.id);
-        const newSpecies: Species =
+        const newSpecies: SpeciesBody =
         {
             name: req.body.name,
+            types: req.body.types,
         };
 
         const updatedSpecies = await speciesService.updateSpeciesById(id, newSpecies);
