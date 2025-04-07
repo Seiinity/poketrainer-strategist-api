@@ -58,9 +58,9 @@ async function update(req: Request, res: Response)
     {
         const id = parseInt(req.params.id);
         const newSpecies: Species =
-            {
-                name: req.body.name,
-            };
+        {
+            name: req.body.name,
+        };
 
         const updatedSpecies = await speciesService.updateSpeciesById(id, newSpecies);
 
