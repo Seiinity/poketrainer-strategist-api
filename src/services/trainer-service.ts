@@ -109,6 +109,18 @@ async function getTrainerIdByName(name: string): Promise<number>
     }
 }
 
+async function getTrainerByName(name: string): Promise<Trainer | null>
+{
+    try
+    {
+        return  await db.queryOne<Trainer>("SELECT id, name, password_hash AS passwordHash FROM trainers WHERE LOWER(name) = LOWER(?)", [name]);
+    }
+    catch (error)
+    {
+        throw new Error(`Error fetching trainer ID for ${name}: ${(error as Error).message}`);
+    }
+}
+
 export default
 {
     getAllTrainers,
@@ -117,5 +129,6 @@ export default
     updateTrainerById,
     deleteTrainerById,
 
-    getTrainerIdByName
+    getTrainerIdByName,
+    getTrainerByName
 }

@@ -88,11 +88,50 @@ async function destroy(req: Request, res: Response): Promise<void>
     }
 }
 
+async function login(req: Request, res: Response)
+{
+    try
+    {
+        const newTrainer: TrainerBody =
+        {
+            name: req.body.name,
+            password: req.body.password,
+        };
+
+        const trainer = await trainerService.getTrainerByName(newTrainer.name);
+
+        if (!trainer)
+        {
+            res.status(404).json({ error: "Trainer not found." });
+            return;
+        }
+
+        if (!trainer.passwordHash)
+        {
+            res.status(404).json({ error: "Invalid password in server." });
+            return;
+        }
+
+        if (!await argon2.verify(trainer.passwordHash, newTrainer.password))
+        {
+            res.status(401).json({ error: "Wrong password!" });
+            return;
+        }
+
+        res.status(200).json({ message: `Welcome, ${trainer.name}!` });
+    }
+    catch (error)
+    {
+        res.status(500).json({ error: `${(error as Error).message}` });
+    }
+}
+
 export default
 {
     index,
     show,
     store,
     update,
-    destroy
+    destroy,
+    login
 };
