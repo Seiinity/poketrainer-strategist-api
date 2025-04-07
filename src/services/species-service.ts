@@ -26,7 +26,7 @@ async function getSpeciesById(id: number): Promise<Species | null>
     }
     catch (error)
     {
-        console.error(`Error fetching species by ID: ${error}`);
+        console.error(`Error fetching species with ID ${id}: ${error}`);
         throw new Error("Could not fetch species.");
     }
 }
@@ -55,8 +55,30 @@ async function createSpecies(newSpecies: Species)
     }
 }
 
-function updateSpeciesById(id: number, updateSpecies: Species)
+async function updateSpeciesById(id: number, updateSpecies: Species)
 {
+    try
+    {
+        const sql = "UPDATE species SET name = ? WHERE id = ?";
+        const params = [updateSpecies.name, id];
+
+        const [result] = await db.query<ResultSetHeader>(sql, params);
+
+        if (result.affectedRows == 0) return null;
+
+        const updated: Species =
+        {
+            id,
+            ...updateSpecies,
+        }
+
+        return updated;
+    }
+    catch (error)
+    {
+        console.error(`Error update species with ID ${id}: ${error}`);
+        throw new Error("Could not update species.");
+    }
 }
 
 async function deleteSpeciesById(id: number): Promise<boolean>

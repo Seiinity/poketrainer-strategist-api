@@ -2,7 +2,7 @@
 import { Species } from "../models/species";
 import speciesService from "../services/species-service";
 
-async function index(req: Request, res: Response)
+async function index(_req: Request, res: Response)
 {
     try
     {
@@ -52,9 +52,26 @@ async function store(req: Request, res: Response)
     }
 }
 
-function update(req: Request, res: Response)
+async function update(req: Request, res: Response)
 {
-    res.send("Update!");
+    try
+    {
+        const id = parseInt(req.params.id);
+        const newSpecies: Species =
+            {
+                name: req.body.name,
+            };
+
+        const updatedSpecies = await speciesService.updateSpeciesById(id, newSpecies);
+
+        if (!updatedSpecies) res.status(404).json({ error: "Species not found." });
+        else res.status(200).json(updatedSpecies);
+    }
+    catch (error)
+    {
+        console.error(`Error creating species: ${error}`);
+        res.status(500).json({ error: "Something went wrong." });
+    }
 }
 
 async function destroy(req: Request, res: Response)
