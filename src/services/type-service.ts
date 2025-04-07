@@ -91,7 +91,7 @@ async function deleteTypeById(id: number): Promise<boolean>
 
 /* Additional methods. */
 
-async function getTypeIdByName(name: string): Promise<number | null>
+async function getTypeIdByName(name: string): Promise<number>
 {
     try
     {

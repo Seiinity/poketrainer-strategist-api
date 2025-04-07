@@ -94,11 +94,28 @@ async function deleteTrainerById(id: number): Promise<boolean>
     }
 }
 
+/* Additional methods. */
+
+async function getTrainerIdByName(name: string): Promise<number>
+{
+    try
+    {
+        const trainer = await db.queryOne<Trainer>("SELECT id FROM trainers WHERE LOWER(name) = LOWER(?)", [name]);
+        return (!trainer || !trainer.id) ? Promise.reject(new Error(`Unknown trainer '${name}'`)) : trainer.id;
+    }
+    catch (error)
+    {
+        throw new Error(`Error fetching trainer ID for ${name}: ${(error as Error).message}`);
+    }
+}
+
 export default
 {
     getAllTrainers,
     getTrainerById,
     createTrainer,
     updateTrainerById,
-    deleteTrainerById
+    deleteTrainerById,
+
+    getTrainerIdByName
 }

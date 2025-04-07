@@ -1,13 +1,13 @@
 ﻿import { Request, Response } from "express";
-import trainerService from "../services/trainer-service";
-import { Trainer } from "../models/trainer";
+import { TeamBody } from "../models/team";
+import teamService from "../services/team-service";
 
 async function index(_req: Request, res: Response): Promise<void>
 {
     try
     {
-        const trainers = await trainerService.getAllTrainers();
-        res.json(trainers);
+        const teams = await teamService.getAllTeams();
+        res.json(teams);
     }
     catch (error)
     {
@@ -20,10 +20,10 @@ async function show(req: Request, res: Response): Promise<void>
     try
     {
         const id = parseInt(req.params.id);
-        const trainer = await trainerService.getTrainerById(id);
+        const team = await teamService.getTeamById(id);
 
-        if (!trainer) res.status(404).json({ error: "Trainer not found." });
-        else res.json(trainer);
+        if (!team) res.status(404).json({ error: "Team not found." });
+        else res.json(team);
     }
     catch (error)
     {
@@ -35,13 +35,14 @@ async function store(req: Request, res: Response): Promise<void>
 {
     try
     {
-        const newTrainer: Trainer =
+        const newTeam: TeamBody =
         {
             name: req.body.name,
+            trainer: req.body.trainer,
         };
 
-        const insertedTrainer = await trainerService.createTrainer(newTrainer);
-        res.status(200).json(insertedTrainer);
+        const insertedTeam = await teamService.createTeam(newTeam);
+        res.status(200).json(insertedTeam);
     }
     catch (error)
     {
@@ -54,15 +55,16 @@ async function update(req: Request, res: Response): Promise<void>
     try
     {
         const id = parseInt(req.params.id);
-        const newTrainer: Trainer =
+        const newTeam: TeamBody =
         {
             name: req.body.name,
+            trainer: req.body.trainer,
         };
 
-        const updatedTrainer = await trainerService.updateTrainerById(id, newTrainer);
+        const updatedTeam = await teamService.updateTeamById(id, newTeam);
 
-        if (!updatedTrainer) res.status(404).json({ error: "Trainer not found." });
-        else res.status(200).json(updatedTrainer);
+        if (!updatedTeam) res.status(404).json({ error: "Team not found." });
+        else res.status(200).json(updatedTeam);
     }
     catch (error)
     {
@@ -75,10 +77,10 @@ async function destroy(req: Request, res: Response): Promise<void>
     try
     {
         const id = parseInt(req.params.id);
-        const result = await trainerService.deleteTrainerById(id);
+        const result = await teamService.deleteTeamById(id);
 
-        if (!result) res.status(404).json({ error: "Trainer not found." });
-        else res.json(`Trainer ${id} deleted.`);
+        if (!result) res.status(404).json({ error: "Team not found." });
+        else res.json(`Team ${id} deleted.`);
     }
     catch (error)
     {

@@ -4,6 +4,9 @@ import { ResultSetHeader, RowDataPacket } from "mysql2";
 import typesService from "./type-service";
 import config from "../config";
 import { TypeReference } from "../models/type";
+import { isErrorCode } from "../utils/error-handling";
+
+/* CRUD methods. */
 
 async function getAllSpecies(): Promise<Species[]>
 {
@@ -134,7 +137,7 @@ async function updateSpeciesById(id: number, newSpecies: SpeciesBody): Promise<S
     }
     catch (error)
     {
-        throw new Error(`Error update species with ID ${id}: ${(error as Error).message}`);
+        throw new Error(`Error updating species with ID ${id}: ${(error as Error).message}`);
     }
 }
 
@@ -147,7 +150,27 @@ async function deleteSpeciesById(id: number): Promise<boolean>
     }
     catch (error)
     {
+        if (isErrorCode(error, "ER_ROW_IS_REFERENCED_2"))
+        {
+            throw new Error("Cannot delete this species as it is referenced by other records.");
+        }
+
         throw new Error(`Error deleting species by ID: ${(error as Error).message}`);
+    }
+}
+
+/* Additional methods. */
+
+async function getSpeciesIdByName(name: string): Promise<number>
+{
+    try
+    {
+        const species = await db.queryOne<Species>("SELECT id FROM species WHERE LOWER(name) = LOWER(?)", [name]);
+        return (!species || !species.id) ? Promise.reject(new Error(`Unknown species '${name}'`)) : species.id;
+    }
+    catch (error)
+    {
+        throw new Error(`Error fetching trainer ID for ${name}: ${(error as Error).message}`);
     }
 }
 
@@ -157,5 +180,7 @@ export default
     getSpeciesById,
     createSpecies,
     updateSpeciesById,
-    deleteSpeciesById
+    deleteSpeciesById,
+
+    getSpeciesIdByName
 };
