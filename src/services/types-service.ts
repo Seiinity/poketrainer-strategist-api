@@ -1,6 +1,7 @@
 ﻿import db from "../db/mysql";
 import { Type } from "../models/type";
 import { ResultSetHeader } from "mysql2";
+import { isErrorCode } from "../utils/error-handling";
 
 /* CRUD methods. */
 
@@ -79,6 +80,11 @@ async function deleteTypeById(id: number): Promise<boolean>
     }
     catch (error)
     {
+        if (isErrorCode(error, "ER_ROW_IS_REFERENCED_2"))
+        {
+            throw new Error("Cannot delete this type as it is referenced by other records.");
+        }
+
         throw new Error(`Error deleting type by ID: ${(error as Error).message}`);
     }
 }
@@ -90,8 +96,7 @@ async function getTypeIdByName(name: string): Promise<number | null>
     try
     {
         const type = await db.queryOne<Type>("SELECT id FROM types WHERE LOWER(name) = LOWER(?)", [name]);
-        return type != null && type.id ? type.id : null;
-
+        return (!type || !type.id) ? Promise.reject(new Error(`Unknown type '${name}'`)) : type.id;
     }
     catch (error)
     {
