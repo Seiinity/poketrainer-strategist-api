@@ -1,8 +1,11 @@
 ﻿import express from "express";
 
 import speciesController from "../controllers/species-controller";
+import validateId from "../middleware/validate-id";
 
 const router = express.Router();
+
+router.param("id", validateId);
 
 router.get("/", speciesController.index);
 router.get("/:id", speciesController.show);
