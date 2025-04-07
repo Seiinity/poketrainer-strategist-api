@@ -83,11 +83,27 @@ async function deleteTrainerById(id: number): Promise<boolean>
     }
 }
 
+/* Additional methods. */
+
+async function getTrainerByName(name: string): Promise<Trainer | null>
+{
+    try
+    {
+        return await db.queryOne<Trainer>("SELECT * FROM trainers WHERE name = ?", [name]);
+    }
+    catch (error)
+    {
+        throw new Error(`Error fetching trainer with name ${name}: ${(error as Error).message}`);
+    }
+}
+
 export default
 {
     getAllTrainers,
     getTrainerById,
     createTrainer,
     updateTrainerById,
-    deleteTrainerById
+    deleteTrainerById,
+
+    getTrainerByName
 }
