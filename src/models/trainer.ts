@@ -5,7 +5,14 @@ export type Trainer =
 {
     id?: number;
     name: string;
+    passwordHash?: string;
     teams?: TeamReference[];
+}
+
+export type TrainerBody =
+{
+    name: string;
+    password: string;
 }
 
 export class TrainerReference

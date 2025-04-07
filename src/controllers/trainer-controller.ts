@@ -1,6 +1,7 @@
 ﻿import { Request, Response } from "express";
+import * as argon2 from "argon2";
 import trainerService from "../services/trainer-service";
-import { Trainer } from "../models/trainer";
+import { Trainer, TrainerBody } from "../models/trainer";
 
 async function index(_req: Request, res: Response): Promise<void>
 {
@@ -35,9 +36,10 @@ async function store(req: Request, res: Response): Promise<void>
 {
     try
     {
-        const newTrainer: Trainer =
+        const newTrainer: TrainerBody =
         {
             name: req.body.name,
+            password: await argon2.hash(req.body.password, { type: argon2.argon2i }),
         };
 
         const insertedTrainer = await trainerService.createTrainer(newTrainer);

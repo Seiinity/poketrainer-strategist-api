@@ -1,6 +1,6 @@
 ﻿import db from "../db/mysql";
 import { ResultSetHeader } from "mysql2";
-import { Trainer } from "../models/trainer";
+import { Trainer, TrainerBody } from "../models/trainer";
 import { isErrorCode } from "../utils/error-handling";
 
 /* CRUD methods. */
@@ -9,7 +9,7 @@ async function getAllTrainers(): Promise<Trainer[]>
 {
     try
     {
-        return await db.queryTyped<Trainer>("SELECT * FROM trainers");
+        return await db.queryTyped<Trainer>("SELECT id, name FROM trainers");
     }
     catch (error)
     {
@@ -21,7 +21,7 @@ async function getTrainerById(id: number): Promise<Trainer | null>
 {
     try
     {
-        return await db.queryOne<Trainer>("SELECT * FROM trainers WHERE id = ?", [id]);
+        return await db.queryOne<Trainer>("SELECT id, name, password_hash AS passwordHash FROM trainers WHERE id = ?", [id]);
     }
     catch (error)
     {
@@ -29,12 +29,12 @@ async function getTrainerById(id: number): Promise<Trainer | null>
     }
 }
 
-async function createTrainer(newTrainer: Trainer): Promise<Trainer>
+async function createTrainer(newTrainer: TrainerBody): Promise<Trainer>
 {
     try
     {
-        const sql = "INSERT INTO trainers (name) VALUES (?)";
-        const params = [newTrainer.name];
+        const sql = "INSERT INTO trainers (name, password_hash) VALUES (?, ?)";
+        const params = [newTrainer.name, newTrainer.password];
 
         const [result] = await db.query<ResultSetHeader>(sql, params);
 
