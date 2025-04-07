@@ -10,6 +10,7 @@ interface Config
     dbPort: number;
     dbUser: string;
     dbPass: string;
+    baseUrl: string;
 }
 
 const config: Config =
@@ -19,7 +20,8 @@ const config: Config =
     dbHost: String(process.env.DB_HOST),
     dbPort: Number(process.env.DB_PORT),
     dbUser: String(process.env.DB_USER),
-    dbPass: String(process.env.DB_PASS)
+    dbPass: String(process.env.DB_PASS),
+    baseUrl: `${process.env.BASE_URL}:${process.env.APP_PORT}`
 };
 
 export default config;
