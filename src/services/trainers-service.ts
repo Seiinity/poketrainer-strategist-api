@@ -1,6 +1,7 @@
 ﻿import db from "../db/mysql";
 import { ResultSetHeader } from "mysql2";
 import { Trainer } from "../models/trainer";
+import { isErrorCode } from "../utils/error-handling";
 
 /* CRUD methods. */
 
@@ -44,6 +45,11 @@ async function createTrainer(newTrainer: Trainer): Promise<Trainer>
     }
     catch (error)
     {
+        if (isErrorCode(error, "ER_DUP_ENTRY"))
+        {
+            throw new Error("Trainer with the specified name already exists.");
+        }
+
         throw new Error(`Error creating trainer: ${(error as Error).message}`);
     }
 }
@@ -66,6 +72,11 @@ async function updateTrainerById(id: number, newTrainer: Trainer): Promise<Train
     }
     catch (error)
     {
+        if (isErrorCode(error, "ER_DUP_ENTRY"))
+        {
+            throw new Error("Trainer with the specified name already exists.");
+        }
+
         throw new Error(`Error updating trainer with ID ${id}: ${(error as Error).message}`);
     }
 }
@@ -83,27 +94,11 @@ async function deleteTrainerById(id: number): Promise<boolean>
     }
 }
 
-/* Additional methods. */
-
-async function getTrainerByName(name: string): Promise<Trainer | null>
-{
-    try
-    {
-        return await db.queryOne<Trainer>("SELECT * FROM trainers WHERE name = ?", [name]);
-    }
-    catch (error)
-    {
-        throw new Error(`Error fetching trainer with name ${name}: ${(error as Error).message}`);
-    }
-}
-
 export default
 {
     getAllTrainers,
     getTrainerById,
     createTrainer,
     updateTrainerById,
-    deleteTrainerById,
-
-    getTrainerByName
+    deleteTrainerById
 }
