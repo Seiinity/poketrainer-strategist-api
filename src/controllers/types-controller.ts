@@ -1,12 +1,12 @@
 ﻿import { Request, Response } from "express";
-import { Species, SpeciesBody } from "../models/species";
-import speciesService from "../services/species-service";
+import typesService from "../services/types-service";
+import { Type } from "../models/type";
 
 async function index(_req: Request, res: Response): Promise<void>
 {
     try
     {
-        const species = await speciesService.getAllSpecies();
+        const species = await typesService.getAllTypes();
         res.json(species);
     }
     catch (error)
@@ -20,10 +20,10 @@ async function show(req: Request, res: Response): Promise<void>
     try
     {
         const id = parseInt(req.params.id);
-        const species = await speciesService.getSpeciesById(id);
+        const type = await typesService.getTypeById(id);
 
-        if (!species) res.status(404).json({ error: "Species not found." });
-        else res.json(species);
+        if (!type) res.status(404).json({ error: "Type not found." });
+        else res.json(type);
     }
     catch (error)
     {
@@ -35,14 +35,13 @@ async function store(req: Request, res: Response): Promise<void>
 {
     try
     {
-        const newSpecies: SpeciesBody =
+        const newType: Type =
         {
             name: req.body.name,
-            types: req.body.types,
         };
 
-        const insertedSpecies = await speciesService.createSpecies(newSpecies);
-        res.status(200).json(insertedSpecies);
+        const insertedType = await typesService.createType(newType);
+        res.status(200).json(insertedType);
     }
     catch (error)
     {
@@ -55,16 +54,15 @@ async function update(req: Request, res: Response): Promise<void>
     try
     {
         const id = parseInt(req.params.id);
-        const newSpecies: SpeciesBody =
+        const newType: Type =
         {
             name: req.body.name,
-            types: req.body.types,
         };
 
-        const updatedSpecies = await speciesService.updateSpeciesById(id, newSpecies);
+        const updatedType = await typesService.updateTypeById(id, newType);
 
-        if (!updatedSpecies) res.status(404).json({ error: "Species not found." });
-        else res.status(200).json(updatedSpecies);
+        if (!updatedType) res.status(404).json({ error: "Type not found." });
+        else res.status(200).json(updatedType);
     }
     catch (error)
     {
@@ -77,10 +75,10 @@ async function destroy(req: Request, res: Response): Promise<void>
     try
     {
         const id = parseInt(req.params.id);
-        const result = await speciesService.deleteSpeciesById(id);
+        const result = await typesService.deleteTypeById(id);
 
-        if (!result) res.status(404).json({ error: "Species not found." });
-        else res.json(`Species ${id} deleted.`);
+        if (!result) res.status(404).json({ error: "Type not found." });
+        else res.json(`Type ${id} deleted.`);
     }
     catch (error)
     {

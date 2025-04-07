@@ -32,8 +32,7 @@ async function getAllSpecies(): Promise<Species[]>
     }
     catch (error)
     {
-        console.error(`Error fetching species: ${error}`);
-        throw new Error("Could not fetch species.");
+        throw new Error(`Error fetching species: ${(error as Error).message}`);
     }
 }
 
@@ -69,8 +68,7 @@ async function getSpeciesById(id: number): Promise<Species | null>
     }
     catch (error)
     {
-        console.error(`Error fetching species with ID ${id}: ${error}`);
-        throw new Error("Could not fetch species.");
+        throw new Error(`Error fetching species with ID ${id}: ${(error as Error).message}`);
     }
 }
 
@@ -102,25 +100,24 @@ async function createSpecies(newSpecies: SpeciesBody): Promise<Species>
     }
     catch (error)
     {
-        console.error(`Error creating species: ${error}`);
-        throw new Error("Could not create species.");
+        throw new Error(`Error creating species: ${(error as Error).message}`);
     }
 }
 
-async function updateSpeciesById(id: number, updateSpecies: SpeciesBody): Promise<Species | null>
+async function updateSpeciesById(id: number, newSpecies: SpeciesBody): Promise<Species | null>
 {
     try
     {
         const typeIds = await Promise.all
         (
-            updateSpecies.types.map(async (typeName) =>
+            newSpecies.types.map(async (typeName) =>
             {
                 return await typesService.getTypeIdByName(typeName);
             })
         );
 
         const sql = "UPDATE species SET name = ?, type_1_id = ?, type_2_id = ? WHERE id = ?";
-        const params = [updateSpecies.name, typeIds[0], typeIds[1], id];
+        const params = [newSpecies.name, typeIds[0], typeIds[1], id];
 
         const [result] = await db.query<ResultSetHeader>(sql, params);
 
@@ -128,8 +125,8 @@ async function updateSpeciesById(id: number, updateSpecies: SpeciesBody): Promis
 
         return {
             id,
-            name: updateSpecies.name,
-            types: updateSpecies.types.map((typeName, index) => ({
+            name: newSpecies.name,
+            types: newSpecies.types.map((typeName, index) => ({
                 name: typeName,
                 url: `${config.baseUrl}/api/types/${typeIds[index]}`
             }))
@@ -137,8 +134,7 @@ async function updateSpeciesById(id: number, updateSpecies: SpeciesBody): Promis
     }
     catch (error)
     {
-        console.error(`Error update species with ID ${id}: ${error}`);
-        throw new Error("Could not update species.");
+        throw new Error(`Error update species with ID ${id}: ${(error as Error).message}`);
     }
 }
 
@@ -151,8 +147,7 @@ async function deleteSpeciesById(id: number): Promise<boolean>
     }
     catch (error)
     {
-        console.error(`Error deleting species by ID: ${error}`);
-        throw new Error("Could not delete species.");
+        throw new Error(`Error deleting species by ID: ${(error as Error).message}`);
     }
 }
 
