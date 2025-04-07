@@ -40,6 +40,12 @@ export function validateTrainerLogin(req: Request, res: Response, next: NextFunc
         return;
     }
 
+    if (!password)
+    {
+        res.status(400).json({ error: "Password is required." });
+        return;
+    }
+
     req.body.password = password.trim();
 
     next();

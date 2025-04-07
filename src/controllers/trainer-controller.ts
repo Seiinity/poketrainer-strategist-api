@@ -114,7 +114,7 @@ async function login(req: Request, res: Response)
 
         if (!await argon2.verify(trainer.passwordHash, newTrainer.password))
         {
-            res.status(401).json({ error: "Wrong password!" });
+            res.status(401).json({ error: "Wrong password." });
             return;
         }
 
