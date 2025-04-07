@@ -1,7 +1,7 @@
 ﻿import db from "../db/mysql";
 import { Species, SpeciesBody } from "../models/species";
 import { ResultSetHeader, RowDataPacket } from "mysql2";
-import typesService from "./types-service";
+import typesService from "./type-service";
 import config from "../config";
 import { TypeReference } from "../models/type";
 

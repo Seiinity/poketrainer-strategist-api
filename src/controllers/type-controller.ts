@@ -1,13 +1,13 @@
 ﻿import { Request, Response } from "express";
-import { Trainer } from "../models/trainer";
-import trainersService from "../services/trainers-service";
+import { Type } from "../models/type";
+import typeService from "../services/type-service";
 
 async function index(_req: Request, res: Response): Promise<void>
 {
     try
     {
-        const trainers = await trainersService.getAllTrainers();
-        res.json(trainers);
+        const types = await typeService.getAllTypes();
+        res.json(types);
     }
     catch (error)
     {
@@ -20,10 +20,10 @@ async function show(req: Request, res: Response): Promise<void>
     try
     {
         const id = parseInt(req.params.id);
-        const trainer = await trainersService.getTrainerById(id);
+        const type = await typeService.getTypeById(id);
 
-        if (!trainer) res.status(404).json({ error: "Trainer not found." });
-        else res.json(trainer);
+        if (!type) res.status(404).json({ error: "Type not found." });
+        else res.json(type);
     }
     catch (error)
     {
@@ -35,13 +35,13 @@ async function store(req: Request, res: Response): Promise<void>
 {
     try
     {
-        const newTrainer: Trainer =
+        const newType: Type =
         {
             name: req.body.name,
         };
 
-        const insertedTrainer = await trainersService.createTrainer(newTrainer);
-        res.status(200).json(insertedTrainer);
+        const insertedType = await typeService.createType(newType);
+        res.status(200).json(insertedType);
     }
     catch (error)
     {
@@ -54,15 +54,15 @@ async function update(req: Request, res: Response): Promise<void>
     try
     {
         const id = parseInt(req.params.id);
-        const newTrainer: Trainer =
+        const newType: Type =
         {
             name: req.body.name,
         };
 
-        const updatedTrainer = await trainersService.updateTrainerById(id, newTrainer);
+        const updatedType = await typeService.updateTypeById(id, newType);
 
-        if (!updatedTrainer) res.status(404).json({ error: "Trainer not found." });
-        else res.status(200).json(updatedTrainer);
+        if (!updatedType) res.status(404).json({ error: "Type not found." });
+        else res.status(200).json(updatedType);
     }
     catch (error)
     {
@@ -75,10 +75,10 @@ async function destroy(req: Request, res: Response): Promise<void>
     try
     {
         const id = parseInt(req.params.id);
-        const result = await trainersService.deleteTrainerById(id);
+        const result = await typeService.deleteTypeById(id);
 
-        if (!result) res.status(404).json({ error: "Trainer not found." });
-        else res.json(`Trainer ${id} deleted.`);
+        if (!result) res.status(404).json({ error: "Type not found." });
+        else res.json(`Type ${id} deleted.`);
     }
     catch (error)
     {

@@ -1,13 +1,13 @@
 ﻿import express from "express";
 
 import speciesRoutes from "./species-routes";
-import trainersController from "./trainers-routes";
-import typesRoutes from "./types-routes";
+import trainerRoutes from "./trainer-routes";
+import typeRoutes from "./type-routes";
 
 const router = express.Router();
 
 router.use("/species", speciesRoutes);
-router.use("/trainers", trainersController);
-router.use("/types", typesRoutes);
+router.use("/trainers", trainerRoutes);
+router.use("/types", typeRoutes);
 
 export default router;
