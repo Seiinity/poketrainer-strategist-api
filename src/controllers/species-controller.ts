@@ -1,4 +1,5 @@
 ﻿import { Request, Response } from "express";
+import { Species } from "../models/species";
 import speciesService from "../services/species-service";
 
 async function index(req: Request, res: Response)
@@ -32,9 +33,23 @@ async function show(req: Request, res: Response)
     }
 }
 
-function store(req: Request, res: Response)
+async function store(req: Request, res: Response)
 {
-    res.send("Store!");
+    try
+    {
+        const newSpecies: Species =
+        {
+            name: req.body.name,
+        };
+
+        const insertedSpecies = await speciesService.createSpecies(newSpecies);
+        res.status(200).json(insertedSpecies);
+    }
+    catch (error)
+    {
+        console.error(`Error creating species: ${error}`);
+        res.status(500).json({ error: "Something went wrong." });
+    }
 }
 
 function update(req: Request, res: Response)

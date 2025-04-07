@@ -31,12 +31,32 @@ async function getSpeciesById(id: number): Promise<Species | null>
     }
 }
 
-function createSpecies(newSpecies: Species)
+async function createSpecies(newSpecies: Species)
 {
+    try
+    {
+        const sql = "INSERT INTO species VALUES (NULL, ?)";
+        const params = [newSpecies.name];
 
+        const [result] = await db.query<ResultSetHeader>(sql, params);
+
+        const inserted: Species =
+        {
+            id: result.insertId,
+            ...newSpecies,
+        }
+
+        return inserted;
+    }
+    catch (error)
+    {
+        console.error(`Error creating species: ${error}`);
+        throw new Error("Could not create species.");
+    }
 }
 
-function updateSpeciesById(id: number, updateSpecies: Species) {
+function updateSpeciesById(id: number, updateSpecies: Species)
+{
 }
 
 async function deleteSpeciesById(id: number): Promise<boolean>
