@@ -1,7 +1,5 @@
-﻿export interface Species
+﻿export type Species =
 {
     id?: number;
     name: string;
 }
-
-export let species: Species[];
