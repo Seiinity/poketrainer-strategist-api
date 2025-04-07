@@ -1,13 +1,13 @@
 ﻿import { Request, Response } from "express";
-import typesService from "../services/types-service";
 import { Type } from "../models/type";
+import typesService from "../services/types-service";
 
 async function index(_req: Request, res: Response): Promise<void>
 {
     try
     {
-        const species = await typesService.getAllTypes();
-        res.json(species);
+        const types = await typesService.getAllTypes();
+        res.json(types);
     }
     catch (error)
     {

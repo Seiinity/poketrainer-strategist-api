@@ -28,7 +28,7 @@ async function getTypeById(id: number): Promise<Type | null>
     }
 }
 
-async function createType(newType: Type)
+async function createType(newType: Type): Promise<Type>
 {
     try
     {
@@ -48,7 +48,7 @@ async function createType(newType: Type)
     }
 }
 
-async function updateTypeById(id: number, newType: Type)
+async function updateTypeById(id: number, newType: Type): Promise<Type | null>
 {
     try
     {
@@ -59,13 +59,10 @@ async function updateTypeById(id: number, newType: Type)
 
         if (result.affectedRows === 0) return null;
 
-        const updatedType: Type =
-        {
+        return {
             id,
             name: newType.name
         };
-
-        return updatedType;
     }
     catch (error)
     {
@@ -73,7 +70,7 @@ async function updateTypeById(id: number, newType: Type)
     }
 }
 
-async function deleteTypeById(id: number)
+async function deleteTypeById(id: number): Promise<boolean>
 {
     try
     {

@@ -1,13 +1,13 @@
 ﻿import { Request, Response } from "express";
-import { SpeciesBody } from "../models/species";
-import speciesService from "../services/species-service";
+import { Trainer } from "../models/trainer";
+import trainersService from "../services/trainers-service";
 
 async function index(_req: Request, res: Response): Promise<void>
 {
     try
     {
-        const species = await speciesService.getAllSpecies();
-        res.json(species);
+        const trainers = await trainersService.getAllTrainers();
+        res.json(trainers);
     }
     catch (error)
     {
@@ -20,10 +20,10 @@ async function show(req: Request, res: Response): Promise<void>
     try
     {
         const id = parseInt(req.params.id);
-        const species = await speciesService.getSpeciesById(id);
+        const trainer = await trainersService.getTrainerById(id);
 
-        if (!species) res.status(404).json({ error: "Species not found." });
-        else res.json(species);
+        if (!trainer) res.status(404).json({ error: "Trainer not found." });
+        else res.json(trainer);
     }
     catch (error)
     {
@@ -35,14 +35,13 @@ async function store(req: Request, res: Response): Promise<void>
 {
     try
     {
-        const newSpecies: SpeciesBody =
+        const newTrainer: Trainer =
         {
             name: req.body.name,
-            types: req.body.types,
         };
 
-        const insertedSpecies = await speciesService.createSpecies(newSpecies);
-        res.status(200).json(insertedSpecies);
+        const insertedTrainer = await trainersService.createTrainer(newTrainer);
+        res.status(200).json(insertedTrainer);
     }
     catch (error)
     {
@@ -55,16 +54,15 @@ async function update(req: Request, res: Response): Promise<void>
     try
     {
         const id = parseInt(req.params.id);
-        const newSpecies: SpeciesBody =
+        const newTrainer: Trainer =
         {
             name: req.body.name,
-            types: req.body.types,
         };
 
-        const updatedSpecies = await speciesService.updateSpeciesById(id, newSpecies);
+        const updatedTrainer = await trainersService.updateTrainerById(id, newTrainer);
 
-        if (!updatedSpecies) res.status(404).json({ error: "Species not found." });
-        else res.status(200).json(updatedSpecies);
+        if (!updatedTrainer) res.status(404).json({ error: "Trainer not found." });
+        else res.status(200).json(updatedTrainer);
     }
     catch (error)
     {
@@ -77,10 +75,10 @@ async function destroy(req: Request, res: Response): Promise<void>
     try
     {
         const id = parseInt(req.params.id);
-        const result = await speciesService.deleteSpeciesById(id);
+        const result = await trainersService.deleteTrainerById(id);
 
-        if (!result) res.status(404).json({ error: "Species not found." });
-        else res.json(`Species ${id} deleted.`);
+        if (!result) res.status(404).json({ error: "Trainer not found." });
+        else res.json(`Trainer ${id} deleted.`);
     }
     catch (error)
     {
