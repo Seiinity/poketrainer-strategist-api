@@ -10,8 +10,8 @@ async function index(req: Request, res: Response)
     }
     catch (error)
     {
-        console.error("Error in index controller:", error);
-        res.status(500).send({ error: "Failed to fetch species." });
+        console.error(`Error fetching species: ${error}`);
+        res.status(500).send({ error: "Something went wrong." });
     }
 }
 
@@ -27,7 +27,7 @@ async function show(req: Request, res: Response)
     }
     catch (error)
     {
-        console.error("Error fetching species:", error);
+        console.error(`Error fetching species: ${error}`);
         res.status(500).json({ error: "Something went wrong." });
     }
 }
@@ -42,9 +42,21 @@ function update(req: Request, res: Response)
     res.send("Update!");
 }
 
-function destroy(req: Request, res: Response)
+async function destroy(req: Request, res: Response)
 {
-    res.send("Destroy!");
+    try
+    {
+        const id = parseInt(req.params.id);
+        const result = await speciesService.deleteSpeciesById(id);
+
+        if (!result) res.status(404).json({ error: "Species not found." });
+        else res.json(`Species ${id} deleted.`);
+    }
+    catch (error)
+    {
+        console.error(`Error deleting species: ${error}`);
+        res.status(500).json({ error: "Something went wrong." });
+    }
 }
 
 export default
