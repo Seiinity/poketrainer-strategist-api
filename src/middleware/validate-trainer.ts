@@ -1,6 +1,5 @@
 ﻿import { Request, Response, NextFunction } from "express";
 import validator from "validator";
-import trainersService from "../services/trainers-service";
 
 function validateTrainerBody(req: Request, res: Response, next: NextFunction)
 {
@@ -12,21 +11,9 @@ function validateTrainerBody(req: Request, res: Response, next: NextFunction)
         return;
     }
 
-    if (checkForExistingName(name))
-    {
-        res.status(400).json({ error: "Trainer with specified name already exists." });
-        return;
-    }
-
     req.body.name = name.trim();
 
     next();
-}
-
-function checkForExistingName(name: string)
-{
-    const trainer = trainersService.getTrainerByName(name);
-    return trainer != null;
 }
 
 export default validateTrainerBody;
