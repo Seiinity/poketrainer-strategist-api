@@ -9,7 +9,7 @@ export class SpeciesAdapter extends Adapter<Species, SpeciesBody>
     {
         return new Species
         ({
-            id: row.id,
+            id: row.species_id,
             name: row.name,
             types: TypeReference.build([
                 { id: row.type1_id, name: row.type1_name },
@@ -21,15 +21,15 @@ export class SpeciesAdapter extends Adapter<Species, SpeciesBody>
         });
     }
 
-    toMySQL(speciesBody: SpeciesBody): Record<string, any>
+    toMySQL(requestBody: SpeciesBody): Record<string, any>
     {
         return {
-            name: speciesBody.name,
-            type_1_id: speciesBody.type1Id,
-            type_2_id: speciesBody.type2Id || null,
-            gender_ratio_id: speciesBody.genderRatioId,
-            height: speciesBody.height,
-            weight: speciesBody.weight
+            name: requestBody.name,
+            type_1_id: requestBody.type1Id,
+            type_2_id: requestBody.type2Id || null,
+            gender_ratio_id: requestBody.genderRatioId,
+            height: requestBody.height,
+            weight: requestBody.weight,
         }
     }
 }

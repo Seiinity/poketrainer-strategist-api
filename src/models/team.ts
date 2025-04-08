@@ -39,10 +39,12 @@ export class TeamBody
 {
     name: string;
     trainerName: string;
+    trainerId?: number;
 
     constructor(requestBody: any)
     {
         this.name = requestBody.name;
         this.trainerName = requestBody.trainerName;
+        this.trainerId = requestBody.trainerId;
     }
 }

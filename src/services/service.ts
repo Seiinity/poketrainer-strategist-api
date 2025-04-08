@@ -12,7 +12,20 @@ export abstract class Service<Model, ModelBody>
     protected abstract searchField: string;
     protected abstract baseSelectQuery: string;
 
-    protected abstract processRequestBody(body: ModelBody): Promise<ModelBody>;
+    protected async processRequestBody(body: ModelBody): Promise<ModelBody>
+    {
+        return body;
+    }
+
+    protected async adaptToModel(row: RowDataPacket): Promise<Model>
+    {
+        return this.adapter.fromMySQL(row);
+    }
+
+    protected async adaptToDatabase(body: ModelBody): Promise<Record<string, any>>
+    {
+        return this.adapter.toMySQL(body);
+    }
 
     async find(search?: string): Promise<Model[]>
     {
@@ -28,7 +41,7 @@ export abstract class Service<Model, ModelBody>
             }
 
             const rows = await db.queryTyped<RowDataPacket>(query, params);
-            return rows.map(row => this.adapter.fromMySQL(row));
+            return Promise.all(rows.map(async row => await this.adaptToModel(row)));
         }
         catch (error)
         {
@@ -42,7 +55,7 @@ export abstract class Service<Model, ModelBody>
         {
             const query = `${this.baseSelectQuery} WHERE ${this.idField} = ?`;
             const row = await db.queryOne<RowDataPacket>(query, [id]);
-            return row ? this.adapter.fromMySQL(row) : null;
+            return row ? await this.adapter.fromMySQL(row) : null;
         }
         catch (error)
         {
@@ -55,7 +68,7 @@ export abstract class Service<Model, ModelBody>
         try
         {
             const processedBody = await this.processRequestBody(body);
-            const data = this.adapter.toMySQL(processedBody);
+            const data = await this.adaptToDatabase(processedBody);
 
             const query = createInsertQuery(this.tableName, data);
             const [result] = await db.query<ResultSetHeader>(query.sql, query.params);
@@ -73,7 +86,7 @@ export abstract class Service<Model, ModelBody>
         try
         {
             const processedBody = await this.processRequestBody(body);
-            const data = this.adapter.toMySQL(processedBody);
+            const data = await this.adaptToDatabase(processedBody);
 
             const query = createUpdateQuery(this.tableName, this.idField, data);
             query.params.push(id);

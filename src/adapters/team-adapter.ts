@@ -1,22 +1,32 @@
 ﻿import { RowDataPacket } from "mysql2";
-import { Team, TeamReference } from "../models/team";
+import { Team, TeamBody, TeamReference } from "../models/team";
 import { TrainerReference } from "../models/trainer";
+import { Adapter } from "./adapter";
 
-export class TeamAdapter
+export class TeamAdapter extends Adapter<Team, TeamBody>
 {
-    static fromMySQL(row: RowDataPacket): Team
+    fromMySQL(row: RowDataPacket): Team
     {
         return new Team
         ({
-            id: row.id,
+            id: row.team_id,
             name: row.name,
             trainer: new TrainerReference(row.trainer_name, row.trainer_id),
             pokemon: row.pokemon,
         });
     }
 
-    static referenceFromMySQL(row: RowDataPacket): TeamReference
+    referenceFromMySQL(row: RowDataPacket): TeamReference
     {
         return new TeamReference(row.name, row.id);
+    }
+
+    toMySQL(requestBody: TeamBody): Record<string, any>
+    {
+        return {
+            id: requestBody.name,
+            trainer_id: requestBody.trainerId,
+            name: requestBody.name,
+        }
     }
 }

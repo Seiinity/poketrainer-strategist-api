@@ -114,11 +114,12 @@ async function getPokemonReferencesByTeamId(teamId: number): Promise<PokemonRefe
                 p.id, p.nickname, 
                 s.name AS species_name
             FROM pokemon p
-            LEFT JOIN species s ON p.species_id = s.id
+            LEFT JOIN species s ON p.species_id = s.species_id
             WHERE p.team_id = ?`,
             [teamId]
         );
 
+        console.log(teamId);
         return rows.map(row => PokemonAdapter.referenceFromMySQL(row));
     }
     catch (error)
