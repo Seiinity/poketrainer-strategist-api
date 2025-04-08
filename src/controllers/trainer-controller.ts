@@ -20,8 +20,10 @@ async function show(req: Request, res: Response): Promise<void>
 {
     try
     {
-        const id = parseInt(req.params.id);
-        const trainer = await trainerService.getTrainerById(id);
+        const id = req.params.id;
+        const trainer = !isNaN(Number(id))
+            ? await trainerService.getTrainerById(parseInt(id))
+            : await trainerService.getTrainerByName(id);
 
         if (!trainer) res.status(404).json({ error: "Trainer not found." });
         else res.json(trainer);

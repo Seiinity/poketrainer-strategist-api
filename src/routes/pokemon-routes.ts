@@ -1,7 +1,7 @@
 ﻿import express from "express";
 
 import pokemonController from "../controllers/pokemon-controller";
-import validateId from "../middleware/validate-id";
+import { validateId } from "../middleware/validate-id";
 import validatePokemonBody from "../middleware/validate-pokemon";
 
 const router = express.Router();

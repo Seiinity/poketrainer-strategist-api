@@ -32,7 +32,36 @@ async function getTrainerById(id: number): Promise<Trainer | null>
 {
     try
     {
-        const row = await db.queryOne<RowDataPacket>("SELECT id, name, password_hash AS passwordHash FROM trainers WHERE id = ?", [id]);
+        return await getTrainerByField("id", id);
+    }
+    catch (error)
+    {
+        throw new Error(`Error fetching trainer with ID ${id}: ${(error as Error).message}`);
+    }
+}
+
+async function getTrainerByName(name: string): Promise<Trainer | null>
+{
+    try
+    {
+        return await getTrainerByField("name", name, true);
+    }
+    catch (error)
+    {
+        throw new Error(`Error fetching trainer named ${name}: ${(error as Error).message}`);
+    }
+}
+
+async function getTrainerByField(field: string, value: string | number, caseInsensitive = false): Promise<Trainer | null>
+{
+    try
+    {
+        const condition = caseInsensitive
+            ? `LOWER(${field}) = LOWER(?)`
+            : `${field} = ?`;
+
+        const query = `SELECT id, name, password_hash AS passwordHash FROM trainers WHERE ${condition}`;
+        const row = await db.queryOne<RowDataPacket>(query, [value]);
 
         if (!row) return null;
 
@@ -41,7 +70,7 @@ async function getTrainerById(id: number): Promise<Trainer | null>
     }
     catch (error)
     {
-        throw new Error(`Error fetching trainer with ID ${id}: ${(error as Error).message}`);
+        throw error;
     }
 }
 
@@ -111,19 +140,6 @@ async function getTrainerIdByName(name: string): Promise<number>
     {
         const trainer = await db.queryOne<Trainer>("SELECT id FROM trainers WHERE LOWER(name) = LOWER(?)", [name]);
         return (!trainer || !trainer.id) ? Promise.reject(new Error(`Unknown trainer '${name}'`)) : trainer.id;
-    }
-    catch (error)
-    {
-        throw new Error(`Error fetching trainer ID for ${name}: ${(error as Error).message}`);
-    }
-}
-
-async function getTrainerByName(name: string): Promise<Trainer | null>
-{
-    try
-    {
-        const row = await db.queryOne<RowDataPacket>("SELECT id, name, password_hash AS passwordHash FROM trainers WHERE LOWER(name) = LOWER(?)", [name]);
-        return row ? TrainerAdapter.fromMySql(row) : null;
     }
     catch (error)
     {

@@ -1,7 +1,7 @@
 ﻿import express from "express";
 
 import typeController from "../controllers/type-controller";
-import validateId from "../middleware/validate-id";
+import { validateId } from "../middleware/validate-id";
 import validateTypeBody from "../middleware/validate-type";
 
 const router = express.Router();

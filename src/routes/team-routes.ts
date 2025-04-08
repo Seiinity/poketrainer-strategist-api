@@ -1,7 +1,7 @@
 ﻿import express from "express";
 
 import teamController from "../controllers/team-controller";
-import validateId from "../middleware/validate-id";
+import { validateId } from "../middleware/validate-id";
 import validateTeamBody from "../middleware/validate-team";
 
 const router = express.Router();
