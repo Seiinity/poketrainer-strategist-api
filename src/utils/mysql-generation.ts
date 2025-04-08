@@ -18,8 +18,10 @@ export function createInsertQuery(tableName: string, data: Record<string, any>):
 
 export function createUpdateQuery(tableName: string, filter: string, data: Record<string, any>): MySQLQuery
 {
-    const setClauses = Object.keys(data).map(key => `${key} = ?`);
-    const params = Object.values(data);
+    const entries = Object.entries(data).filter(([_, value]) => value !== undefined);
+
+    const setClauses = entries.map(([key]) => `${key} = ?`);
+    const params = entries.map(([_, value]) => value);
 
     return {
         sql: `UPDATE ${tableName} SET ${setClauses.join(', ')} WHERE ${filter} = ?`,

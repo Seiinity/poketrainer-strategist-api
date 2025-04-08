@@ -24,7 +24,6 @@ export class TeamAdapter extends Adapter<Team, TeamBody>
     toMySQL(requestBody: TeamBody): Record<string, any>
     {
         return {
-            id: requestBody.name,
             trainer_id: requestBody.trainerId,
             name: requestBody.name,
         }

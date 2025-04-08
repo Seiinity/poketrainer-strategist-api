@@ -1,160 +1,44 @@
-﻿import db from "../db/mysql";
-import { ResultSetHeader, RowDataPacket } from "mysql2";
-import { Trainer, TrainerBody } from "../models/trainer";
-import { isErrorCode } from "../utils/error-handling";
+﻿import { Trainer, TrainerBody } from "../models/trainer";
+import { Service } from "./service";
 import { TrainerAdapter } from "../adapters/trainer-adapter";
-import teamService from "./team-service";
+import db from "../db/mysql";
+import { RowDataPacket } from "mysql2";
 
-/* CRUD methods. */
-
-async function getAllTrainers(): Promise<Trainer[]>
+class TrainerService extends Service<Trainer, TrainerBody>
 {
-    try
-    {
-        const rows = await db.queryTyped<RowDataPacket>("SELECT id, name FROM trainers");
+    protected adapter = new TrainerAdapter();
+    protected tableName = "trainers";
+    protected idField = "trainer_id";
+    protected searchField = "name";
+    protected baseSelectQuery = "SELECT * FROM trainers";
 
-        return await Promise.all
-        (
-            rows.map(async row =>
-            {
-                row.teams = await teamService.getReferencesByTrainerId(row.id);
-                return TrainerAdapter.fromMySQL(row);
-            })
-        );
-    }
-    catch (error)
+    async getByName(name: string) : Promise<Trainer | null>
     {
-        throw new Error(`Error fetching trainers: ${(error as Error).message}`);
-    }
-}
-
-async function getTrainerById(id: number): Promise<Trainer | null>
-{
-    try
-    {
-        return await getTrainerByField("id", id);
-    }
-    catch (error)
-    {
-        throw new Error(`Error fetching trainer with ID ${id}: ${(error as Error).message}`);
-    }
-}
-
-async function getTrainerByName(name: string): Promise<Trainer | null>
-{
-    try
-    {
-        return await getTrainerByField("name", name, true);
-    }
-    catch (error)
-    {
-        throw new Error(`Error fetching trainer named ${name}: ${(error as Error).message}`);
-    }
-}
-
-async function getTrainerByField(field: string, value: string | number, caseInsensitive = false): Promise<Trainer | null>
-{
-    try
-    {
-        const condition = caseInsensitive
-            ? `LOWER(${field}) = LOWER(?)`
-            : `${field} = ?`;
-
-        const query = `SELECT id, name, password_hash AS passwordHash FROM trainers WHERE ${condition}`;
-        const row = await db.queryOne<RowDataPacket>(query, [value]);
-
-        if (!row) return null;
-
-        row.teams = await teamService.getReferencesByTrainerId(row.id);
-        return TrainerAdapter.fromMySQL(row);
-    }
-    catch (error)
-    {
-        throw error;
-    }
-}
-
-async function createTrainer(newTrainer: TrainerBody): Promise<Trainer>
-{
-    try
-    {
-        const sql = "INSERT INTO trainers (name, password_hash) VALUES (?, ?)";
-        const params = [newTrainer.name, newTrainer.passwordHash];
-
-        const [result] = await db.query<ResultSetHeader>(sql, params);
-
-        return await getTrainerById(result.insertId) as Trainer;
-    }
-    catch (error)
-    {
-        if (isErrorCode(error, "ER_DUP_ENTRY"))
+        try
         {
-            throw new Error("Trainer with the specified name already exists.");
+            const query = `${this.baseSelectQuery} WHERE name = ?`;
+            const row = await db.queryOne<RowDataPacket>(query, [name]);
+            return row ? this.adapter.fromMySQL(row) : null;
         }
-
-        throw new Error(`Error creating trainer: ${(error as Error).message}`);
-    }
-}
-
-async function updateTrainerById(id: number, newTrainer: TrainerBody): Promise<Trainer | null>
-{
-    try
-    {
-        const sql = "UPDATE trainers SET name = ? WHERE id = ?";
-        const params = [newTrainer.name, id];
-
-        const [result] = await db.query<ResultSetHeader>(sql, params);
-
-        if (result.affectedRows === 0) return null;
-        return await getTrainerById(result.insertId) as Trainer;
-    }
-    catch (error)
-    {
-        if (isErrorCode(error, "ER_DUP_ENTRY"))
+        catch (error)
         {
-            throw new Error("Trainer with the specified name already exists.");
+            throw new Error(`Error fetching ${this.tableName} named ${name}: ${(error as Error).message}`);
         }
+    }
 
-        throw new Error(`Error updating trainer with ID ${id}: ${(error as Error).message}`);
+    async getIdByName(name: string): Promise<number>
+    {
+        try
+        {
+            const trainer = await db.queryOne<Trainer>("SELECT id FROM trainers WHERE LOWER(name) = LOWER(?)", [name]);
+            return (!trainer || !trainer.id) ? Promise.reject(new Error(`Unknown trainer '${name}'`)) : trainer.id;
+        }
+        catch (error)
+        {
+            throw new Error(`Error fetching trainer ID for ${name}: ${(error as Error).message}`);
+        }
     }
 }
 
-async function deleteTrainerById(id: number): Promise<boolean>
-{
-    try
-    {
-        const [result] = await db.query<ResultSetHeader>("DELETE FROM trainers WHERE id = ?", [id]);
-        return result.affectedRows > 0;
-    }
-    catch (error)
-    {
-        throw new Error(`Error deleting trainer by ID: ${(error as Error).message}`);
-    }
-}
-
-/* Additional methods. */
-
-async function getTrainerIdByName(name: string): Promise<number>
-{
-    try
-    {
-        const trainer = await db.queryOne<Trainer>("SELECT id FROM trainers WHERE LOWER(name) = LOWER(?)", [name]);
-        return (!trainer || !trainer.id) ? Promise.reject(new Error(`Unknown trainer '${name}'`)) : trainer.id;
-    }
-    catch (error)
-    {
-        throw new Error(`Error fetching trainer ID for ${name}: ${(error as Error).message}`);
-    }
-}
-
-export default
-{
-    getAllTrainers,
-    getTrainerById,
-    createTrainer,
-    updateTrainerById,
-    deleteTrainerById,
-
-    getTrainerIdByName,
-    getTrainerByName
-}
+const trainerService = new TrainerService();
+export default trainerService;

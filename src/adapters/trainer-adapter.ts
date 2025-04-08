@@ -1,16 +1,25 @@
 ﻿import { RowDataPacket } from "mysql2";
-import { Trainer } from "../models/trainer";
+import { Trainer, TrainerBody } from "../models/trainer";
+import { Adapter } from "./adapter";
 
-export class TrainerAdapter
+export class TrainerAdapter extends Adapter<Trainer, TrainerBody>
 {
-    static fromMySQL(row: RowDataPacket): Trainer
+    fromMySQL(row: RowDataPacket): Trainer
     {
         return new Trainer
         ({
-            id: row.id,
+            id: row.trainer_id,
             name: row.name,
-            passwordHash: row.passwordHash,
+            passwordHash: row.password_hash,
             teams: row.teams,
         });
+    }
+
+    toMySQL(requestBody: TrainerBody): Record<string, any>
+    {
+        return {
+            name: requestBody.name,
+            password_hash: requestBody.passwordHash,
+        }
     }
 }

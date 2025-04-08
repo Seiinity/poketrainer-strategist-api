@@ -25,7 +25,7 @@ class TeamService extends Service<Team, TeamBody>
     protected async processRequestBody(body: TeamBody): Promise<TeamBody>
     {
         const processed = { ...body };
-        processed.trainerId = await trainerService.getTrainerIdByName(body.trainerName);
+        processed.trainerId = await trainerService.getIdByName(body.trainerName);
         return processed;
     }
 

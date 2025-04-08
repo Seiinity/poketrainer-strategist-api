@@ -77,6 +77,11 @@ export abstract class Service<Model, ModelBody>
         }
         catch (error)
         {
+            if (isErrorCode(error, "ER_DUP_ENTRY"))
+            {
+                throw new Error(`A duplicate record in ${this.tableName} already exists.`);
+            }
+
             throw new Error(`Error creating ${this.tableName}: ${(error as Error).message}`);
         }
     }
@@ -98,6 +103,11 @@ export abstract class Service<Model, ModelBody>
         }
         catch (error)
         {
+            if (isErrorCode(error, "ER_DUP_ENTRY"))
+            {
+                throw new Error(`A duplicate record in ${this.tableName} already exists.`);
+            }
+
             throw new Error(`Error updating ${this.tableName} with ID ${id}: ${(error as Error).message}`);
         }
     }

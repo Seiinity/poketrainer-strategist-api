@@ -7,7 +7,7 @@ async function index(_req: Request, res: Response): Promise<void>
 {
     try
     {
-        const trainers = await trainerService.getAllTrainers();
+        const trainers = await trainerService.find();
         res.json(trainers);
     }
     catch (error)
@@ -22,8 +22,8 @@ async function show(req: Request, res: Response): Promise<void>
     {
         const id = req.params.id;
         const trainer = !isNaN(Number(id))
-            ? await trainerService.getTrainerById(parseInt(id))
-            : await trainerService.getTrainerByName(id);
+            ? await trainerService.getById(parseInt(id))
+            : await trainerService.getByName(id);
 
         if (!trainer) res.status(404).json({ error: "Trainer not found." });
         else res.json(trainer);
@@ -40,7 +40,7 @@ async function store(req: Request, res: Response): Promise<void>
     {
         const passwordHash = await argon2.hash(req.body.password, { type: argon2.argon2i });
         const newTrainer = new TrainerBody(req.body, passwordHash);
-        const insertedTrainer = await trainerService.createTrainer(newTrainer);
+        const insertedTrainer = await trainerService.create(newTrainer);
         res.status(200).json(insertedTrainer);
     }
     catch (error)
@@ -55,7 +55,7 @@ async function update(req: Request, res: Response): Promise<void>
     {
         const id = parseInt(req.params.id);
         const newTrainer = new TrainerBody(req.body);
-        const updatedTrainer = await trainerService.updateTrainerById(id, newTrainer);
+        const updatedTrainer = await trainerService.update(id, newTrainer);
 
         if (!updatedTrainer) res.status(404).json({ error: "Trainer not found." });
         else res.status(200).json(updatedTrainer);
@@ -71,7 +71,7 @@ async function destroy(req: Request, res: Response): Promise<void>
     try
     {
         const id = parseInt(req.params.id);
-        const result = await trainerService.deleteTrainerById(id);
+        const result = await trainerService.delete(id);
 
         if (!result) res.status(404).json({ error: "Trainer not found." });
         else res.json(`Trainer ${id} deleted.`);
@@ -88,7 +88,7 @@ async function login(req: Request, res: Response)
     {
         const newTrainer = new TrainerBody(req.body);
 
-        const trainer = await trainerService.getTrainerByName(newTrainer.name);
+        const trainer = await trainerService.getByName(newTrainer.name);
 
         if (!trainer)
         {
