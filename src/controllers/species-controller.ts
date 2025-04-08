@@ -2,11 +2,12 @@
 import { SpeciesBody } from "../models/species";
 import speciesService from "../services/species-service";
 
-async function index(_req: Request, res: Response): Promise<void>
+async function index(req: Request, res: Response): Promise<void>
 {
     try
     {
-        const species = await speciesService.getAllSpecies();
+        const search = req.query.search as string | undefined;
+        const species = await speciesService.getAllSpecies(search);
         res.json(species);
     }
     catch (error)

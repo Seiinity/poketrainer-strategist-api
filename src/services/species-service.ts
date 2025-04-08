@@ -20,11 +20,20 @@ const baseSelectQuery =
     LEFT JOIN gender_ratios g ON s.gender_ratio_id = g.id
 `;
 
-async function getAllSpecies(): Promise<Species[]>
+async function getAllSpecies(search?: string): Promise<Species[]>
 {
     try
     {
-        const rows = await db.queryTyped<RowDataPacket>(baseSelectQuery);
+        let query = baseSelectQuery;
+        const params: any[] = [];
+
+        if (search)
+        {
+            query += " WHERE s.name LIKE ?";
+            params.push(`%${search}%`);
+        }
+
+        const rows = await db.queryTyped<RowDataPacket>(query, params);
         return rows.map(row => SpeciesAdapter.fromMySQL(row));
     }
     catch (error)
