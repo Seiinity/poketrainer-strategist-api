@@ -1,5 +1,5 @@
-﻿import { Adapter } from "../adapters/adapter";
-import db from "../db/mysql";
+﻿import db from "../db/mysql";
+import { Adapter } from "../adapters/adapter";
 import { ResultSetHeader, RowDataPacket } from "mysql2";
 import { createInsertQuery, createUpdateQuery } from "../utils/mysql-generation";
 import { isErrorCode } from "../utils/error-handling";

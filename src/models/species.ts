@@ -1,5 +1,5 @@
-﻿import { TypeReference } from "./type";
-import config from "../config";
+﻿import config from "../config";
+import { TypeReference } from "./type";
 
 export class Species
 {

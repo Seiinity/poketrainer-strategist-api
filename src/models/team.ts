@@ -1,6 +1,6 @@
-﻿import { TrainerReference } from "./trainer";
+﻿import config from "../config";
+import { TrainerReference } from "./trainer";
 import { PokemonReference } from "./pokemon";
-import config from "../config";
 
 export class Team
 {

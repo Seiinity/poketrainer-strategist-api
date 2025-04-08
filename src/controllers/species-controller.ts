@@ -1,6 +1,6 @@
-﻿import { Request, Response } from "express";
+﻿import speciesService from "../services/species-service";
+import { Request, Response } from "express";
 import { SpeciesBody } from "../models/species";
-import speciesService from "../services/species-service";
 
 async function index(req: Request, res: Response): Promise<void>
 {

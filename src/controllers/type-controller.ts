@@ -1,6 +1,6 @@
-﻿import { Request, Response } from "express";
+﻿import typeService from "../services/type-service";
+import { Request, Response } from "express";
 import { TypeBody } from "../models/type";
-import typeService from "../services/type-service";
 
 async function index(_req: Request, res: Response): Promise<void>
 {

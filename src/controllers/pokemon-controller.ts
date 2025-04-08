@@ -1,5 +1,5 @@
-﻿import { Request, Response } from "express";
-import pokemonService from "../services/pokemon-service";
+﻿import pokemonService from "../services/pokemon-service";
+import { Request, Response } from "express";
 import { PokemonBody } from "../models/pokemon";
 
 async function index(_req: Request, res: Response): Promise<void>

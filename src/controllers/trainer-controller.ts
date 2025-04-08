@@ -1,6 +1,6 @@
-﻿import { Request, Response } from "express";
+﻿import trainerService from "../services/trainer-service";
 import * as argon2 from "argon2";
-import trainerService from "../services/trainer-service";
+import { Request, Response } from "express";
 import { TrainerBody } from "../models/trainer";
 
 async function index(_req: Request, res: Response): Promise<void>

@@ -1,6 +1,6 @@
-﻿import { Request, Response } from "express";
+﻿import teamService from "../services/team-service";
+import { Request, Response } from "express";
 import { TeamBody } from "../models/team";
-import teamService from "../services/team-service";
 
 async function index(_req: Request, res: Response): Promise<void>
 {

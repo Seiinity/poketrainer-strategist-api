@@ -1,7 +1,7 @@
 ﻿import { RowDataPacket } from "mysql2";
 import { Type, TypeBody } from "../models/type";
-import { Adapter } from "./adapter";
 import { TeamBody } from "../models/team";
+import { Adapter } from "./adapter";
 
 export class TypeAdapter extends Adapter<Type, TypeBody>
 {
