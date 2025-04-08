@@ -15,7 +15,7 @@ class TypeService extends Service<Type, TypeBody>
     {
         try
         {
-            const type = await db.queryOne<Type>("SELECT id FROM types WHERE LOWER(name) = LOWER(?)", [name]);
+            const type = await db.queryOne<Type>("SELECT type_id AS id FROM types WHERE LOWER(name) = LOWER(?)", [name]);
             return (!type || !type.id) ? Promise.reject(new Error(`Unknown type '${name}'`)) : type.id;
         }
         catch (error)

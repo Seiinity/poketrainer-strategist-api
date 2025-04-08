@@ -17,9 +17,9 @@ class TeamService extends Service<Team, TeamBody>
     `
         SELECT
              t.team_id, t.name,
-             tr.id AS trainer_id, tr.name AS trainer_name
+             tr.trainer_id, tr.name AS trainer_name
         FROM teams t
-        LEFT JOIN trainers tr ON t.trainer_id = tr.id
+        LEFT JOIN trainers tr ON t.trainer_id = tr.trainer_id
     `;
 
     protected async processRequestBody(body: TeamBody): Promise<TeamBody>
@@ -31,7 +31,7 @@ class TeamService extends Service<Team, TeamBody>
 
     protected async adaptToModel(row: RowDataPacket): Promise<Team>
     {
-        row.pokemon = await pokemonService.getPokemonReferencesByTeamId(row.team_id);
+        row.pokemon = await pokemonService.getReferencesByTeamId(row.team_id);
         return super.adaptToModel(row);
     }
 

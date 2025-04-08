@@ -39,6 +39,7 @@ export class PokemonBody
 {
     nickname?: string;
     speciesName: string;
+    speciesId?: number;
     teamId: number;
 
     constructor(requestBody: any)

@@ -38,7 +38,7 @@ class SpeciesService extends Service<Species, SpeciesBody>
     {
         try
         {
-            const species = await db.queryOne<Species>("SELECT id FROM species WHERE LOWER(name) = LOWER(?)", [name]);
+            const species = await db.queryOne<Species>("SELECT species_id AS id FROM species WHERE LOWER(name) = LOWER(?)", [name]);
             return (!species || !species.id) ? Promise.reject(new Error(`Unknown species '${name}'`)) : species.id;
         }
         catch (error)
