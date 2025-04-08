@@ -1,7 +1,6 @@
 ﻿import db from "../db/mysql";
 import { ResultSetHeader, RowDataPacket } from "mysql2";
 import { Team, TeamBody } from "../models/team";
-import { TrainerReference } from "../models/trainer";
 import { isErrorCode } from "../utils/error-handling";
 import trainerService from "./trainer-service";
 import pokemonService from "./pokemon-service";

@@ -1,7 +1,8 @@
 ﻿import db from "../db/mysql";
-import { ResultSetHeader } from "mysql2";
+import { ResultSetHeader, RowDataPacket } from "mysql2";
 import { Trainer, TrainerBody } from "../models/trainer";
 import { isErrorCode } from "../utils/error-handling";
+import { TrainerAdapter } from "../adapters/trainer-adapter";
 
 /* CRUD methods. */
 
@@ -9,7 +10,8 @@ async function getAllTrainers(): Promise<Trainer[]>
 {
     try
     {
-        return await db.queryTyped<Trainer>("SELECT id, name FROM trainers");
+        const rows = await db.queryTyped<RowDataPacket>("SELECT id, name FROM trainers");
+        return rows.map(row => TrainerAdapter.fromMySql(row));
     }
     catch (error)
     {
@@ -21,7 +23,8 @@ async function getTrainerById(id: number): Promise<Trainer | null>
 {
     try
     {
-        return await db.queryOne<Trainer>("SELECT id, name, password_hash AS passwordHash FROM trainers WHERE id = ?", [id]);
+        const row = await db.queryOne<RowDataPacket>("SELECT id, name, password_hash AS passwordHash FROM trainers WHERE id = ?", [id]);
+        return row ? TrainerAdapter.fromMySql(row) : null;
     }
     catch (error)
     {
@@ -34,14 +37,11 @@ async function createTrainer(newTrainer: TrainerBody): Promise<Trainer>
     try
     {
         const sql = "INSERT INTO trainers (name, password_hash) VALUES (?, ?)";
-        const params = [newTrainer.name, newTrainer.password];
+        const params = [newTrainer.name, newTrainer.passwordHash];
 
         const [result] = await db.query<ResultSetHeader>(sql, params);
 
-        return {
-            id: result.insertId,
-            name: newTrainer.name,
-        };
+        return await getTrainerById(result.insertId) as Trainer;
     }
     catch (error)
     {
@@ -54,7 +54,7 @@ async function createTrainer(newTrainer: TrainerBody): Promise<Trainer>
     }
 }
 
-async function updateTrainerById(id: number, newTrainer: Trainer): Promise<Trainer | null>
+async function updateTrainerById(id: number, newTrainer: TrainerBody): Promise<Trainer | null>
 {
     try
     {
@@ -64,11 +64,7 @@ async function updateTrainerById(id: number, newTrainer: Trainer): Promise<Train
         const [result] = await db.query<ResultSetHeader>(sql, params);
 
         if (result.affectedRows === 0) return null;
-
-        return {
-            id,
-            name: newTrainer.name
-        };
+        return await getTrainerById(result.insertId) as Trainer;
     }
     catch (error)
     {
@@ -113,7 +109,8 @@ async function getTrainerByName(name: string): Promise<Trainer | null>
 {
     try
     {
-        return  await db.queryOne<Trainer>("SELECT id, name, password_hash AS passwordHash FROM trainers WHERE LOWER(name) = LOWER(?)", [name]);
+        const row = await db.queryOne<RowDataPacket>("SELECT id, name, password_hash AS passwordHash FROM trainers WHERE LOWER(name) = LOWER(?)", [name]);
+        return row ? TrainerAdapter.fromMySql(row) : null;
     }
     catch (error)
     {

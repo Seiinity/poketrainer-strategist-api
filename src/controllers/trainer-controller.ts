@@ -1,7 +1,7 @@
 ﻿import { Request, Response } from "express";
 import * as argon2 from "argon2";
 import trainerService from "../services/trainer-service";
-import { Trainer, TrainerBody } from "../models/trainer";
+import { TrainerBody } from "../models/trainer";
 
 async function index(_req: Request, res: Response): Promise<void>
 {
@@ -36,12 +36,8 @@ async function store(req: Request, res: Response): Promise<void>
 {
     try
     {
-        const newTrainer: TrainerBody =
-        {
-            name: req.body.name,
-            password: await argon2.hash(req.body.password, { type: argon2.argon2i }),
-        };
-
+        const passwordHash = await argon2.hash(req.body.password, { type: argon2.argon2i });
+        const newTrainer = new TrainerBody(req.body, passwordHash);
         const insertedTrainer = await trainerService.createTrainer(newTrainer);
         res.status(200).json(insertedTrainer);
     }
@@ -56,11 +52,7 @@ async function update(req: Request, res: Response): Promise<void>
     try
     {
         const id = parseInt(req.params.id);
-        const newTrainer: Trainer =
-        {
-            name: req.body.name,
-        };
-
+        const newTrainer = new TrainerBody(req.body);
         const updatedTrainer = await trainerService.updateTrainerById(id, newTrainer);
 
         if (!updatedTrainer) res.status(404).json({ error: "Trainer not found." });
@@ -92,11 +84,7 @@ async function login(req: Request, res: Response)
 {
     try
     {
-        const newTrainer: TrainerBody =
-        {
-            name: req.body.name,
-            password: req.body.password,
-        };
+        const newTrainer = new TrainerBody(req.body);
 
         const trainer = await trainerService.getTrainerByName(newTrainer.name);
 
@@ -112,7 +100,7 @@ async function login(req: Request, res: Response)
             return;
         }
 
-        if (!await argon2.verify(trainer.passwordHash, newTrainer.password))
+        if (!await argon2.verify(trainer.passwordHash, newTrainer.password as string))
         {
             res.status(401).json({ error: "Wrong password." });
             return;

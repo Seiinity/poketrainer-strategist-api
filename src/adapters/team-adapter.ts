@@ -1,7 +1,6 @@
 ﻿import { RowDataPacket } from "mysql2";
 import { Team } from "../models/team";
 import { TrainerReference } from "../models/trainer";
-import pokemonService from "../services/pokemon-service";
 
 export class TeamAdapter
 {
