@@ -1,5 +1,5 @@
 ﻿import { Request, Response } from "express";
-import { Type } from "../models/type";
+import { Type, TypeBody } from "../models/type";
 import typeService from "../services/type-service";
 
 async function index(_req: Request, res: Response): Promise<void>
@@ -35,11 +35,7 @@ async function store(req: Request, res: Response): Promise<void>
 {
     try
     {
-        const newType: Type =
-        {
-            name: req.body.name,
-        };
-
+        const newType = new TypeBody(req.body);
         const insertedType = await typeService.createType(newType);
         res.status(200).json(insertedType);
     }
@@ -54,11 +50,7 @@ async function update(req: Request, res: Response): Promise<void>
     try
     {
         const id = parseInt(req.params.id);
-        const newType: Type =
-        {
-            name: req.body.name,
-        };
-
+        const newType = new TypeBody(req.body);
         const updatedType = await typeService.updateTypeById(id, newType);
 
         if (!updatedType) res.status(404).json({ error: "Type not found." });

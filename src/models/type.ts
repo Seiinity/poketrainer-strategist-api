@@ -1,9 +1,18 @@
 ﻿import config from "../config";
 
-export type Type =
+export class Type
 {
-    id?: number;
+    id: number;
     name: string;
+
+    constructor(data: {
+        id: number;
+        name: string;
+    })
+    {
+        this.id = data.id;
+        this.name = data.name;
+    }
 }
 
 export class TypeReference
@@ -22,5 +31,15 @@ export class TypeReference
         return types
             .filter((type) => type.id && type.name)
             .map((type) => new TypeReference(type.name!, `${config.baseUrl}/api/types/${type.id}`));
+    }
+}
+
+export class TypeBody
+{
+    name: string;
+
+    constructor(requestBody: any)
+    {
+        this.name = requestBody.name;
     }
 }

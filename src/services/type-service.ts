@@ -1,15 +1,19 @@
 ﻿import db from "../db/mysql";
-import { Type } from "../models/type";
-import { ResultSetHeader } from "mysql2";
+import { Type, TypeBody } from "../models/type";
+import { ResultSetHeader, RowDataPacket } from "mysql2";
 import { isErrorCode } from "../utils/error-handling";
+import { TypeAdapter } from "../adapters/type-adapter";
 
 /* CRUD methods. */
+
+const baseSelectQuery = "SELECT * FROM types";
 
 async function getAllTypes(): Promise<Type[]>
 {
     try
     {
-        return await db.queryTyped<Type>("SELECT * FROM types");
+        const rows = await db.queryTyped<RowDataPacket>(baseSelectQuery);
+        return rows.map(row => TypeAdapter.fromMySql(row));
     }
     catch (error)
     {
@@ -21,7 +25,8 @@ async function getTypeById(id: number): Promise<Type | null>
 {
     try
     {
-        return await db.queryOne<Type>("SELECT * FROM types WHERE id = ?", [id]);
+        const row = await db.queryOne<RowDataPacket>(`${baseSelectQuery} WHERE id = ?`, [id]);
+        return row ? TypeAdapter.fromMySql(row) : null;
     }
     catch (error)
     {
@@ -29,7 +34,7 @@ async function getTypeById(id: number): Promise<Type | null>
     }
 }
 
-async function createType(newType: Type): Promise<Type>
+async function createType(newType: TypeBody): Promise<Type>
 {
     try
     {
@@ -38,10 +43,7 @@ async function createType(newType: Type): Promise<Type>
 
         const [result] = await db.query<ResultSetHeader>(sql, params);
 
-        return {
-            id: result.insertId,
-            name: newType.name,
-        };
+        return await getTypeById(result.insertId) as Type;
     }
     catch (error)
     {
@@ -49,7 +51,7 @@ async function createType(newType: Type): Promise<Type>
     }
 }
 
-async function updateTypeById(id: number, newType: Type): Promise<Type | null>
+async function updateTypeById(id: number, newType: TypeBody): Promise<Type | null>
 {
     try
     {
@@ -59,11 +61,7 @@ async function updateTypeById(id: number, newType: Type): Promise<Type | null>
         const [result] = await db.query<ResultSetHeader>(sql, params);
 
         if (result.affectedRows === 0) return null;
-
-        return {
-            id,
-            name: newType.name
-        };
+        return await getTypeById(result.insertId) as Type;
     }
     catch (error)
     {
