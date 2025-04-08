@@ -11,13 +11,11 @@ function validatePokemonBody(req: Request, res: Response, next: NextFunction)
         return;
     }
 
-
-    if (!trainerId && !Number.isInteger(Number(trainerId) && Number(trainerId) <= 0))
+    if (!trainerId || !Number.isInteger(Number(trainerId) || Number(trainerId) <= 0))
     {
         res.status(400).json({ error: "Trainer ID must be a positive integer." });
         return;
     }
-
 
     req.body.name = species.trim();
 

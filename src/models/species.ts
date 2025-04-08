@@ -1,11 +1,25 @@
 ﻿import { TypeReference } from "./type";
 import config from "../config";
 
-export type Species =
+export class Species
 {
     id?: number;
     name: string;
     types: TypeReference[];
+    genderRatio: string;
+
+    constructor(data: {
+        id?: number;
+        name: string;
+        types: TypeReference[];
+        genderRatio: string;
+    })
+    {
+        this.id = data.id;
+        this.name = data.name;
+        this.types = data.types;
+        this.genderRatio = data.genderRatio;
+    }
 }
 
 export class SpeciesReference
@@ -20,8 +34,16 @@ export class SpeciesReference
     }
 }
 
-export type SpeciesBody =
+export class SpeciesBody
 {
     name: string;
-    types: string[];
+    typeNames: string[];
+    genderRatioId: number;
+
+    constructor(requestBody: any)
+    {
+        this.name = requestBody.name;
+        this.typeNames = requestBody.typeNames;
+        this.genderRatioId = requestBody.genderRatioId;
+    }
 }

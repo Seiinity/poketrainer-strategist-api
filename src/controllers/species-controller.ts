@@ -35,12 +35,7 @@ async function store(req: Request, res: Response): Promise<void>
 {
     try
     {
-        const newSpecies: SpeciesBody =
-        {
-            name: req.body.name,
-            types: req.body.types,
-        };
-
+        const newSpecies = new SpeciesBody(req.body);
         const insertedSpecies = await speciesService.createSpecies(newSpecies);
         res.status(200).json(insertedSpecies);
     }
@@ -55,12 +50,7 @@ async function update(req: Request, res: Response): Promise<void>
     try
     {
         const id = parseInt(req.params.id);
-        const newSpecies: SpeciesBody =
-        {
-            name: req.body.name,
-            types: req.body.types,
-        };
-
+        const newSpecies = new SpeciesBody(req.body);
         const updatedSpecies = await speciesService.updateSpeciesById(id, newSpecies);
 
         if (!updatedSpecies) res.status(404).json({ error: "Species not found." });
