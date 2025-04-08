@@ -10,7 +10,7 @@ import { SpeciesAdapter } from "../adapters/species-adapter";
 const baseSelectQuery =
 `
     SELECT 
-        s.id, s.name,
+        s.id, s.name, s.height, s.weight,
         t1.id AS type1_id, t1.name AS type1_name, 
         t2.id AS type2_id, t2.name AS type2_name,
         g.male_rate, g.female_rate
@@ -58,8 +58,8 @@ async function createSpecies(newSpecies: SpeciesBody): Promise<Species>
             })
         );
 
-        const sql = "INSERT INTO species VALUES (NULL, ?, ?, ?, ?)";
-        const params = [newSpecies.name, typeIds[0], typeIds[1], newSpecies.genderRatioId];
+        const sql = "INSERT INTO species VALUES (NULL, ?, ?, ?, ?, ?, ?)";
+        const params = [newSpecies.name, typeIds[0], typeIds[1], newSpecies.genderRatioId, newSpecies.height, newSpecies.weight];
 
         const [result] = await db.query<ResultSetHeader>(sql, params);
 
@@ -83,8 +83,8 @@ async function updateSpeciesById(id: number, newSpecies: SpeciesBody): Promise<S
             })
         );
 
-        const sql = "UPDATE species SET name = ?, type_1_id = ?, type_2_id = ?, gender_ratio_id = ? WHERE id = ?";
-        const params = [newSpecies.name, typeIds[0], typeIds[1], newSpecies.genderRatioId, id];
+        const sql = "UPDATE species SET name = ?, type_1_id = ?, type_2_id = ?, gender_ratio_id = ?, height = ?, weight = ? WHERE id = ?";
+        const params = [newSpecies.name, typeIds[0], typeIds[1], newSpecies.genderRatioId, newSpecies.height, newSpecies.weight, id];
 
         const [result] = await db.query<ResultSetHeader>(sql, params);
 

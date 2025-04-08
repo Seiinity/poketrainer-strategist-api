@@ -14,7 +14,9 @@ export class SpeciesAdapter
                 { id: row.type1_id, name: row.type1_name },
                 { id: row.type2_id, name: row.type2_name }
             ]),
-            genderRatio: `${row.male_rate}M:${row.female_rate}F`
+            genderRatio: `${row.male_rate}M:${row.female_rate}F`,
+            height: Number(row.height),
+            weight: Number(row.weight),
         });
     }
 }
