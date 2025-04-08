@@ -23,7 +23,7 @@ async function getAllPokemon(): Promise<Pokemon[]>
     try
     {
         const rows = await db.queryTyped<RowDataPacket>(baseSelectQuery);
-        return rows.map(row => PokemonAdapter.fromMySql(row));
+        return rows.map(row => PokemonAdapter.fromMySQL(row));
     }
     catch (error)
     {
@@ -36,7 +36,7 @@ async function getPokemonById(id: number): Promise<Pokemon | null>
     try
     {
         const row = await db.queryOne<RowDataPacket> (`${baseSelectQuery} WHERE p.id = ?`, [id]);
-        return row ? PokemonAdapter.fromMySql(row) : null;
+        return row ? PokemonAdapter.fromMySQL(row) : null;
     }
     catch (error)
     {
@@ -119,7 +119,7 @@ async function getPokemonReferencesByTeamId(teamId: number): Promise<PokemonRefe
             [teamId]
         );
 
-        return rows.map(row => PokemonAdapter.referenceFromMySql(row));
+        return rows.map(row => PokemonAdapter.referenceFromMySQL(row));
     }
     catch (error)
     {

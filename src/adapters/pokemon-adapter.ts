@@ -5,7 +5,7 @@ import { RowDataPacket } from "mysql2";
 
 export class PokemonAdapter
 {
-    static fromMySql(row: RowDataPacket): Pokemon
+    static fromMySQL(row: RowDataPacket): Pokemon
     {
         return new Pokemon
         ({
@@ -16,7 +16,7 @@ export class PokemonAdapter
         });
     }
 
-    static referenceFromMySql(row: RowDataPacket): PokemonReference
+    static referenceFromMySQL(row: RowDataPacket): PokemonReference
     {
         return new PokemonReference(row.nickname ?? row.species_name, row.id);
     }

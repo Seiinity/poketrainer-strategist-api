@@ -13,7 +13,7 @@ async function getAllTypes(): Promise<Type[]>
     try
     {
         const rows = await db.queryTyped<RowDataPacket>(baseSelectQuery);
-        return rows.map(row => TypeAdapter.fromMySql(row));
+        return rows.map(row => TypeAdapter.fromMySQL(row));
     }
     catch (error)
     {
@@ -26,7 +26,7 @@ async function getTypeById(id: number): Promise<Type | null>
     try
     {
         const row = await db.queryOne<RowDataPacket>(`${baseSelectQuery} WHERE id = ?`, [id]);
-        return row ? TypeAdapter.fromMySql(row) : null;
+        return row ? TypeAdapter.fromMySQL(row) : null;
     }
     catch (error)
     {

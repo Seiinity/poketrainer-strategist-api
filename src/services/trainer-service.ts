@@ -18,7 +18,7 @@ async function getAllTrainers(): Promise<Trainer[]>
             rows.map(async row =>
             {
                 row.teams = await teamService.getTeamReferencesByTrainerId(row.id);
-                return TrainerAdapter.fromMySql(row);
+                return TrainerAdapter.fromMySQL(row);
             })
         );
     }
@@ -66,7 +66,7 @@ async function getTrainerByField(field: string, value: string | number, caseInse
         if (!row) return null;
 
         row.teams = await teamService.getTeamReferencesByTrainerId(row.id);
-        return TrainerAdapter.fromMySql(row);
+        return TrainerAdapter.fromMySQL(row);
     }
     catch (error)
     {

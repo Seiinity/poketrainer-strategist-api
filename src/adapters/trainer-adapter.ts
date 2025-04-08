@@ -3,7 +3,7 @@ import { Trainer } from "../models/trainer";
 
 export class TrainerAdapter
 {
-    static fromMySql(row: RowDataPacket): Trainer
+    static fromMySQL(row: RowDataPacket): Trainer
     {
         return new Trainer
         ({

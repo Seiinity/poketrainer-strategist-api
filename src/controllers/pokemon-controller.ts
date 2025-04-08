@@ -6,8 +6,8 @@ async function index(_req: Request, res: Response): Promise<void>
 {
     try
     {
-        const teams = await pokemonService.getAllPokemon();
-        res.json(teams);
+        const pokemon = await pokemonService.getAllPokemon();
+        res.json(pokemon);
     }
     catch (error)
     {

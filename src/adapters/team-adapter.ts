@@ -4,7 +4,7 @@ import { TrainerReference } from "../models/trainer";
 
 export class TeamAdapter
 {
-    static fromMySql(row: RowDataPacket): Team
+    static fromMySQL(row: RowDataPacket): Team
     {
         return new Team
         ({
@@ -15,7 +15,7 @@ export class TeamAdapter
         });
     }
 
-    static referenceFromMySql(row: RowDataPacket): TeamReference
+    static referenceFromMySQL(row: RowDataPacket): TeamReference
     {
         return new TeamReference(row.name, row.id);
     }

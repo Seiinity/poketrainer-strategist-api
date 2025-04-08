@@ -28,7 +28,7 @@ async function getAllTeams(): Promise<Team[]>
             rows.map(async row =>
             {
                 row.pokemon = await pokemonService.getPokemonReferencesByTeamId(row.id);
-                return TeamAdapter.fromMySql(row);
+                return TeamAdapter.fromMySQL(row);
             })
         );
     }
@@ -46,7 +46,7 @@ async function getTeamById(id: number): Promise<Team | null>
         if (!row) return null;
 
         row.pokemon = await pokemonService.getPokemonById(row.id);
-        return TeamAdapter.fromMySql(row);
+        return TeamAdapter.fromMySQL(row);
     }
     catch (error)
     {
@@ -125,7 +125,7 @@ async function getTeamReferencesByTrainerId(trainerId: number): Promise<TeamRefe
             [trainerId]
         );
 
-        return rows.map(row => TeamAdapter.referenceFromMySql(row));
+        return rows.map(row => TeamAdapter.referenceFromMySQL(row));
     }
     catch (error)
     {
