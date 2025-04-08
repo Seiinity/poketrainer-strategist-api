@@ -61,7 +61,7 @@ async function updateTypeById(id: number, newType: TypeBody): Promise<Type | nul
         const [result] = await db.query<ResultSetHeader>(sql, params);
 
         if (result.affectedRows === 0) return null;
-        return await getTypeById(result.insertId) as Type;
+        return await getTypeById(id) as Type;
     }
     catch (error)
     {
