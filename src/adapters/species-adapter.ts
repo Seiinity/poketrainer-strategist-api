@@ -2,6 +2,7 @@
 import { TypeReference } from "../models/type";
 import { RowDataPacket } from "mysql2";
 import { Adapter } from "./adapter";
+import { MySQLData } from "../types/mysql-types";
 
 export class SpeciesAdapter extends Adapter<Species, SpeciesBody>
 {
@@ -21,7 +22,7 @@ export class SpeciesAdapter extends Adapter<Species, SpeciesBody>
         });
     }
 
-    toMySQL(requestBody: SpeciesBody): Record<string, any>
+    toMySQL(requestBody: SpeciesBody): MySQLData
     {
         return {
             name: requestBody.name,
@@ -30,6 +31,6 @@ export class SpeciesAdapter extends Adapter<Species, SpeciesBody>
             gender_ratio_id: requestBody.genderRatioId,
             height: requestBody.height,
             weight: requestBody.weight,
-        }
+        };
     }
 }

@@ -1,5 +1,6 @@
 ﻿import config from "../config";
 import { TeamReference } from "./team";
+import { Request } from "express";
 
 export class Trainer
 {
@@ -40,7 +41,7 @@ export class TrainerBody
     password?: string;
     passwordHash?: string;
 
-    constructor(requestBody: any, passwordHash?: string)
+    constructor(requestBody: Request["body"], passwordHash?: string)
     {
         this.name = requestBody.name;
         this.password = requestBody.password;

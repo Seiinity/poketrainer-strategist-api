@@ -1,5 +1,6 @@
 ﻿import config from "../config";
 import { TypeReference } from "./type";
+import { Request } from "express";
 
 export class Species
 {
@@ -50,7 +51,7 @@ export class SpeciesBody
     type1Id?: number;
     type2Id?: number | null;
 
-    constructor(requestBody: any)
+    constructor(requestBody: Request["body"])
     {
         this.name = requestBody.name;
         this.typeNames = requestBody.typeNames;

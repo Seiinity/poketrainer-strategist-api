@@ -13,7 +13,7 @@ const validationSchema = z.object
         .trim()
         .min(1, "Trainer name must be between 1 and 12 characters.")
         .max(12, "Trainer name must be between 1 and 12 characters.")
-        .nonempty("Trainer name is required.")
+        .nonempty("Trainer name is required."),
 });
 
 function validateTeamBody(req: Request, res: Response, next: NextFunction)

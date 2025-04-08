@@ -33,7 +33,7 @@ const config: Config =
     speciesPath: "/species",
     teamPath: "/teams",
     trainerPath: "/trainers",
-    typePath: "/types"
+    typePath: "/types",
 };
 
 export default config;

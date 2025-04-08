@@ -84,5 +84,5 @@ export default
     show,
     store,
     update,
-    destroy
+    destroy,
 };

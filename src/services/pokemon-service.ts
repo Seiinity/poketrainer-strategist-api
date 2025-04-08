@@ -13,8 +13,7 @@ export class PokemonService extends Service<Pokemon, PokemonBody>
     protected idField = "pokemon_id";
     protected searchField = "p.nickname";
 
-    protected baseSelectQuery =
-    `
+    protected baseSelectQuery = `
         SELECT
             p.pokemon_id, p.nickname,
             s.species_id, s.name AS species_name,

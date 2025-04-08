@@ -2,6 +2,7 @@
 import { Team, TeamBody, TeamReference } from "../models/team";
 import { TrainerReference } from "../models/trainer";
 import { Adapter } from "./adapter";
+import { MySQLData } from "../types/mysql-types";
 
 export class TeamAdapter extends Adapter<Team, TeamBody>
 {
@@ -21,11 +22,11 @@ export class TeamAdapter extends Adapter<Team, TeamBody>
         return new TeamReference(row.name, row.id);
     }
 
-    toMySQL(requestBody: TeamBody): Record<string, any>
+    toMySQL(requestBody: TeamBody): MySQLData
     {
         return {
             trainer_id: requestBody.trainerId,
             name: requestBody.name,
-        }
+        };
     }
 }

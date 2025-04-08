@@ -19,7 +19,7 @@ class TrainerService extends Service<Trainer, TrainerBody>
         return super.adaptToModel(row);
     }
 
-    async getByName(name: string) : Promise<Trainer | null>
+    async getByName(name: string): Promise<Trainer | null>
     {
         try
         {

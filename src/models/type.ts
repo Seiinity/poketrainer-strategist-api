@@ -1,4 +1,5 @@
 ﻿import config from "../config";
+import { Request } from "express";
 
 export class Type
 {
@@ -29,8 +30,8 @@ export class TypeReference
     static build(types: Type[]): TypeReference[]
     {
         return types
-            .filter((type) => type.id && type.name)
-            .map((type) => new TypeReference(type.name!, `${config.baseUrl}/api/types/${type.id}`));
+            .filter(type => type.id && type.name)
+            .map(type => new TypeReference(type.name!, `${config.baseUrl}/api/types/${type.id}`));
     }
 }
 
@@ -38,7 +39,7 @@ export class TypeBody
 {
     name: string;
 
-    constructor(requestBody: any)
+    constructor(requestBody: Request["body"])
     {
         this.name = requestBody.name;
     }

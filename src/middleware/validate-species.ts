@@ -3,7 +3,7 @@ import { z } from "zod";
 
 const validationSchema = z.object
 ({
-    name: z.string({ required_error: "Field 'name' is required.", invalid_type_error: "Species name must be a string."})
+    name: z.string({ required_error: "Field 'name' is required.", invalid_type_error: "Species name must be a string." })
         .trim()
         .min(1, "Species name is required.")
         .max(12, "Species name must be between 1 and 12 characters.")
@@ -14,7 +14,8 @@ const validationSchema = z.object
             .trim()
             .min(1, "Each type name must be between 1 and 12 characters.")
             .max(12, "Each type name must be between 1 and 12 characters."),
-        { required_error: "Field 'typeNames' is required.", invalid_type_error: "Type names must be an array of strings." })
+        { required_error: "Field 'typeNames' is required.", invalid_type_error: "Type names must be an array of strings." }
+    )
         .max(2, "Species can have a maximum of two types.")
         .nonempty("Species must have at least one type."),
 
@@ -30,7 +31,7 @@ const validationSchema = z.object
     weight: z.number({ required_error: "Field 'weight' is required.", invalid_type_error: "Weight must be a number." })
         .min(0.1, "Weight must be between 0.1 and 999.9 kg.")
         .max(999.9, "Weight must be between 0.1 and 999.9 kg.")
-        .refine(n => Number(n.toFixed(1)) === n, "Weight must have at most one decimal place.")
+        .refine(n => Number(n.toFixed(1)) === n, "Weight must have at most one decimal place."),
 
 });
 

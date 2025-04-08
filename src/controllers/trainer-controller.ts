@@ -123,5 +123,5 @@ export default
     store,
     update,
     destroy,
-    login
+    login,
 };

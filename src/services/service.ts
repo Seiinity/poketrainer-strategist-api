@@ -1,6 +1,7 @@
 ﻿import db from "../db/mysql";
 import { Adapter } from "../adapters/adapter";
 import { ResultSetHeader, RowDataPacket } from "mysql2";
+import { MySQLCompatibleValue, MySQLData } from "../types/mysql-types";
 import { createInsertQuery, createUpdateQuery } from "../utils/mysql-generation";
 import { isErrorCode } from "../utils/error-handling";
 
@@ -22,7 +23,7 @@ export abstract class Service<Model, ModelBody>
         return this.adapter.fromMySQL(row);
     }
 
-    protected async adaptToDatabase(body: ModelBody): Promise<Record<string, any>>
+    protected async adaptToDatabase(body: ModelBody): Promise<MySQLData>
     {
         return this.adapter.toMySQL(body);
     }
@@ -32,7 +33,7 @@ export abstract class Service<Model, ModelBody>
         try
         {
             let query = this.baseSelectQuery;
-            const params: any[] = [];
+            const params: MySQLCompatibleValue[] = [];
 
             if (search)
             {

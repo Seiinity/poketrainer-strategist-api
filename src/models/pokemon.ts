@@ -1,6 +1,7 @@
 ﻿import config from "../config";
 import { TeamReference } from "./team";
 import { SpeciesReference } from "./species";
+import { Request } from "express";
 
 export class Pokemon
 {
@@ -42,7 +43,7 @@ export class PokemonBody
     speciesId?: number;
     teamId: number;
 
-    constructor(requestBody: any)
+    constructor(requestBody: Request["body"])
     {
         this.nickname = requestBody.nickname;
         this.speciesName = requestBody.speciesName;

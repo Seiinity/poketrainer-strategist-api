@@ -1,6 +1,7 @@
 ﻿import config from "../config";
 import { TrainerReference } from "./trainer";
 import { PokemonReference } from "./pokemon";
+import { Request } from "express";
 
 export class Team
 {
@@ -41,7 +42,7 @@ export class TeamBody
     trainerName: string;
     trainerId?: number;
 
-    constructor(requestBody: any)
+    constructor(requestBody: Request["body"])
     {
         this.name = requestBody.name;
         this.trainerName = requestBody.trainerName;

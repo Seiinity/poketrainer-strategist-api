@@ -11,8 +11,7 @@ class SpeciesService extends Service<Species, SpeciesBody>
     protected idField = "species_id";
     protected searchField = "s.name";
 
-    protected baseSelectQuery =
-    `
+    protected baseSelectQuery = `
         SELECT 
             s.species_id, s.name, s.height, s.weight,
             t1.type_id AS type1_id, t1.name AS type1_name, 

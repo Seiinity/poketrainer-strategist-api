@@ -2,6 +2,7 @@
 import { Type, TypeBody } from "../models/type";
 import { TeamBody } from "../models/team";
 import { Adapter } from "./adapter";
+import { MySQLData } from "../types/mysql-types";
 
 export class TypeAdapter extends Adapter<Type, TypeBody>
 {
@@ -14,10 +15,10 @@ export class TypeAdapter extends Adapter<Type, TypeBody>
         });
     }
 
-    toMySQL(requestBody: TeamBody): Record<string, any>
+    toMySQL(requestBody: TeamBody): MySQLData
     {
         return {
             name: requestBody.name,
-        }
+        };
     }
 }

@@ -23,7 +23,6 @@ class TypeService extends Service<Type, TypeBody>
             throw new Error(`Error fetching type ID for ${name}: ${(error as Error).message}`);
         }
     }
-
 }
 
 const typeService = new TypeService();

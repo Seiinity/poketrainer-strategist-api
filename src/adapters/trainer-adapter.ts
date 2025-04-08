@@ -1,6 +1,7 @@
 ﻿import { RowDataPacket } from "mysql2";
 import { Trainer, TrainerBody } from "../models/trainer";
 import { Adapter } from "./adapter";
+import { MySQLData } from "../types/mysql-types";
 
 export class TrainerAdapter extends Adapter<Trainer, TrainerBody>
 {
@@ -15,11 +16,11 @@ export class TrainerAdapter extends Adapter<Trainer, TrainerBody>
         });
     }
 
-    toMySQL(requestBody: TrainerBody): Record<string, any>
+    toMySQL(requestBody: TrainerBody): MySQLData
     {
         return {
             name: requestBody.name,
             password_hash: requestBody.passwordHash,
-        }
+        };
     }
 }

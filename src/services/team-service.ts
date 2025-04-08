@@ -13,8 +13,7 @@ class TeamService extends Service<Team, TeamBody>
     protected idField = "team_id";
     protected searchField = "t.name";
 
-    protected baseSelectQuery =
-    `
+    protected baseSelectQuery = `
         SELECT
              t.team_id, t.name,
              tr.trainer_id, tr.name AS trainer_name

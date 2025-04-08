@@ -6,7 +6,7 @@ const validationSchema = z.object
     speciesName: z.string
     ({
         required_error: "Field 'speciesName' is required.",
-        invalid_type_error: "Species name must be a string."
+        invalid_type_error: "Species name must be a string.",
     })
         .trim()
         .min(1, "Species name must be between 1 and 12 characters.")
@@ -16,19 +16,19 @@ const validationSchema = z.object
     teamId: z.number
     ({
         required_error: "Field 'teamId' is required.",
-        invalid_type_error: "Team ID must be a number."
+        invalid_type_error: "Team ID must be a number.",
     })
         .int("Team ID must be a positive integer.")
         .positive("Team ID must be a positive integer."),
 
     nickname: z.string
     ({
-        invalid_type_error: "Nickname must be a string."
+        invalid_type_error: "Nickname must be a string.",
     })
         .trim()
         .min(1, "Nickname must be between 1 and 12 characters.")
         .max(12, "Nickname must be between 1 and 12 characters.")
-        .optional()
+        .optional(),
 });
 
 function validatePokemonBody(req: Request, res: Response, next: NextFunction)
