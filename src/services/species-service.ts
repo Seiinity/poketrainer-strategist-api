@@ -89,7 +89,6 @@ async function updateSpeciesById(id: number, newSpecies: SpeciesBody): Promise<S
         const [result] = await db.query<ResultSetHeader>(sql, params);
 
         if (result.affectedRows == 0) return null;
-
         return await getSpeciesById(id) as Species;
     }
     catch (error)

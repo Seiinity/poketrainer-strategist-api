@@ -3,9 +3,9 @@ import validator from "validator";
 
 function validatePokemonBody(req: Request, res: Response, next: NextFunction)
 {
-    const { species, trainer_id: trainerId } = req.body;
+    const { speciesName, trainerId } = req.body;
 
-    if (!species || !validator.isLength(species.trim(), { min: 1, max: 12 }))
+    if (!speciesName || !validator.isLength(speciesName.trim(), { min: 1, max: 12 }))
     {
         res.status(400).json({ error: "Species name is required and must be between 1 and 24 characters." });
         return;
@@ -17,7 +17,7 @@ function validatePokemonBody(req: Request, res: Response, next: NextFunction)
         return;
     }
 
-    req.body.name = species.trim();
+    req.body.name = speciesName.trim();
 
     next();
 }

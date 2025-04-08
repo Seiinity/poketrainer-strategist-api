@@ -35,13 +35,7 @@ async function store(req: Request, res: Response): Promise<void>
 {
     try
     {
-        const newPokemon: PokemonBody =
-        {
-            nickname: req.body.nickname,
-            species: req.body.species,
-            teamId: req.body.teamId
-        };
-
+        const newPokemon = new PokemonBody(req.body);
         const insertedPokemon = await pokemonService.createPokemon(newPokemon);
         res.status(200).json(insertedPokemon);
     }
@@ -56,13 +50,7 @@ async function update(req: Request, res: Response): Promise<void>
     try
     {
         const id = parseInt(req.params.id);
-        const newPokemon: PokemonBody =
-        {
-            nickname: req.body.nickname,
-            species: req.body.species,
-            teamId: req.body.teamId
-        };
-
+        const newPokemon = new PokemonBody(req.body);
         const updatedPokemon = await pokemonService.updatePokemonById(id, newPokemon);
 
         if (!updatedPokemon) res.status(404).json({ error: "Pokémon not found." });

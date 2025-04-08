@@ -1,35 +1,29 @@
 ﻿import db from "../db/mysql";
 import { ResultSetHeader, RowDataPacket } from "mysql2";
-import { TeamReference } from "../models/team";
 import { Pokemon, PokemonBody, PokemonReference } from "../models/pokemon";
-import { SpeciesReference } from "../models/species";
 import speciesService from "./species-service";
 import teamService from "./team-service";
+import { PokemonAdapter } from "../adapters/pokemon-adapter";
 
 /* CRUD methods. */
+
+const baseSelectQuery =
+`
+    SELECT
+        p.id, p.nickname,
+        s.id AS species_id, s.name AS species_name,
+        t.id AS team_id, t.name AS team_name
+    FROM pokemon p
+    LEFT JOIN species s ON p.species_id = s.id
+    LEFT JOIN teams t ON p.team_id = t.id
+`;
 
 async function getAllPokemon(): Promise<Pokemon[]>
 {
     try
     {
-        const rows = await db.queryTyped<RowDataPacket>
-        (
-            `SELECT 
-                p.id, p.nickname, 
-                s.id AS species_id, s.name AS species_name,
-                t.id AS team_id, t.name AS team_name
-            FROM pokemon p
-            LEFT JOIN species s ON p.species_id = s.id
-            LEFT JOIN teams t ON p.team_id = t.id`
-        );
-
-        return rows.map(row =>
-        ({
-            id: row.id,
-            ...(row.nickname != null && { nickname: row.nickname }),
-            species: new SpeciesReference(row.species_name, row.species_id),
-            team: new TeamReference(row.team_name, row.team_id)
-        }));
+        const rows = await db.queryTyped<RowDataPacket>(baseSelectQuery);
+        return rows.map(row => PokemonAdapter.fromMySql(row));
     }
     catch (error)
     {
@@ -41,27 +35,8 @@ async function getPokemonById(id: number): Promise<Pokemon | null>
 {
     try
     {
-        const pokemon = await db.queryOne<RowDataPacket>
-        (
-            `SELECT 
-                p.id, p.nickname, 
-                s.id AS species_id, s.name AS species_name,
-                t.id AS team_id, t.name AS team_name
-            FROM pokemon p
-            LEFT JOIN species s ON p.species_id = s.id
-            LEFT JOIN teams t ON p.team_id = t.id
-            WHERE p.id = ?`,
-            [id]
-        );
-
-        if (!pokemon) return null;
-
-        return {
-            id: pokemon.id,
-            ...(pokemon.nickname != null && { nickname: pokemon.nickname }),
-            species: new SpeciesReference(pokemon.species_name, pokemon.species_id),
-            team: new TeamReference(pokemon.team_name, pokemon.team_id)
-        }
+        const pokemon = await db.queryOne<RowDataPacket> (`${baseSelectQuery} WHERE p.id = ?`, [id]);
+        return pokemon ? PokemonAdapter.fromMySql(pokemon) : null;
     }
     catch (error)
     {
@@ -73,7 +48,7 @@ async function createPokemon(newPokemon: PokemonBody): Promise<Pokemon>
 {
     try
     {
-        const speciesId = await speciesService.getSpeciesIdByName(newPokemon.species);
+        const speciesId = await speciesService.getSpeciesIdByName(newPokemon.speciesName);
 
         const team = await teamService.getTeamById(newPokemon.teamId);
         if (team == null) return Promise.reject(new Error(`No team found with ID ${newPokemon.teamId}.`));
@@ -83,12 +58,7 @@ async function createPokemon(newPokemon: PokemonBody): Promise<Pokemon>
 
         const [result] = await db.query<ResultSetHeader>(sql, params);
 
-        return {
-            id: result.insertId,
-            ...(newPokemon.nickname != null && { nickname: newPokemon.nickname }),
-            species: new SpeciesReference(newPokemon.species, speciesId),
-            team: new TeamReference(team.name, newPokemon.teamId)
-        };
+        return await getPokemonById(result.insertId) as Pokemon;
     }
     catch (error)
     {
@@ -100,7 +70,7 @@ async function updatePokemonById(id: number, newPokemon: PokemonBody): Promise<P
 {
     try
     {
-        const speciesId = await speciesService.getSpeciesIdByName(newPokemon.species);
+        const speciesId = await speciesService.getSpeciesIdByName(newPokemon.speciesName);
 
         const team = await teamService.getTeamById(newPokemon.teamId);
         if (team == null) return Promise.reject(new Error(`No team found with ID ${newPokemon.teamId}.`));
@@ -111,13 +81,7 @@ async function updatePokemonById(id: number, newPokemon: PokemonBody): Promise<P
         const [result] = await db.query<ResultSetHeader>(sql, params);
 
         if (result.affectedRows == 0) return null;
-
-        return {
-            id,
-            ...(newPokemon.nickname != null && { nickname: newPokemon.nickname }),
-            species: new SpeciesReference(newPokemon.species, speciesId),
-            team: new TeamReference(team.name, newPokemon.teamId)
-        };
+        return await getPokemonById(id) as Pokemon;
     }
     catch (error)
     {
@@ -151,12 +115,11 @@ async function getPokemonReferencesByTeamId(teamId: number): Promise<PokemonRefe
                 s.name AS species_name
             FROM pokemon p
             LEFT JOIN species s ON p.species_id = s.id
-            LEFT JOIN teams t ON p.team_id = t.id
             WHERE p.team_id = ?`,
             [teamId]
         );
 
-        return rows.map(row => new PokemonReference(row.nickname ?? row.species_name, row.id));
+        return rows.map(row => PokemonAdapter.referenceFromMySql(row));
     }
     catch (error)
     {

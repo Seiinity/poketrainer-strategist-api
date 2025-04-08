@@ -2,12 +2,25 @@
 import { SpeciesReference } from "./species";
 import config from "../config";
 
-export type Pokemon =
+export class Pokemon
 {
     id: number;
     nickname?: string;
     species: SpeciesReference;
     team: TeamReference;
+
+    constructor(data: {
+        id: number;
+        nickname?: string;
+        species: SpeciesReference;
+        team: TeamReference;
+    })
+    {
+        this.id = data.id;
+        this.nickname = data.nickname;
+        this.species = data.species;
+        this.team = data.team;
+    }
 }
 
 export class PokemonReference
@@ -22,9 +35,16 @@ export class PokemonReference
     }
 }
 
-export type PokemonBody =
+export class PokemonBody
 {
     nickname?: string;
-    species: string;
+    speciesName: string;
     teamId: number;
+
+    constructor(requestBody: any)
+    {
+        this.nickname = requestBody.nickname;
+        this.speciesName = requestBody.speciesName;
+        this.teamId = requestBody.teamId;
+    }
 }
