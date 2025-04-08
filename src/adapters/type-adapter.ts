@@ -1,14 +1,23 @@
 ﻿import { RowDataPacket } from "mysql2";
-import { Type } from "../models/type";
+import { Type, TypeBody } from "../models/type";
+import { Adapter } from "./adapter";
+import { TeamBody } from "../models/team";
 
-export class TypeAdapter
+export class TypeAdapter extends Adapter<Type, TypeBody>
 {
-    static fromMySQL(row: RowDataPacket): Type
+    fromMySQL(row: RowDataPacket): Type
     {
         return new Type
         ({
-            id: row.id,
+            id: row.type_id,
             name: row.name,
         });
+    }
+
+    toMySQL(requestBody: TeamBody): Record<string, any>
+    {
+        return {
+            name: requestBody.name,
+        }
     }
 }
