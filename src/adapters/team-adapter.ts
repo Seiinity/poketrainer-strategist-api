@@ -1,5 +1,5 @@
 ﻿import { RowDataPacket } from "mysql2";
-import { Team } from "../models/team";
+import { Team, TeamReference } from "../models/team";
 import { TrainerReference } from "../models/trainer";
 
 export class TeamAdapter
@@ -13,5 +13,10 @@ export class TeamAdapter
             trainer: new TrainerReference(row.trainer_name, row.trainer_id),
             pokemon: row.pokemon,
         });
+    }
+
+    static referenceFromMySql(row: RowDataPacket): TeamReference
+    {
+        return new TeamReference(row.name, row.id);
     }
 }

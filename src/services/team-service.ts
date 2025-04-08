@@ -1,6 +1,6 @@
 ﻿import db from "../db/mysql";
 import { ResultSetHeader, RowDataPacket } from "mysql2";
-import { Team, TeamBody } from "../models/team";
+import { Team, TeamBody, TeamReference } from "../models/team";
 import { isErrorCode } from "../utils/error-handling";
 import trainerService from "./trainer-service";
 import pokemonService from "./pokemon-service";
@@ -111,11 +111,35 @@ async function deleteTeamById(id: number): Promise<boolean>
     }
 }
 
+/* Additional methods. */
+
+async function getTeamReferencesByTrainerId(trainerId: number): Promise<TeamReference[]>
+{
+    try
+    {
+        const rows = await db.queryTyped<RowDataPacket>
+        (
+            `SELECT id, name
+            FROM teams
+            WHERE trainer_id = ?`,
+            [trainerId]
+        );
+
+        return rows.map(row => TeamAdapter.referenceFromMySql(row));
+    }
+    catch (error)
+    {
+        throw new Error(`Error fetching team reference by trainer ID: ${(error as Error).message}`);
+    }
+}
+
 export default
 {
     getAllTeams,
     getTeamById,
     createTeam,
     updateTeamById,
-    deleteTeamById
+    deleteTeamById,
+
+    getTeamReferencesByTrainerId
 }

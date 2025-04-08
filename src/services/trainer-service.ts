@@ -3,6 +3,7 @@ import { ResultSetHeader, RowDataPacket } from "mysql2";
 import { Trainer, TrainerBody } from "../models/trainer";
 import { isErrorCode } from "../utils/error-handling";
 import { TrainerAdapter } from "../adapters/trainer-adapter";
+import teamService from "./team-service";
 
 /* CRUD methods. */
 
@@ -11,7 +12,15 @@ async function getAllTrainers(): Promise<Trainer[]>
     try
     {
         const rows = await db.queryTyped<RowDataPacket>("SELECT id, name FROM trainers");
-        return rows.map(row => TrainerAdapter.fromMySql(row));
+
+        return await Promise.all
+        (
+            rows.map(async row =>
+            {
+                row.teams = await teamService.getTeamReferencesByTrainerId(row.id);
+                return TrainerAdapter.fromMySql(row);
+            })
+        );
     }
     catch (error)
     {
@@ -24,7 +33,11 @@ async function getTrainerById(id: number): Promise<Trainer | null>
     try
     {
         const row = await db.queryOne<RowDataPacket>("SELECT id, name, password_hash AS passwordHash FROM trainers WHERE id = ?", [id]);
-        return row ? TrainerAdapter.fromMySql(row) : null;
+
+        if (!row) return null;
+
+        row.teams = await teamService.getTeamReferencesByTrainerId(row.id);
+        return TrainerAdapter.fromMySql(row);
     }
     catch (error)
     {
