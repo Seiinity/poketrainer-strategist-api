@@ -1,19 +1,39 @@
 ﻿import { Request, Response, NextFunction } from "express";
-import validator from "validator";
+import { z } from "zod";
+
+const validationSchema = z.object
+({
+    name: z.string
+    ({
+        required_error: "Field 'name' is required.",
+        invalid_type_error: "Type name must be a string."
+    })
+        .trim()
+        .min(1, "Type name must be between 1 and 12 characters.")
+        .max(12, "Type name must be between 1 and 12 characters.")
+});
 
 function validateTypeBody(req: Request, res: Response, next: NextFunction)
 {
-    const { name } = req.body;
-
-    if (!name || !validator.isLength(name.trim(), { min: 1, max: 12 }))
+    try
     {
-        res.status(400).json({ error: "Type name is required and must be between 1 and 12 characters." });
-        return;
+        const result = validationSchema.parse(req.body);
+
+        req.body.name = result.name;
+
+        next();
     }
+    catch (error)
+    {
+        if (error instanceof z.ZodError)
+        {
+            const errorMessages = error.errors.map(err => err.message);
+            res.status(400).json({ error: errorMessages });
+            return;
+        }
 
-    req.body.name = name.trim();
-
-    next();
+        res.status(500).json({ error: "An unexpected error occurred during validation." });
+    }
 }
 
 export default validateTypeBody;

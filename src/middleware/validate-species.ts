@@ -1,41 +1,61 @@
 ﻿import { Request, Response, NextFunction } from "express";
-import validator from "validator";
+import { z } from "zod";
+
+const validationSchema = z.object
+({
+    name: z.string({ required_error: "Field 'name' is required.", invalid_type_error: "Species name must be a string."})
+        .trim()
+        .min(1, "Species name is required.")
+        .max(12, "Species name must be between 1 and 12 characters.")
+        .nonempty("Species name is required."),
+
+    typeNames: z.array(
+        z.string({ invalid_type_error: "Type name must be a string." })
+            .trim()
+            .min(1, "Each type name must be between 1 and 12 characters.")
+            .max(12, "Each type name must be between 1 and 12 characters."),
+        { required_error: "Field 'typeNames' is required.", invalid_type_error: "Type names must be an array of strings." })
+        .max(2, "Species can have a maximum of two types.")
+        .nonempty("Species must have at least one type."),
+
+    genderRatioId: z.number({ required_error: "Field 'genderRatioId' is required.", invalid_type_error: "Gender ratio ID name must be a positive integer." })
+        .int("Gender ratio ID must be a positive integer.")
+        .positive("Gender ratio ID must be a positive integer."),
+
+    height: z.number({ required_error: "Field 'height' is required.", invalid_type_error: "Height name must be a number." })
+        .min(0.1, "Height must be between 0.1 and 999.9 metres.")
+        .max(999.9, "Height must be between 0.1 and 999.9 metres.")
+        .refine(n => Number(n.toFixed(1)) === n, "Height must have at most one decimal place."),
+
+    weight: z.number({ required_error: "Field 'weight' is required.", invalid_type_error: "Weight must be a number." })
+        .min(0.1, "Weight must be between 0.1 and 999.9 kg.")
+        .max(999.9, "Weight must be between 0.1 and 999.9 kg.")
+        .refine(n => Number(n.toFixed(1)) === n, "Weight must have at most one decimal place.")
+
+});
 
 function validateSpeciesBody(req: Request, res: Response, next: NextFunction)
 {
-    const { name, typeNames, genderRatioId } = req.body;
-
-    if (!name || !validator.isLength(name.trim(), { min: 1, max: 12 }))
+    try
     {
-        res.status(400).json({ error: "Species name is required and must be between 1 and 12 characters." });
-        return;
+        const result = validationSchema.parse(req.body);
+
+        req.body.name = result.name;
+        req.body.typeNames = result.typeNames;
+
+        next();
     }
-
-    if (!Array.isArray(typeNames) || typeNames.length === 0 || typeNames.length > 2)
+    catch (error)
     {
-        res.status(400).json({ error: "Species must have one or two types." });
-        return;
-    }
-
-    for (const typeName of typeNames)
-    {
-        if (typeof typeName !== "string" || !validator.isLength(typeName.trim(), { min: 1, max: 12 }))
+        if (error instanceof z.ZodError)
         {
-            res.status(400).json({ error: "Each type name must be a string between 1 and 12 characters." });
+            const errorMessages = error.errors.map(err => err.message);
+            res.status(400).json({ error: errorMessages });
             return;
         }
+
+        res.status(500).json({ error: "An unexpected error occurred during validation." });
     }
-
-    if (!genderRatioId || !Number.isInteger(Number(genderRatioId)) || Number(genderRatioId) <= 0)
-    {
-        res.status(400).json({ error: "Gender ratio ID must be a positive integer." });
-        return;
-    }
-
-    req.body.name = name.trim();
-    req.body.typeNames = typeNames.map((typeName: string) => typeName.trim());
-
-    next();
 }
 
 export default validateSpeciesBody;

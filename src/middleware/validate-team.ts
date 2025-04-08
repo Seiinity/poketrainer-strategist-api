@@ -1,26 +1,43 @@
 ﻿import { Request, Response, NextFunction } from "express";
-import validator from "validator";
+import { z } from "zod";
+
+const validationSchema = z.object
+({
+    name: z.string({ required_error: "Team name is required.", invalid_type_error: "Team name must be a string." })
+        .trim()
+        .min(1, "Team name must be between 1 and 24 characters.")
+        .max(24, "Team name must be between 1 and 24 characters.")
+        .nonempty("Team name is required."),
+
+    trainerName: z.string({ required_error: "Trainer name is required.", invalid_type_error: "Trainer name must be a string." })
+        .trim()
+        .min(1, "Trainer name must be between 1 and 12 characters.")
+        .max(12, "Trainer name must be between 1 and 12 characters.")
+        .nonempty("Trainer name is required.")
+});
 
 function validateTeamBody(req: Request, res: Response, next: NextFunction)
 {
-    const { name, trainerName } = req.body;
-
-    if (!name || !validator.isLength(name.trim(), { min: 1, max: 24 }))
+    try
     {
-        res.status(400).json({ error: "Team name is required and must be between 1 and 24 characters." });
-        return;
-    }
+        const result = validationSchema.parse(req.body);
 
-    if (!trainerName || !validator.isLength(trainerName.trim(), { min: 1, max: 12 }))
+        req.body.name = result.name;
+        req.body.trainerName = result.trainerName;
+
+        next();
+    }
+    catch (error)
     {
-        res.status(400).json({ error: "Trainer name is required and must be between 1 and 24 characters." });
-        return;
+        if (error instanceof z.ZodError)
+        {
+            const errorMessages = error.errors.map(err => err.message);
+            res.status(400).json({ error: errorMessages });
+            return;
+        }
+
+        res.status(500).json({ error: "An unexpected error occurred during validation." });
     }
-
-    req.body.name = name.trim();
-    req.body.trainerName = trainerName.trim();
-
-    next();
 }
 
 export default validateTeamBody;

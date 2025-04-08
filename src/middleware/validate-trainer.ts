@@ -1,52 +1,93 @@
 ﻿import { Request, Response, NextFunction } from "express";
-import validator from "validator";
+import { z } from "zod";
 
-export function validateTrainerBody(req: Request, res: Response, next: NextFunction)
+const validationSchema = z.object
+({
+    name: z.string
+    ({
+        required_error: "Field 'name' is required.",
+        invalid_type_error: "Trainer name must be a string."
+    })
+        .trim()
+        .min(1, "Trainer name must be between 1 and 24 characters.")
+        .max(24, "Trainer name must be between 1 and 24 characters.")
+        .regex(/[a-zA-Z]/, "Trainer name must contain at least one letter."),
+
+    password: z.string
+    ({
+        required_error: "Field 'password' is required.",
+        invalid_type_error: "Password must be a string."
+    })
+        .trim()
+        .min(6, "Password must be at least 6 characters long.")
+        .regex(/^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{6,}$/, "Password must contain at least one letter, one number, and one special character.")
+});
+
+const loginSchema = z.object
+({
+    name: z.string
+    ({
+        required_error: "Field 'name' is required.",
+        invalid_type_error: "Trainer name must be a string."
+    })
+        .trim()
+        .min(1, "Trainer name must be between 1 and 24 characters.")
+        .max(24, "Trainer name must be between 1 and 24 characters."),
+
+    password: z.string
+    ({
+        required_error: "Field 'password' is required.",
+        invalid_type_error: "Password must be a string."
+    })
+        .trim()
+});
+
+function validateTrainerBody(req: Request, res: Response, next: NextFunction)
 {
-    const { name, password } = req.body;
-
-    if (!name || !validator.isLength(name.trim(), { min: 1, max: 24 }))
+    try
     {
-        res.status(400).json({ error: "Trainer name is required and must be between 1 and 24 characters." });
-        return;
-    }
+        const result = validationSchema.parse(req.body);
 
-    if (!password || !validator.isLength(password.trim(), { min: 6 }))
+        req.body.name = result.name;
+        req.body.password = result.password;
+
+        next();
+    }
+    catch (error)
     {
-        res.status(400).json({ error: "Password must be at least 6 characters long." });
-        return;
+        if (error instanceof z.ZodError)
+        {
+            const errorMessages = error.errors.map(err => err.message);
+            res.status(400).json({ error: errorMessages });
+            return;
+        }
+
+        res.status(500).json({ error: "An unexpected error occurred during validation." });
     }
-
-    const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{6,}$/;
-    if (!passwordRegex.test(password.trim()))
-    {
-        res.status(400).json({ error: "Password must contain at least one letter, one number, and one special character." });
-        return;
-    }
-
-    req.body.name = name.trim();
-    req.body.password = password.trim();
-
-    next();
 }
 
-export function validateTrainerLogin(req: Request, res: Response, next: NextFunction)
-{
-    const { name, password } = req.body;
+function validateTrainerLogin(req: Request, res: Response, next: NextFunction) {
 
-    if (!name || !validator.isLength(name.trim(), { min: 1, max: 24 }))
+    try
     {
-        res.status(400).json({ error: "Trainer name is required and must be between 1 and 24 characters." });
-        return;
-    }
+        const result = loginSchema.parse(req.body);
 
-    if (!password)
+        req.body.name = result.name;
+        req.body.password = result.password;
+
+        next();
+    }
+    catch (error)
     {
-        res.status(400).json({ error: "Password is required." });
-        return;
+        if (error instanceof z.ZodError)
+        {
+            const errorMessages = error.errors.map(err => err.message);
+            res.status(400).json({ error: errorMessages });
+            return;
+        }
+
+        res.status(500).json({ error: "An unexpected error occurred during validation." });
     }
-
-    req.body.password = password.trim();
-
-    next();
 }
+
+export { validateTrainerBody, validateTrainerLogin };
