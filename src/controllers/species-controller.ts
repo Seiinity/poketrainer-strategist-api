@@ -7,7 +7,7 @@ async function index(req: Request, res: Response): Promise<void>
     try
     {
         const search = req.query.search as string | undefined;
-        const species = await speciesService.getAllSpecies(search);
+        const species = await speciesService.find(search);
         res.json(species);
     }
     catch (error)
@@ -21,7 +21,7 @@ async function show(req: Request, res: Response): Promise<void>
     try
     {
         const id = parseInt(req.params.id);
-        const species = await speciesService.getSpeciesById(id);
+        const species = await speciesService.getById(id);
 
         if (!species) res.status(404).json({ error: "Species not found." });
         else res.json(species);
@@ -37,7 +37,7 @@ async function store(req: Request, res: Response): Promise<void>
     try
     {
         const newSpecies = new SpeciesBody(req.body);
-        const insertedSpecies = await speciesService.createSpecies(newSpecies);
+        const insertedSpecies = await speciesService.create(newSpecies);
         res.status(200).json(insertedSpecies);
     }
     catch (error)
@@ -52,7 +52,7 @@ async function update(req: Request, res: Response): Promise<void>
     {
         const id = parseInt(req.params.id);
         const newSpecies = new SpeciesBody(req.body);
-        const updatedSpecies = await speciesService.updateSpeciesById(id, newSpecies);
+        const updatedSpecies = await speciesService.update(id, newSpecies);
 
         if (!updatedSpecies) res.status(404).json({ error: "Species not found." });
         else res.status(200).json(updatedSpecies);
@@ -68,7 +68,7 @@ async function destroy(req: Request, res: Response): Promise<void>
     try
     {
         const id = parseInt(req.params.id);
-        const result = await speciesService.deleteSpeciesById(id);
+        const result = await speciesService.delete(id);
 
         if (!result) res.status(404).json({ error: "Species not found." });
         else res.json(`Species ${id} deleted.`);

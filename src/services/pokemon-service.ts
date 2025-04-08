@@ -48,7 +48,7 @@ async function createPokemon(newPokemon: PokemonBody): Promise<Pokemon>
 {
     try
     {
-        const speciesId = await speciesService.getSpeciesIdByName(newPokemon.speciesName);
+        const speciesId = await speciesService.getIdByName(newPokemon.speciesName);
 
         const team = await teamService.getTeamById(newPokemon.teamId);
         if (team == null) return Promise.reject(new Error(`No team found with ID ${newPokemon.teamId}.`));
@@ -70,7 +70,7 @@ async function updatePokemonById(id: number, newPokemon: PokemonBody): Promise<P
 {
     try
     {
-        const speciesId = await speciesService.getSpeciesIdByName(newPokemon.speciesName);
+        const speciesId = await speciesService.getIdByName(newPokemon.speciesName);
 
         const team = await teamService.getTeamById(newPokemon.teamId);
         if (team == null) return Promise.reject(new Error(`No team found with ID ${newPokemon.teamId}.`));

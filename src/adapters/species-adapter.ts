@@ -1,10 +1,11 @@
-﻿import { Species } from "../models/species";
+﻿import { Species, SpeciesBody } from "../models/species";
 import { TypeReference } from "../models/type";
 import { RowDataPacket } from "mysql2";
+import { Adapter } from "./adapter";
 
-export class SpeciesAdapter
+export class SpeciesAdapter extends Adapter<Species, SpeciesBody>
 {
-    static fromMySQL(row: RowDataPacket): Species
+    fromMySQL(row: RowDataPacket): Species
     {
         return new Species
         ({
@@ -18,5 +19,17 @@ export class SpeciesAdapter
             height: Number(row.height),
             weight: Number(row.weight),
         });
+    }
+
+    toMySQL(speciesBody: SpeciesBody): Record<string, any>
+    {
+        return {
+            name: speciesBody.name,
+            type_1_id: speciesBody.type1Id,
+            type_2_id: speciesBody.type2Id || null,
+            gender_ratio_id: speciesBody.genderRatioId,
+            height: speciesBody.height,
+            weight: speciesBody.weight
+        }
     }
 }

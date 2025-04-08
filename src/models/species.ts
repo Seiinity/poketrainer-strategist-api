@@ -47,6 +47,8 @@ export class SpeciesBody
     genderRatioId: number;
     height: number;
     weight: number;
+    type1Id?: number;
+    type2Id?: number | null;
 
     constructor(requestBody: any)
     {
