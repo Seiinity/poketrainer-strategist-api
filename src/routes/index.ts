@@ -5,13 +5,14 @@ import speciesRoutes from "./species-routes";
 import teamRoutes from "./team-routes";
 import trainerRoutes from "./trainer-routes";
 import typeRoutes from "./type-routes";
+import config from "../config";
 
 const router = express.Router();
 
-router.use("/pokemon", pokemonRoutes);
-router.use("/species", speciesRoutes);
-router.use("/teams", teamRoutes);
-router.use("/trainers", trainerRoutes);
-router.use("/types", typeRoutes);
+router.use(config.pokemonPath, pokemonRoutes);
+router.use(config.speciesPath, speciesRoutes);
+router.use(config.teamPath, teamRoutes);
+router.use(config.trainerPath, trainerRoutes);
+router.use(config.typePath, typeRoutes);
 
 export default router;

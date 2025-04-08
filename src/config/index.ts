@@ -11,6 +11,12 @@ interface Config
     dbUser: string;
     dbPass: string;
     baseUrl: string;
+
+    pokemonPath: string;
+    speciesPath: string;
+    teamPath: string;
+    trainerPath: string;
+    typePath: string;
 }
 
 const config: Config =
@@ -21,7 +27,13 @@ const config: Config =
     dbPort: Number(process.env.DB_PORT),
     dbUser: String(process.env.DB_USER),
     dbPass: String(process.env.DB_PASS),
-    baseUrl: `${process.env.BASE_URL}:${process.env.APP_PORT}`
+    baseUrl: `${process.env.BASE_URL}:${process.env.APP_PORT}`,
+
+    pokemonPath: "/pokemon",
+    speciesPath: "/species",
+    teamPath: "/teams",
+    trainerPath: "/trainers",
+    typePath: "/types"
 };
 
 export default config;
