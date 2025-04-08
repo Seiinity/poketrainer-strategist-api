@@ -5,33 +5,31 @@ import { TrainerReference } from "../models/trainer";
 import { isErrorCode } from "../utils/error-handling";
 import trainerService from "./trainer-service";
 import pokemonService from "./pokemon-service";
-import { PokemonReference } from "../models/pokemon";
+import { TeamAdapter } from "../adapters/team-adapter";
 
 /* CRUD methods. */
+
+const baseSelectQuery =
+`
+    SELECT
+        t.id, t.name,
+        tr.id AS trainer_id, tr.name AS trainer_name
+    FROM teams t
+    LEFT JOIN trainers tr ON t.trainer_id = tr.id
+`;
 
 async function getAllTeams(): Promise<Team[]>
 {
     try
     {
-        const rows = await db.queryTyped<RowDataPacket>
-        (
-            `SELECT 
-                t.id, t.name, 
-                tr.id AS trainer_id, tr.name AS trainer_name
-            FROM teams t
-            LEFT JOIN trainers tr ON t.trainer_id = tr.id`
-        );
+        const rows = await db.queryTyped<RowDataPacket>(baseSelectQuery);
 
         return await Promise.all
         (
             rows.map(async row =>
             {
-                return {
-                    id: row.id,
-                    name: row.name,
-                    trainer: new TrainerReference(row.trainer_name, row.trainer_id),
-                    pokemon: await pokemonService.getPokemonReferencesByTeamId(row.id)
-                };
+                row.pokemon = await pokemonService.getPokemonReferencesByTeamId(row.id);
+                return TeamAdapter.fromMySql(row);
             })
         );
     }
@@ -45,25 +43,11 @@ async function getTeamById(id: number): Promise<Team | null>
 {
     try
     {
-        const team = await db.queryOne<RowDataPacket>
-        (
-            `SELECT 
-                t.id, t.name, 
-                tr.id AS trainer_id, tr.name AS trainer_name
-            FROM teams t
-            LEFT JOIN trainers tr ON t.trainer_id = tr.id
-            WHERE t.id = ?`,
-            [id]
-        );
+        const row = await db.queryOne<RowDataPacket>(`${baseSelectQuery} WHERE t.id = ?`, [id]);
+        if (!row) return null;
 
-        if (!team) return null;
-
-        return {
-            id: team.id,
-            name: team.name,
-            trainer: new TrainerReference(team.trainer_name, team.trainer_id),
-            pokemon: await pokemonService.getPokemonReferencesByTeamId(team.id)
-        }
+        row.pokemon = await pokemonService.getPokemonById(row.id);
+        return TeamAdapter.fromMySql(row);
     }
     catch (error)
     {
@@ -75,19 +59,14 @@ async function createTeam(newTeam: TeamBody): Promise<Team>
 {
     try
     {
-        const trainerId = await trainerService.getTrainerIdByName(newTeam.trainer);
+        const trainerId = await trainerService.getTrainerIdByName(newTeam.trainerName);
 
         const sql = "INSERT INTO teams VALUES (NULL, ?, ?)";
         const params = [trainerId, newTeam.name];
 
         const [result] = await db.query<ResultSetHeader>(sql, params);
 
-        return {
-            id: result.insertId,
-            name: newTeam.name,
-            trainer: new TrainerReference(newTeam.trainer, trainerId),
-            pokemon: await pokemonService.getPokemonReferencesByTeamId(result.insertId)
-        };
+        return await getTeamById(result.insertId) as Team;
     }
     catch (error)
     {
@@ -99,7 +78,7 @@ async function updateTeamById(id: number, newTeam: TeamBody): Promise<Team | nul
 {
     try
     {
-        const trainerId = await trainerService.getTrainerIdByName(newTeam.trainer);
+        const trainerId = await trainerService.getTrainerIdByName(newTeam.trainerName);
 
         const sql = "UPDATE teams SET name = ?, trainer_id = ? WHERE id = ?";
         const params = [newTeam.name, trainerId, id];
@@ -107,13 +86,7 @@ async function updateTeamById(id: number, newTeam: TeamBody): Promise<Team | nul
         const [result] = await db.query<ResultSetHeader>(sql, params);
 
         if (result.affectedRows == 0) return null;
-
-        return {
-            id,
-            name: newTeam.name,
-            trainer: new TrainerReference(newTeam.trainer, trainerId),
-            pokemon: await pokemonService.getPokemonReferencesByTeamId(id)
-        };
+        return await getTeamById(id) as Team;
     }
     catch (error)
     {

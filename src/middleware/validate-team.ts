@@ -3,7 +3,7 @@ import validator from "validator";
 
 function validateTeamBody(req: Request, res: Response, next: NextFunction)
 {
-    const { name, trainer } = req.body;
+    const { name, trainerName } = req.body;
 
     if (!name || !validator.isLength(name.trim(), { min: 1, max: 24 }))
     {
@@ -11,14 +11,14 @@ function validateTeamBody(req: Request, res: Response, next: NextFunction)
         return;
     }
 
-    if (!trainer || !validator.isLength(trainer.trim(), { min: 1, max: 12 }))
+    if (!trainerName || !validator.isLength(trainerName.trim(), { min: 1, max: 12 }))
     {
         res.status(400).json({ error: "Trainer name is required and must be between 1 and 24 characters." });
         return;
     }
 
     req.body.name = name.trim();
-    req.body.trainer = trainer.trim();
+    req.body.trainerName = trainerName.trim();
 
     next();
 }

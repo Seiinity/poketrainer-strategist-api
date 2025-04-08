@@ -35,8 +35,8 @@ async function getPokemonById(id: number): Promise<Pokemon | null>
 {
     try
     {
-        const pokemon = await db.queryOne<RowDataPacket> (`${baseSelectQuery} WHERE p.id = ?`, [id]);
-        return pokemon ? PokemonAdapter.fromMySql(pokemon) : null;
+        const row = await db.queryOne<RowDataPacket> (`${baseSelectQuery} WHERE p.id = ?`, [id]);
+        return row ? PokemonAdapter.fromMySql(row) : null;
     }
     catch (error)
     {

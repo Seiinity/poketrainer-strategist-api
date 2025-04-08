@@ -35,12 +35,7 @@ async function store(req: Request, res: Response): Promise<void>
 {
     try
     {
-        const newTeam: TeamBody =
-        {
-            name: req.body.name,
-            trainer: req.body.trainer,
-        };
-
+        const newTeam = new TeamBody(req.body);
         const insertedTeam = await teamService.createTeam(newTeam);
         res.status(200).json(insertedTeam);
     }
@@ -55,12 +50,7 @@ async function update(req: Request, res: Response): Promise<void>
     try
     {
         const id = parseInt(req.params.id);
-        const newTeam: TeamBody =
-        {
-            name: req.body.name,
-            trainer: req.body.trainer,
-        };
-
+        const newTeam = new TeamBody(req.body);
         const updatedTeam = await teamService.updateTeamById(id, newTeam);
 
         if (!updatedTeam) res.status(404).json({ error: "Team not found." });
