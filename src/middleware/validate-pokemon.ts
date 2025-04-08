@@ -17,7 +17,8 @@ function validatePokemonBody(req: Request, res: Response, next: NextFunction)
         return;
     }
 
-    req.body.name = speciesName.trim();
+    if (req.body.nickname) req.body.nickname = req.body.nickname.trim();
+    req.body.speciesName = speciesName.trim();
 
     next();
 }

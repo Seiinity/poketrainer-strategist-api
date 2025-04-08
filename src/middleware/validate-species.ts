@@ -33,7 +33,7 @@ function validateSpeciesBody(req: Request, res: Response, next: NextFunction)
     }
 
     req.body.name = name.trim();
-    req.body.types = typeNames.map((typeName: string) => typeName.trim());
+    req.body.typeNames = typeNames.map((typeName: string) => typeName.trim());
 
     next();
 }
