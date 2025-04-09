@@ -31,7 +31,7 @@ export class TypeReference
     {
         return types
             .filter(type => type.id && type.name)
-            .map(type => new TypeReference(type.name, `${config.baseUrl}/api/types/${type.id}`));
+            .map(type => new TypeReference(type.name, `${config.baseUrl}/api/${config.typePath}/${type.id}`));
     }
 }
 

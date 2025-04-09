@@ -32,6 +32,21 @@ const validationSchema = z.object
         .max(999.9, "Weight must be between 0.1 and 999.9 kg.")
         .refine(n => Number(n.toFixed(1)) === n, "Weight must have at most one decimal place."),
 
+    abilityNames: z.array(
+        z.string({ invalid_type_error: "Ability name must be a string." })
+            .trim()
+            .min(1, "Ability name is required.")
+            .max(32, "Each type name must be shorter than 32 characters."),
+        { required_error: "Field 'abilityNames' is required.", invalid_type_error: "Type names must be an array of strings." }
+    )
+        .max(2, "Species can have a maximum of two abilities.")
+        .nonempty("Species must have at least one ability."),
+
+    hiddenAbilityName: z.string({ required_error: "Field 'hiddenAbilityName' is required.", invalid_type_error: "Hidden Ability name must be a string." })
+        .trim()
+        .min(1, "Hidden Ability name is required.")
+        .max(32, "Hidden Ability name must be shorter than 32 characters."),
+
     generationId: z.number
     ({
         required_error: "Field 'generationId' is required.",
@@ -42,11 +57,11 @@ const validationSchema = z.object
 
 });
 
-function validateSpeciesBody(req: Request, res: Response, next: NextFunction)
+function validateSpeciesBody(req: Request, res: Response, next: NextFunction, schema: z.Schema)
 {
     try
     {
-        const result = validationSchema.parse(req.body);
+        const result = schema.parse(req.body);
 
         req.body.name = result.name;
         req.body.typeNames = result.typeNames;
@@ -66,4 +81,12 @@ function validateSpeciesBody(req: Request, res: Response, next: NextFunction)
     }
 }
 
-export default validateSpeciesBody;
+export function validateSpeciesBodyRequired(req: Request, res: Response, next: NextFunction)
+{
+    validateSpeciesBody(req, res, next, validationSchema);
+}
+
+export function validateSpeciesBodyOptional(req: Request, res: Response, next: NextFunction)
+{
+    validateSpeciesBody(req, res, next, validationSchema.partial());
+}

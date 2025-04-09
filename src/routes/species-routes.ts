@@ -2,7 +2,7 @@
 
 import speciesController from "../controllers/species-controller";
 import { sanitiseIdOrName, validateId } from "../middleware/validate-id";
-import validateSpeciesBody from "../middleware/validate-species";
+import { validateSpeciesBodyOptional, validateSpeciesBodyRequired } from "../middleware/validate-species";
 
 const router = express.Router();
 
@@ -11,8 +11,8 @@ router.param("idName", sanitiseIdOrName);
 
 router.get("/", speciesController.index);
 router.get("/:idName", speciesController.show);
-router.post("/", validateSpeciesBody, speciesController.store);
-router.put("/:id", validateSpeciesBody, speciesController.update);
+router.post("/", validateSpeciesBodyRequired, speciesController.store);
+router.put("/:id", validateSpeciesBodyOptional, speciesController.update);
 router.delete("/:id", speciesController.destroy);
 
 export default router;

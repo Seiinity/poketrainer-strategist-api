@@ -1,4 +1,5 @@
 ﻿import { Request } from "express";
+import config from "../config";
 
 export class Ability
 {
@@ -18,6 +19,26 @@ export class Ability
         this.name = data.name;
         this.description = data.description;
         this.generation = data.generation;
+    }
+}
+
+export class SpeciesAbilityReference
+{
+    ability:
+    {
+        name: string;
+        url?: string;
+    }
+    isHidden: boolean;
+
+    constructor(name: string, id: number, isHidden: Buffer)
+    {
+        this.ability =
+        {
+            name: name,
+            url: `${config.baseUrl}/api/${config.abilityPath}/${id}`
+        }
+        this.isHidden = Boolean(isHidden.readUInt8());
     }
 }
 

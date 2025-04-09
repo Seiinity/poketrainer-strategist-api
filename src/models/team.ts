@@ -32,7 +32,7 @@ export class TeamReference
     constructor(name: string, id: number)
     {
         this.name = name;
-        this.url = `${config.baseUrl}/api/teams/${id}`;
+        this.url = `${config.baseUrl}/api/${config.teamPath}/${id}`;
     }
 }
 

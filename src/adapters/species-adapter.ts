@@ -19,6 +19,7 @@ export class SpeciesAdapter extends Adapter<Species, SpeciesBody>
             genderRatio: `${row.male_rate}M:${row.female_rate}F`,
             height: Number(row.height),
             weight: Number(row.weight),
+            abilities: row.abilities,
             generation: row.generation,
         });
     }

@@ -1,5 +1,5 @@
 ﻿import config from "../config";
-import mysql from "mysql2/promise";
+import mysql, { PoolConnection } from "mysql2/promise";
 import { MySQLCompatibleValue } from "../types/mysql-types";
 
 const pool = mysql.createPool({
@@ -29,4 +29,5 @@ export default {
     query: pool.query.bind(pool),
     queryTyped,
     queryOne,
+    getConnection: (): Promise<PoolConnection> => pool.getConnection(),
 };

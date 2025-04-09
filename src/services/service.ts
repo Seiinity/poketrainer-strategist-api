@@ -7,6 +7,7 @@ import { MySQLCompatibleValue, MySQLData } from "../types/mysql-types";
 import { createInsertQuery, createUpdateQuery } from "../utils/mysql-generation";
 import { isErrorCode } from "../utils/error-handling";
 import { MySQLOperation } from "../types/enums";
+import { Connection } from "mysql2/promise";
 
 export abstract class Service<Model, ModelBody>
 {
@@ -102,7 +103,7 @@ export abstract class Service<Model, ModelBody>
         {
             const query = `${this.baseSelectQuery} WHERE ${this.idField} = ?`;
             const row = await db.queryOne<RowDataPacket>(query, [id]);
-            return row ? await this.adapter.fromMySQL(row) : null;
+            return row ? await this.adaptToModel(row) : null;
         }
         catch (error)
         {
@@ -128,7 +129,7 @@ export abstract class Service<Model, ModelBody>
         }
     }
 
-    async update(id: number, body: ModelBody): Promise<Model | null>
+    async update(id: number, body: ModelBody, connection?: Connection): Promise<Model | null>
     {
         try
         {
@@ -138,7 +139,8 @@ export abstract class Service<Model, ModelBody>
             const query = createUpdateQuery(this.tableName, this.idField, data);
             query.params.push(id);
 
-            const [result] = await db.query<ResultSetHeader>(query.sql, query.params);
+            const toQuery = connection ? connection : db;
+            const [result] = await toQuery.query<ResultSetHeader>(query.sql, query.params);
 
             if (result.affectedRows === 0) return null;
             return await this.getById(id) as Model;

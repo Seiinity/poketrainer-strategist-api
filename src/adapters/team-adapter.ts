@@ -19,7 +19,7 @@ export class TeamAdapter extends Adapter<Team, TeamBody>
 
     referenceFromMySQL(row: RowDataPacket): TeamReference
     {
-        return new TeamReference(row.name, row.id);
+        return new TeamReference(row.name, row.team_id);
     }
 
     toMySQL(requestBody: TeamBody): MySQLData

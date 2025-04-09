@@ -1,7 +1,7 @@
 ﻿import { RowDataPacket } from "mysql2";
 import { Adapter } from "./adapter";
 import { MySQLData } from "../types/mysql-types";
-import { Ability, AbilityBody } from "../models/ability";
+import { Ability, AbilityBody, SpeciesAbilityReference } from "../models/ability";
 
 export class AbilityAdapter extends Adapter<Ability, AbilityBody>
 {
@@ -23,5 +23,10 @@ export class AbilityAdapter extends Adapter<Ability, AbilityBody>
             description: requestBody.description,
             generation_id: requestBody.generationId,
         };
+    }
+
+    speciesReferenceFromSQL(row: RowDataPacket): SpeciesAbilityReference
+    {
+        return new SpeciesAbilityReference(row.name, row.ability_id, row.is_hidden);
     }
 }
