@@ -39,9 +39,9 @@ export class PokemonReference
 export class PokemonBody
 {
     nickname?: string;
-    speciesName: string;
+    speciesName?: string;
     speciesId?: number;
-    teamId: number;
+    teamId?: number;
 
     constructor(requestBody: Request["body"])
     {

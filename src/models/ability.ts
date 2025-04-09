@@ -44,9 +44,9 @@ export class SpeciesAbilityReference
 
 export class AbilityBody
 {
-    name: string;
-    description: string;
-    generationId: number;
+    name?: string;
+    description?: string;
+    generationId?: number;
 
     constructor(requestBody: Request["body"])
     {

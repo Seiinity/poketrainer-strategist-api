@@ -37,7 +37,7 @@ export class TypeReference
 
 export class TypeBody
 {
-    name: string;
+    name?: string;
 
     constructor(requestBody: Request["body"])
     {

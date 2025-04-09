@@ -37,7 +37,7 @@ export class TrainerReference
 
 export class TrainerBody
 {
-    name: string;
+    name?: string;
     password?: string;
     passwordHash?: string;
 

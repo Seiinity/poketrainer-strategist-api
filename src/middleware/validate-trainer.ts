@@ -42,11 +42,11 @@ const loginSchema = z.object
         .trim(),
 });
 
-function validateTrainerBody(req: Request, res: Response, next: NextFunction)
+function validateTrainerBody(req: Request, res: Response, next: NextFunction, schema: z.Schema)
 {
     try
     {
-        const result = validationSchema.parse(req.body);
+        const result = schema.parse(req.body);
 
         req.body.name = result.name;
         req.body.password = result.password;
@@ -66,7 +66,7 @@ function validateTrainerBody(req: Request, res: Response, next: NextFunction)
     }
 }
 
-function validateTrainerLogin(req: Request, res: Response, next: NextFunction)
+export function validateTrainerLogin(req: Request, res: Response, next: NextFunction)
 {
     try
     {
@@ -90,4 +90,12 @@ function validateTrainerLogin(req: Request, res: Response, next: NextFunction)
     }
 }
 
-export { validateTrainerBody, validateTrainerLogin };
+export function validateTrainerBodyRequired(req: Request, res: Response, next: NextFunction)
+{
+    validateTrainerBody(req, res, next, validationSchema);
+}
+
+export function validateTrainerBodyOptional(req: Request, res: Response, next: NextFunction)
+{
+    validateTrainerBody(req, res, next, validationSchema.partial());
+}

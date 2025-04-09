@@ -31,11 +31,11 @@ const validationSchema = z.object
         .optional(),
 });
 
-function validatePokemonBody(req: Request, res: Response, next: NextFunction)
+function validatePokemonBody(req: Request, res: Response, next: NextFunction, schema: z.Schema)
 {
     try
     {
-        const result = validationSchema.parse(req.body);
+        const result = schema.parse(req.body);
 
         req.body.speciesName = result.speciesName;
         req.body.teamId = result.teamId;
@@ -56,4 +56,12 @@ function validatePokemonBody(req: Request, res: Response, next: NextFunction)
     }
 }
 
-export default validatePokemonBody;
+export function validatePokemonBodyRequired(req: Request, res: Response, next: NextFunction)
+{
+    validatePokemonBody(req, res, next, validationSchema);
+}
+
+export function validatePokemonBodyOptional(req: Request, res: Response, next: NextFunction)
+{
+    validatePokemonBody(req, res, next, validationSchema.partial());
+}

@@ -27,10 +27,16 @@ export class PokemonService extends Service<Pokemon, PokemonBody>
     {
         const processed = { ...body };
 
-        processed.speciesId = await speciesService.getIdByName(body.speciesName);
+        if (body.speciesName)
+        {
+            processed.speciesId = await speciesService.getIdByName(body.speciesName);
+        }
 
-        const team = await teamService.getById(body.teamId);
-        if (team == null) return Promise.reject(new Error(`No team found with ID ${body.teamId}.`));
+        if (body.teamId)
+        {
+            const team = await teamService.getById(body.teamId);
+            if (team == null) return Promise.reject(new Error(`No team found with ID ${body.teamId}.`));
+        }
 
         return processed;
     }

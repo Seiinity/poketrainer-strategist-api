@@ -13,11 +13,11 @@ const validationSchema = z.object
         .max(12, "Type name must be shorter than 12 characters."),
 });
 
-function validateTypeBody(req: Request, res: Response, next: NextFunction)
+function validateTypeBody(req: Request, res: Response, next: NextFunction, schema: z.Schema)
 {
     try
     {
-        const result = validationSchema.parse(req.body);
+        const result = schema.parse(req.body);
 
         req.body.name = result.name;
 
@@ -36,4 +36,12 @@ function validateTypeBody(req: Request, res: Response, next: NextFunction)
     }
 }
 
-export default validateTypeBody;
+export function validateTypeBodyRequired(req: Request, res: Response, next: NextFunction)
+{
+    validateTypeBody(req, res, next, validationSchema);
+}
+
+export function validateTypeBodyOptional(req: Request, res: Response, next: NextFunction)
+{
+    validateTypeBody(req, res, next, validationSchema.partial());
+}

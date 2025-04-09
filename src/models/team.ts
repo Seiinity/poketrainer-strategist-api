@@ -38,8 +38,8 @@ export class TeamReference
 
 export class TeamBody
 {
-    name: string;
-    trainerName: string;
+    name?: string;
+    trainerName?: string;
     trainerId?: number;
 
     constructor(requestBody: Request["body"])

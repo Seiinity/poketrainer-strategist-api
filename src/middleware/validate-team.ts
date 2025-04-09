@@ -14,11 +14,11 @@ const validationSchema = z.object
         .max(12, "Trainer name must be shorter than 12 characters."),
 });
 
-function validateTeamBody(req: Request, res: Response, next: NextFunction)
+function validateTeamBody(req: Request, res: Response, next: NextFunction, schema: z.Schema)
 {
     try
     {
-        const result = validationSchema.parse(req.body);
+        const result = schema.parse(req.body);
 
         req.body.name = result.name;
         req.body.trainerName = result.trainerName;
@@ -38,4 +38,12 @@ function validateTeamBody(req: Request, res: Response, next: NextFunction)
     }
 }
 
-export default validateTeamBody;
+export function validateTeamBodyRequired(req: Request, res: Response, next: NextFunction)
+{
+    validateTeamBody(req, res, next, validationSchema);
+}
+
+export function validateTeamBodyOptional(req: Request, res: Response, next: NextFunction)
+{
+    validateTeamBody(req, res, next, validationSchema.partial());
+}

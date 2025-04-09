@@ -30,11 +30,11 @@ const validationSchema = z.object
         .positive("Generation ID must be a positive integer."),
 });
 
-function validateAbilityBody(req: Request, res: Response, next: NextFunction)
+function validateAbilityBody(req: Request, res: Response, next: NextFunction, schema: z.Schema)
 {
     try
     {
-        const result = validationSchema.parse(req.body);
+        const result = schema.parse(req.body);
 
         req.body.name = result.name;
         req.body.description = result.description;
@@ -54,4 +54,12 @@ function validateAbilityBody(req: Request, res: Response, next: NextFunction)
     }
 }
 
-export default validateAbilityBody;
+export function validateAbilityBodyRequired(req: Request, res: Response, next: NextFunction)
+{
+    validateAbilityBody(req, res, next, validationSchema);
+}
+
+export function validateAbilityBodyOptional(req: Request, res: Response, next: NextFunction)
+{
+    validateAbilityBody(req, res, next, validationSchema.partial());
+}
