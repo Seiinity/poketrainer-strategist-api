@@ -9,16 +9,17 @@ export class AbilityService extends NameLookupService<Ability, AbilityBody>
 {
     protected adapter = new AbilityAdapter();
     protected tableName = "abilities";
+    protected tableAlias = "ab";
     protected idField = "ability_id";
     protected searchField = "name";
     protected nameField = "name";
 
     protected baseSelectQuery = `
         SELECT
-            a.*,
-            g.name as generation
-        FROM abilities a
-            LEFT JOIN generations g ON a.generation_id = g.generation_id
+            ab.*,
+            gn.name as generation
+        FROM abilities ab
+            LEFT JOIN generations gn ON ab.generation_id = gn.generation_id
     `;
 
     protected getSpecificErrorMessage(error: unknown, body: AbilityBody): string | null

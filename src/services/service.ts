@@ -13,6 +13,7 @@ export abstract class Service<Model, ModelBody>
 {
     protected abstract adapter: Adapter<Model, ModelBody>;
     protected abstract tableName: string;
+    protected abstract tableAlias: string;
     protected abstract idField: string;
     protected abstract searchField: string;
     protected abstract baseSelectQuery: string;
@@ -84,7 +85,7 @@ export abstract class Service<Model, ModelBody>
 
             if (search)
             {
-                query += ` WHERE ${this.searchField} LIKE ?`;
+                query += ` WHERE ${this.tableAlias}.${this.searchField} LIKE ?`;
                 params.push(`%${search}%`);
             }
 
@@ -101,7 +102,7 @@ export abstract class Service<Model, ModelBody>
     {
         try
         {
-            const query = `${this.baseSelectQuery} WHERE ${this.idField} = ?`;
+            const query = `${this.baseSelectQuery} WHERE ${this.tableAlias}.${this.idField} = ?`;
             const row = await db.queryOne<RowDataPacket>(query, [id]);
             return row ? await this.adaptToModel(row) : null;
         }
@@ -173,7 +174,7 @@ export abstract class NameLookupService<Model, ModelBody> extends Service<Model,
     {
         try
         {
-            const query = `${this.baseSelectQuery} WHERE ${this.nameField} = ?`;
+            const query = `${this.baseSelectQuery} WHERE ${this.tableAlias}.${this.nameField} = ?`;
             const row = await db.queryOne<RowDataPacket>(query, [name]);
             return row ? this.adapter.fromMySQL(row) : null;
         }
@@ -187,7 +188,7 @@ export abstract class NameLookupService<Model, ModelBody> extends Service<Model,
     {
         try
         {
-            const query = `SELECT ${this.idField} AS id FROM ${this.tableName} WHERE LOWER(${this.nameField}) = LOWER(?)`;
+            const query = `SELECT ${this.idField} AS id FROM ${this.tableName} WHERE ${this.tableAlias}.LOWER(${this.nameField}) = LOWER(?)`;
             const result = await db.queryOne<{ id: number }>(query, [name]);
             return (!result || !result.id) ? Promise.reject(new Error(`${capitalize(pluralize.singular(this.tableName))} '${name}' does not exist.`)) : result.id;
         }

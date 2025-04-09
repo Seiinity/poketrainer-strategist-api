@@ -10,17 +10,18 @@ export class PokemonService extends Service<Pokemon, PokemonBody>
 {
     protected adapter = new PokemonAdapter();
     protected tableName = "pokemon";
+    protected tableAlias = "pk";
     protected idField = "pokemon_id";
     protected searchField = "p.nickname";
 
     protected baseSelectQuery = `
         SELECT
-            p.pokemon_id, p.nickname,
-            s.species_id, s.name AS species_name,
-            t.team_id, t.name AS team_name
-        FROM pokemon p
-            LEFT JOIN species s ON p.species_id = s.species_id
-            LEFT JOIN teams t ON p.team_id = t.team_id
+            pk.pokemon_id, pk.nickname,
+            sp.species_id, sp.name AS species_name,
+            tm.team_id, tm.name AS team_name
+        FROM pokemon pk
+            LEFT JOIN species sp ON pk.species_id = sp.species_id
+            LEFT JOIN teams tm ON pk.team_id = tm.team_id
     `;
 
     protected async processRequestBody(body: PokemonBody): Promise<PokemonBody>

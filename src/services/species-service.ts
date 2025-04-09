@@ -11,22 +11,23 @@ class SpeciesService extends NameLookupService<Species, SpeciesBody>
 {
     protected adapter = new SpeciesAdapter();
     protected tableName = "species";
+    protected tableAlias = "sp";
     protected idField = "species_id";
-    protected searchField = "s.name";
-    protected nameField = "s.name";
+    protected searchField = "name";
+    protected nameField = "name";
 
     protected baseSelectQuery = `
-        SELECT 
-            s.species_id, s.name, s.height, s.weight,
-            t1.type_id AS type1_id, t1.name AS type1_name, 
-            t2.type_id AS type2_id, t2.name AS type2_name,
-            g.male_rate, g.female_rate,
+        SELECT
+            sp.*,
+            tp1.type_id AS type1_id, tp1.name AS type1_name,
+            tp2.type_id AS type2_id, tp2.name AS type2_name,
+            gr.male_rate, gr.female_rate,
             gn.name AS generation
-        FROM species s
-            LEFT JOIN types t1 ON s.type_1_id = t1.type_id
-            LEFT JOIN types t2 ON s.type_2_id = t2.type_id
-            LEFT JOIN gender_ratios g ON s.gender_ratio_id = g.gender_ratio_id
-            LEFT JOIN generations gn ON s.generation_id = gn.generation_id
+        FROM species sp
+            LEFT JOIN types tp1 ON sp.type_1_id = tp1.type_id
+            LEFT JOIN types tp2 ON sp.type_2_id = tp2.type_id
+            LEFT JOIN gender_ratios gr ON sp.gender_ratio_id = gr.gender_ratio_id
+            LEFT JOIN generations gn ON sp.generation_id = gn.generation_id
     `;
 
     protected async processRequestBody(body: SpeciesBody): Promise<SpeciesBody>

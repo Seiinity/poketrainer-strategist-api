@@ -10,15 +10,16 @@ class TeamService extends Service<Team, TeamBody>
 {
     protected adapter = new TeamAdapter();
     protected tableName = "teams";
+    protected tableAlias = "tm";
     protected idField = "team_id";
     protected searchField = "t.name";
 
     protected baseSelectQuery = `
         SELECT
-             t.team_id, t.name,
+             tm.team_id, tm.name,
              tr.trainer_id, tr.name AS trainer_name
-        FROM teams t
-            LEFT JOIN trainers tr ON t.trainer_id = tr.trainer_id
+        FROM teams tm
+            LEFT JOIN trainers tr ON tm.trainer_id = tr.trainer_id
     `;
 
     protected async processRequestBody(body: TeamBody): Promise<TeamBody>
