@@ -28,7 +28,8 @@ export class SpeciesAbilityReference
     {
         name: string;
         url?: string;
-    }
+    };
+
     isHidden: boolean;
 
     constructor(name: string, id: number, isHidden: Buffer)
@@ -36,8 +37,8 @@ export class SpeciesAbilityReference
         this.ability =
         {
             name: name,
-            url: `${config.baseUrl}/api/${config.abilityPath}/${id}`
-        }
+            url: `${config.baseUrl}/api/${config.abilityPath}/${id}`,
+        };
         this.isHidden = Boolean(isHidden.readUInt8());
     }
 }

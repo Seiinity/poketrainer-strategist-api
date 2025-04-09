@@ -89,7 +89,7 @@ export abstract class Service<Model, ModelBody>
                 params.push(`%${search}%`);
             }
 
-            const rows = await db.queryTyped<RowDataPacket>(query, params);
+            const rows = await db.queryTyped<RowDataPacket>(query + ` ORDER BY ${this.tableAlias}.${this.idField}`, params);
             return Promise.all(rows.map(async row => await this.adaptToModel(row)));
         }
         catch (error)
@@ -112,7 +112,7 @@ export abstract class Service<Model, ModelBody>
         }
     }
 
-    async create(body: ModelBody): Promise<Model>
+    async create(body: ModelBody, connection?: Connection): Promise<Model>
     {
         try
         {
@@ -120,7 +120,8 @@ export abstract class Service<Model, ModelBody>
             const data = await this.adaptToDatabase(processedBody);
 
             const query = createInsertQuery(this.tableName, data);
-            const [result] = await db.query<ResultSetHeader>(query.sql, query.params);
+            const toQuery = connection ? connection : db;
+            const [result] = await toQuery.query<ResultSetHeader>(query.sql, query.params);
 
             return await this.getById(result.insertId) as Model;
         }
@@ -176,7 +177,7 @@ export abstract class NameLookupService<Model, ModelBody> extends Service<Model,
         {
             const query = `${this.baseSelectQuery} WHERE ${this.tableAlias}.${this.nameField} = ?`;
             const row = await db.queryOne<RowDataPacket>(query, [name]);
-            return row ? this.adapter.fromMySQL(row) : null;
+            return row ? await this.adaptToModel(row) : null;
         }
         catch (error)
         {
@@ -188,7 +189,7 @@ export abstract class NameLookupService<Model, ModelBody> extends Service<Model,
     {
         try
         {
-            const query = `SELECT ${this.idField} AS id FROM ${this.tableName} WHERE ${this.tableAlias}.LOWER(${this.nameField}) = LOWER(?)`;
+            const query = `SELECT ${this.idField} AS id FROM ${this.tableName} ${this.tableAlias} WHERE LOWER(${this.tableAlias}.${this.nameField}) = LOWER(?)`;
             const result = await db.queryOne<{ id: number }>(query, [name]);
             return (!result || !result.id) ? Promise.reject(new Error(`${capitalize(pluralize.singular(this.tableName))} '${name}' does not exist.`)) : result.id;
         }

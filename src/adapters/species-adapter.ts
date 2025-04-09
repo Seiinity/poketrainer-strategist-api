@@ -27,6 +27,7 @@ export class SpeciesAdapter extends Adapter<Species, SpeciesBody>
     toMySQL(requestBody: SpeciesBody): MySQLData
     {
         return {
+            species_id: requestBody.id,
             name: requestBody.name,
             type_1_id: requestBody.type1Id,
             type_2_id: requestBody.type2Id || null,

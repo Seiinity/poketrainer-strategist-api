@@ -1,4 +1,5 @@
 ﻿import { MySQLData, MySQLQuery } from "../types/mysql-types";
+import { PoolConnection } from "mysql2/promise";
 
 export function createInsertQuery(tableName: string, data: MySQLData): MySQLQuery
 {
@@ -23,4 +24,10 @@ export function createUpdateQuery(tableName: string, filter: string, data: MySQL
         sql: `UPDATE ${tableName} SET ${setClauses.join(", ")} WHERE ${filter} = ?`,
         params,
     };
+}
+
+export async function getLastInsertId(connection: PoolConnection): Promise<number>
+{
+    const [rows] = await connection.query("SELECT LAST_INSERT_ID() AS insertId");
+    return (rows as { insertId: number }[])[0].insertId;
 }

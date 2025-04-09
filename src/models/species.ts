@@ -50,6 +50,7 @@ export class SpeciesReference
 
 export class SpeciesBody
 {
+    id?: number;
     name?: string;
     typeNames?: string[];
     genderRatioId?: number;
@@ -63,6 +64,7 @@ export class SpeciesBody
 
     constructor(requestBody: Request["body"])
     {
+        this.id = requestBody.id;
         this.name = requestBody.name;
         this.typeNames = requestBody.typeNames;
         this.genderRatioId = requestBody.genderRatioId;

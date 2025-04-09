@@ -3,6 +3,10 @@ import { z } from "zod";
 
 const validationSchema = z.object
 ({
+    id: z.number({ required_error: "Field 'id' is required.", invalid_type_error: "ID must be a number." })
+        .int("ID must be a positive integer.")
+        .positive("ID must be a positive integer."),
+
     name: z.string({ required_error: "Field 'name' is required.", invalid_type_error: "Species name must be a string." })
         .trim()
         .min(1, "Species name is required.")
