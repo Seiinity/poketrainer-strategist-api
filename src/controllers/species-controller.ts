@@ -22,7 +22,7 @@ class SpeciesController extends NameLookupController<Species, SpeciesBody>
         {
             this.handleError(res, error);
         }
-    }
+    };
 }
 
 export default new SpeciesController();

@@ -23,7 +23,7 @@ export class Controller<TModel, TBody>
         {
             this.handleError(res, error);
         }
-    }
+    };
 
     show = async (req: Request, res: Response): Promise<void> =>
     {
@@ -39,7 +39,7 @@ export class Controller<TModel, TBody>
         {
             this.handleError(res, error);
         }
-    }
+    };
 
     store = async (req: Request, res: Response): Promise<void> =>
     {
@@ -53,7 +53,7 @@ export class Controller<TModel, TBody>
         {
             this.handleError(res, error);
         }
-    }
+    };
 
     update = async (req: Request, res: Response): Promise<void> =>
     {
@@ -70,7 +70,7 @@ export class Controller<TModel, TBody>
         {
             this.handleError(res, error);
         }
-    }
+    };
 
     destroy = async (req: Request, res: Response): Promise<void> =>
     {
@@ -86,12 +86,12 @@ export class Controller<TModel, TBody>
         {
             this.handleError(res, error);
         }
-    }
+    };
 
     protected handleError = (res: Response, error: unknown): void =>
     {
         res.status(500).json({ error: `${(error as Error).message}` });
-    }
+    };
 }
 
 export class NameLookupController<TModel, TBody> extends Controller<TModel, TBody>
@@ -120,5 +120,5 @@ export class NameLookupController<TModel, TBody> extends Controller<TModel, TBod
         {
             this.handleError(res, error);
         }
-    }
+    };
 }

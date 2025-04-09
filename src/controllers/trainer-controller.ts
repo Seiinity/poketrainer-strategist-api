@@ -24,7 +24,7 @@ class TrainerController extends NameLookupController<Trainer, TrainerBody>
         {
             this.handleError(res, error);
         }
-    }
+    };
 
     login = async (req: Request, res: Response) =>
     {
@@ -58,7 +58,7 @@ class TrainerController extends NameLookupController<Trainer, TrainerBody>
         {
             this.handleError(res, error);
         }
-    }
+    };
 }
 
 export default new TrainerController();
