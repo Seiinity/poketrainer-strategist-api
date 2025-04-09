@@ -1,4 +1,4 @@
-﻿import { NameLookupService, Service } from "./service";
+﻿import { NameLookupService } from "./service";
 import { Type, TypeBody } from "../models/type";
 import { TypeAdapter } from "../adapters/type-adapter";
 

@@ -1,6 +1,6 @@
 ﻿import teamService from "./team-service";
 import { Trainer, TrainerBody } from "../models/trainer";
-import { NameLookupService, Service } from "./service";
+import { NameLookupService } from "./service";
 import { TrainerAdapter } from "../adapters/trainer-adapter";
 import { RowDataPacket } from "mysql2";
 
