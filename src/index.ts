@@ -4,14 +4,14 @@ import express from "express";
 import cors from "cors";
 import routes from "./routes";
 
-const index = express();
+const app = express();
 
-index.use(cors());
-index.use(express.json());
+app.use(cors());
+app.use(express.json());
 
-index.use("/api", routes);
+app.use("/api", routes);
 
-index.listen(config.port, () =>
+app.listen(config.port, () =>
 {
     console.log(`Listening on port ${config.port}!`);
 });

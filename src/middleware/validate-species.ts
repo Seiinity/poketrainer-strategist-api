@@ -6,14 +6,13 @@ const validationSchema = z.object
     name: z.string({ required_error: "Field 'name' is required.", invalid_type_error: "Species name must be a string." })
         .trim()
         .min(1, "Species name is required.")
-        .max(12, "Species name must be between 1 and 12 characters.")
-        .nonempty("Species name is required."),
+        .max(12, "Species name must be shorter than 12 characters."),
 
     typeNames: z.array(
         z.string({ invalid_type_error: "Type name must be a string." })
             .trim()
-            .min(1, "Each type name must be between 1 and 12 characters.")
-            .max(12, "Each type name must be between 1 and 12 characters."),
+            .min(1, "Type name is required.")
+            .max(12, "Each type name must be shorter than 12 characters."),
         { required_error: "Field 'typeNames' is required.", invalid_type_error: "Type names must be an array of strings." }
     )
         .max(2, "Species can have a maximum of two types.")

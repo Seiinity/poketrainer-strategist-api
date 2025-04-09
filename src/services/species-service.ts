@@ -1,15 +1,15 @@
-﻿import db from "../db/mysql";
-import typeService from "./type-service";
-import { Service } from "./service";
+﻿import typeService from "./type-service";
+import { NameLookupService } from "./service";
 import { Species, SpeciesBody } from "../models/species";
 import { SpeciesAdapter } from "../adapters/species-adapter";
 
-class SpeciesService extends Service<Species, SpeciesBody>
+class SpeciesService extends NameLookupService<Species, SpeciesBody>
 {
     protected adapter = new SpeciesAdapter();
     protected tableName = "species";
     protected idField = "species_id";
     protected searchField = "s.name";
+    protected nameField = "s.name";
 
     protected baseSelectQuery = `
         SELECT 
@@ -31,19 +31,6 @@ class SpeciesService extends Service<Species, SpeciesBody>
         processed.type2Id = body.typeNames[1] ? await typeService.getIdByName(body.typeNames[1]) : null;
 
         return processed;
-    }
-
-    async getIdByName(name: string): Promise<number>
-    {
-        try
-        {
-            const species = await db.queryOne<Species>("SELECT species_id AS id FROM species WHERE LOWER(name) = LOWER(?)", [name]);
-            return (!species || !species.id) ? Promise.reject(new Error(`Unknown species '${name}'`)) : species.id;
-        }
-        catch (error)
-        {
-            throw new Error(`Error fetching species ID for ${name}: ${(error as Error).message}`);
-        }
     }
 }
 

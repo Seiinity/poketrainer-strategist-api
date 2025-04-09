@@ -9,8 +9,8 @@ const validationSchema = z.object
         invalid_type_error: "Type name must be a string.",
     })
         .trim()
-        .min(1, "Type name must be between 1 and 12 characters.")
-        .max(12, "Type name must be between 1 and 12 characters."),
+        .min(1, "Type name is required.")
+        .max(12, "Type name must be shorter than 12 characters."),
 });
 
 function validateTypeBody(req: Request, res: Response, next: NextFunction)

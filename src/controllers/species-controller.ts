@@ -20,8 +20,10 @@ async function show(req: Request, res: Response): Promise<void>
 {
     try
     {
-        const id = parseInt(req.params.id);
-        const species = await speciesService.getById(id);
+        const idName = req.params.idName;
+        const species = !isNaN(Number(idName))
+            ? await speciesService.getById(parseInt(idName))
+            : await speciesService.getByName(idName);
 
         if (!species) res.status(404).json({ error: "Species not found." });
         else res.json(species);

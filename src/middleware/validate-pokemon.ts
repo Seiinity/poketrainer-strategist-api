@@ -9,8 +9,8 @@ const validationSchema = z.object
         invalid_type_error: "Species name must be a string.",
     })
         .trim()
-        .min(1, "Species name must be between 1 and 12 characters.")
-        .max(12, "Species name must be between 1 and 12 characters.")
+        .min(1, "Species name is required.")
+        .max(12, "Species name must be shorter than 12 characters.")
         .nonempty("Field 'speciesName' cannot be empty."),
 
     teamId: z.number

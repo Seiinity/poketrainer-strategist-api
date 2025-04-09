@@ -3,17 +3,15 @@ import { z } from "zod";
 
 const validationSchema = z.object
 ({
-    name: z.string({ required_error: "Team name is required.", invalid_type_error: "Team name must be a string." })
+    name: z.string({ required_error: "Field 'name' is required.", invalid_type_error: "Team name must be a string." })
         .trim()
-        .min(1, "Team name must be between 1 and 24 characters.")
-        .max(24, "Team name must be between 1 and 24 characters.")
-        .nonempty("Team name is required."),
+        .min(1, "Team name is required.")
+        .max(24, "Team name must be shorter than 24 characters."),
 
-    trainerName: z.string({ required_error: "Trainer name is required.", invalid_type_error: "Trainer name must be a string." })
+    trainerName: z.string({ required_error: "Field 'trainerName' is required.", invalid_type_error: "Trainer name must be a string." })
         .trim()
-        .min(1, "Trainer name must be between 1 and 12 characters.")
-        .max(12, "Trainer name must be between 1 and 12 characters.")
-        .nonempty("Trainer name is required."),
+        .min(1, "Trainer name is required.")
+        .max(12, "Trainer name must be shorter than 12 characters."),
 });
 
 function validateTeamBody(req: Request, res: Response, next: NextFunction)

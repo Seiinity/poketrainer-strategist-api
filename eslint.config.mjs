@@ -5,21 +5,15 @@ import stylistic from "@stylistic/eslint-plugin";
 export default tseslint.config
 (
     eslint.configs.recommended,
-    ...tseslint.configs.recommended,
+    ...tseslint.configs.strict,
     {
-        plugins: {
+        plugins:
+        {
             "@stylistic": stylistic,
         },
         rules:
         {
-            "@typescript-eslint/no-unused-vars": [
-                "error",
-                {
-                    argsIgnorePattern: "^_",
-                    varsIgnorePattern: "^_",
-                    caughtErrorsIgnorePattern: "^_",
-                }
-            ],
+            "@typescript-eslint/no-unused-vars": ["error", { argsIgnorePattern: "^_", varsIgnorePattern: "^_", caughtErrorsIgnorePattern: "^_" }],
             "no-unexpected-multiline": "off",
 
             "@stylistic/array-bracket-spacing": ["error", "never"],

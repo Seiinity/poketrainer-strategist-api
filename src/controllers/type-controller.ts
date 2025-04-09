@@ -19,8 +19,10 @@ async function show(req: Request, res: Response): Promise<void>
 {
     try
     {
-        const id = parseInt(req.params.id);
-        const type = await typeService.getById(id);
+        const idName = req.params.idName;
+        const type = !isNaN(Number(idName))
+            ? await typeService.getById(parseInt(idName))
+            : await typeService.getByName(idName);
 
         if (!type) res.status(404).json({ error: "Type not found." });
         else res.json(type);

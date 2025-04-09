@@ -130,3 +130,36 @@ export abstract class Service<Model, ModelBody>
         }
     }
 }
+
+export abstract class NameLookupService<Model, ModelBody> extends Service<Model, ModelBody>
+{
+    protected abstract nameField: string;
+
+    async getByName(name: string): Promise<Model | null>
+    {
+        try
+        {
+            const query = `${this.baseSelectQuery} WHERE ${this.nameField} = ?`;
+            const row = await db.queryOne<RowDataPacket>(query, [name]);
+            return row ? this.adapter.fromMySQL(row) : null;
+        }
+        catch (error)
+        {
+            throw new Error(`Error fetching ${this.tableName} named ${name}: ${(error as Error).message}`);
+        }
+    }
+
+    async getIdByName(name: string): Promise<number>
+    {
+        try
+        {
+            const query = `SELECT ${this.idField} AS id FROM ${this.tableName} WHERE LOWER(${this.nameField}) = LOWER(?)`;
+            const result = await db.queryOne<{ id: number }>(query, [name]);
+            return (!result || !result.id) ? Promise.reject(new Error(`Unknown ${this.tableName} '${name}'`)) : result.id;
+        }
+        catch (error)
+        {
+            throw new Error(`Error fetching ${this.tableName} ID for ${name}: ${(error as Error).message}`);
+        }
+    }
+}

@@ -1,16 +1,19 @@
 ﻿import express from "express";
 
 import trainerController from "../controllers/trainer-controller";
-import { validateId, sanitiseId } from "../middleware/validate-id";
+import { validateId, sanitiseIdOrName } from "../middleware/validate-id";
 import { validateTrainerBody, validateTrainerLogin } from "../middleware/validate-trainer";
 
 const router = express.Router();
 
+router.param("id", validateId);
+router.param("idName", sanitiseIdOrName);
+
 router.get("/", trainerController.index);
 router.get("/login", validateTrainerLogin, trainerController.login);
-router.get("/:id", sanitiseId, trainerController.show);
+router.get("/:idName", trainerController.show);
 router.post("/", validateTrainerBody, trainerController.store);
-router.put("/:id", validateId, validateTrainerBody, trainerController.update);
-router.delete("/:id", validateId, trainerController.destroy);
+router.put("/:id", validateTrainerBody, trainerController.update);
+router.delete("/:id", trainerController.destroy);
 
 export default router;
