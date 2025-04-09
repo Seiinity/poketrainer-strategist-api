@@ -32,6 +32,14 @@ const validationSchema = z.object
         .max(999.9, "Weight must be between 0.1 and 999.9 kg.")
         .refine(n => Number(n.toFixed(1)) === n, "Weight must have at most one decimal place."),
 
+    generationId: z.number
+    ({
+        required_error: "Field 'generationId' is required.",
+        invalid_type_error: "Generation ID must be a number.",
+    })
+        .int("Generation ID must be a positive integer.")
+        .positive("Generation ID must be a positive integer."),
+
 });
 
 function validateSpeciesBody(req: Request, res: Response, next: NextFunction)

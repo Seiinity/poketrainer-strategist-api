@@ -10,6 +10,7 @@ export class Species
     genderRatio: string;
     height: number;
     weight: number;
+    generation: string;
 
     constructor(data: {
         id?: number;
@@ -18,6 +19,7 @@ export class Species
         genderRatio: string;
         height: number;
         weight: number;
+        generation: string;
     })
     {
         this.id = data.id;
@@ -26,6 +28,7 @@ export class Species
         this.genderRatio = data.genderRatio;
         this.height = data.height;
         this.weight = data.weight;
+        this.generation = data.generation;
     }
 }
 
@@ -50,6 +53,7 @@ export class SpeciesBody
     weight: number;
     type1Id?: number;
     type2Id?: number | null;
+    generationId: number;
 
     constructor(requestBody: Request["body"])
     {
@@ -58,5 +62,6 @@ export class SpeciesBody
         this.genderRatioId = requestBody.genderRatioId;
         this.height = requestBody.height;
         this.weight = requestBody.weight;
+        this.generationId = requestBody.generationId;
     }
 }
