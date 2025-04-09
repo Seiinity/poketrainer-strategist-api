@@ -12,5 +12,4 @@ class TypeService extends NameLookupService<Type, TypeBody>
     protected baseSelectQuery = "SELECT * FROM types";
 }
 
-const typeService = new TypeService();
-export default typeService;
+export default new TypeService();

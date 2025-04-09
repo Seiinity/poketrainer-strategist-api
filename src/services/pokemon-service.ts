@@ -19,8 +19,8 @@ export class PokemonService extends Service<Pokemon, PokemonBody>
             s.species_id, s.name AS species_name,
             t.team_id, t.name AS team_name
         FROM pokemon p
-        LEFT JOIN species s ON p.species_id = s.species_id
-        LEFT JOIN teams t ON p.team_id = t.team_id
+            LEFT JOIN species s ON p.species_id = s.species_id
+            LEFT JOIN teams t ON p.team_id = t.team_id
     `;
 
     protected async processRequestBody(body: PokemonBody): Promise<PokemonBody>
@@ -59,5 +59,4 @@ export class PokemonService extends Service<Pokemon, PokemonBody>
     }
 }
 
-const pokemonService = new PokemonService();
-export default pokemonService;
+export default new PokemonService();

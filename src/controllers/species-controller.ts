@@ -1,7 +1,7 @@
 ﻿import speciesService from "../services/species-service";
 import { Request, Response } from "express";
-import { Species, SpeciesBody } from "../models/species";
 import { NameLookupController } from "./controller";
+import { Species, SpeciesBody } from "../models/species";
 
 class SpeciesController extends NameLookupController<Species, SpeciesBody>
 {

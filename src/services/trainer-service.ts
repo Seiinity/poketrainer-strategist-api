@@ -20,5 +20,4 @@ class TrainerService extends NameLookupService<Trainer, TrainerBody>
     }
 }
 
-const trainerService = new TrainerService();
-export default trainerService;
+export default new TrainerService();

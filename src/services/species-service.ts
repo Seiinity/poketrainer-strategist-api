@@ -18,9 +18,9 @@ class SpeciesService extends NameLookupService<Species, SpeciesBody>
             t2.type_id AS type2_id, t2.name AS type2_name,
             g.male_rate, g.female_rate
         FROM species s
-        LEFT JOIN types t1 ON s.type_1_id = t1.type_id
-        LEFT JOIN types t2 ON s.type_2_id = t2.type_id
-        LEFT JOIN gender_ratios g ON s.gender_ratio_id = g.gender_ratio_id
+            LEFT JOIN types t1 ON s.type_1_id = t1.type_id
+            LEFT JOIN types t2 ON s.type_2_id = t2.type_id
+            LEFT JOIN gender_ratios g ON s.gender_ratio_id = g.gender_ratio_id
     `;
 
     protected async processRequestBody(body: SpeciesBody): Promise<SpeciesBody>
@@ -34,5 +34,4 @@ class SpeciesService extends NameLookupService<Species, SpeciesBody>
     }
 }
 
-const speciesService = new SpeciesService();
-export default speciesService;
+export default new SpeciesService();

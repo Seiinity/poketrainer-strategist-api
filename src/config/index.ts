@@ -12,6 +12,7 @@ interface Config
     dbPass: string;
     baseUrl: string;
 
+    abilityPath: string;
     pokemonPath: string;
     speciesPath: string;
     teamPath: string;
@@ -29,6 +30,7 @@ const config: Config =
     dbPass: String(process.env.DB_PASS),
     baseUrl: `${process.env.BASE_URL}:${process.env.APP_PORT}`,
 
+    abilityPath: "/abilities",
     pokemonPath: "/pokemon",
     speciesPath: "/species",
     teamPath: "/teams",

@@ -1,5 +1,6 @@
 ﻿import express from "express";
 
+import abilityRoutes from "./ability-routes";
 import pokemonRoutes from "./pokemon-routes";
 import speciesRoutes from "./species-routes";
 import teamRoutes from "./team-routes";
@@ -9,6 +10,7 @@ import config from "../config";
 
 const router = express.Router();
 
+router.use(config.abilityPath, abilityRoutes);
 router.use(config.pokemonPath, pokemonRoutes);
 router.use(config.speciesPath, speciesRoutes);
 router.use(config.teamPath, teamRoutes);

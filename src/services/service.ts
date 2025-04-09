@@ -1,9 +1,12 @@
 ﻿import db from "../db/mysql";
+import pluralize from "pluralize";
+import capitalize from "lodash.capitalize";
 import { Adapter } from "../adapters/adapter";
 import { ResultSetHeader, RowDataPacket } from "mysql2";
 import { MySQLCompatibleValue, MySQLData } from "../types/mysql-types";
 import { createInsertQuery, createUpdateQuery } from "../utils/mysql-generation";
 import { isErrorCode } from "../utils/error-handling";
+import { MySQLOperation } from "../types/enums";
 
 export abstract class Service<Model, ModelBody>
 {
@@ -28,6 +31,49 @@ export abstract class Service<Model, ModelBody>
         return this.adapter.toMySQL(body);
     }
 
+    protected getSpecificErrorMessage(_error: unknown, _body: ModelBody): string | null
+    {
+        // Intentionally empty, inherited classes can provide custom error handling.
+        return null;
+    }
+
+    protected handleError(error: unknown, body: ModelBody, operation: MySQLOperation, id?: number): never
+    {
+        const singularName = pluralize.singular(this.tableName);
+        let prefix = "";
+
+        switch (operation)
+        {
+            case MySQLOperation.Create:
+                prefix = `Error creating ${singularName}: `;
+                break;
+            case MySQLOperation.Update:
+                prefix = `Error updating ${singularName} with ID ${id}: `;
+                break;
+            case MySQLOperation.Delete:
+                prefix = `Error deleting ${singularName} with ID ${id}: `;
+                break;
+            case MySQLOperation.Fetch:
+                prefix = `Error fetching ${singularName}${id ? ` with ID ${id}` : ""}: `;
+                break;
+        }
+
+        const specificErrorMessage = this.getSpecificErrorMessage(error, body);
+        if (specificErrorMessage) throw new Error(`${prefix}${specificErrorMessage}`);
+
+        if (isErrorCode(error, "ER_DUP_ENTRY"))
+        {
+            throw new Error(`${prefix}A duplicate ${singularName} already exists.`);
+        }
+
+        if (isErrorCode(error, "ER_ROW_IS_REFERENCED_2"))
+        {
+            throw new Error(`${prefix}Cannot delete this ${singularName} as it is referenced by other records.`);
+        }
+
+        throw new Error(`${prefix}${(error as Error).message}`);
+    }
+
     async find(search?: string): Promise<Model[]>
     {
         try
@@ -46,7 +92,7 @@ export abstract class Service<Model, ModelBody>
         }
         catch (error)
         {
-            throw new Error(`Error fetching ${this.tableName}: ${(error as Error).message}`);
+            throw this.handleError(error, {} as ModelBody, MySQLOperation.Fetch);
         }
     }
 
@@ -60,7 +106,7 @@ export abstract class Service<Model, ModelBody>
         }
         catch (error)
         {
-            throw new Error(`Error fetching ${this.tableName} with ID ${id}: ${(error as Error).message}`);
+            throw this.handleError(error, {} as ModelBody, MySQLOperation.Fetch, id);
         }
     }
 
@@ -78,12 +124,7 @@ export abstract class Service<Model, ModelBody>
         }
         catch (error)
         {
-            if (isErrorCode(error, "ER_DUP_ENTRY"))
-            {
-                throw new Error(`A duplicate record in ${this.tableName} already exists.`);
-            }
-
-            throw new Error(`Error creating ${this.tableName}: ${(error as Error).message}`);
+            throw this.handleError(error, body, MySQLOperation.Create);
         }
     }
 
@@ -104,12 +145,7 @@ export abstract class Service<Model, ModelBody>
         }
         catch (error)
         {
-            if (isErrorCode(error, "ER_DUP_ENTRY"))
-            {
-                throw new Error(`A duplicate record in ${this.tableName} already exists.`);
-            }
-
-            throw new Error(`Error updating ${this.tableName} with ID ${id}: ${(error as Error).message}`);
+            throw this.handleError(error, body, MySQLOperation.Update, id);
         }
     }
 
@@ -122,11 +158,7 @@ export abstract class Service<Model, ModelBody>
         }
         catch (error)
         {
-            if (isErrorCode(error, "ER_ROW_IS_REFERENCED_2"))
-            {
-                throw new Error(`Cannot delete this ${this.tableName} as it is referenced by other records.`);
-            }
-            throw new Error(`Error deleting ${this.tableName} by ID: ${(error as Error).message}`);
+            throw this.handleError(error, {} as ModelBody, MySQLOperation.Delete, id);
         }
     }
 }
@@ -155,7 +187,7 @@ export abstract class NameLookupService<Model, ModelBody> extends Service<Model,
         {
             const query = `SELECT ${this.idField} AS id FROM ${this.tableName} WHERE LOWER(${this.nameField}) = LOWER(?)`;
             const result = await db.queryOne<{ id: number }>(query, [name]);
-            return (!result || !result.id) ? Promise.reject(new Error(`Unknown ${this.tableName} '${name}'`)) : result.id;
+            return (!result || !result.id) ? Promise.reject(new Error(`${capitalize(pluralize.singular(this.tableName))} '${name}' does not exist.`)) : result.id;
         }
         catch (error)
         {

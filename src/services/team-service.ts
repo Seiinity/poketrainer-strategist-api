@@ -18,7 +18,7 @@ class TeamService extends Service<Team, TeamBody>
              t.team_id, t.name,
              tr.trainer_id, tr.name AS trainer_name
         FROM teams t
-        LEFT JOIN trainers tr ON t.trainer_id = tr.trainer_id
+            LEFT JOIN trainers tr ON t.trainer_id = tr.trainer_id
     `;
 
     protected async processRequestBody(body: TeamBody): Promise<TeamBody>
@@ -55,5 +55,4 @@ class TeamService extends Service<Team, TeamBody>
     }
 }
 
-const teamService = new TeamService();
-export default teamService;
+export default new TeamService();

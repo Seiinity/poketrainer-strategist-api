@@ -1,8 +1,8 @@
 ﻿import trainerService from "../services/trainer-service";
 import * as argon2 from "argon2";
 import { Request, Response } from "express";
-import { Trainer, TrainerBody } from "../models/trainer";
 import { NameLookupController } from "./controller";
+import { Trainer, TrainerBody } from "../models/trainer";
 
 class TrainerController extends NameLookupController<Trainer, TrainerBody>
 {

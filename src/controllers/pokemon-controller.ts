@@ -1,5 +1,5 @@
 ﻿import pokemonService from "../services/pokemon-service";
-import { PokemonBody } from "../models/pokemon";
 import { Controller } from "./controller";
+import { PokemonBody } from "../models/pokemon";
 
 export default new Controller(pokemonService, PokemonBody);
