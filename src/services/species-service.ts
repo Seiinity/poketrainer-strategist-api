@@ -1,12 +1,12 @@
 ﻿import db from "../db/mysql";
 import typeService from "./type-service";
 import abilityService from "./ability-service";
+import statService from "./stat-service";
 import { NameLookupService } from "./service";
 import { Species, SpeciesBody } from "../models/species";
 import { SpeciesAdapter } from "../adapters/species-adapter";
 import { RowDataPacket } from "mysql2";
 import { MySQLOperation } from "../types/enums";
-import statService from "./stat-service";
 import { PoolConnection } from "mysql2/promise";
 
 class SpeciesService extends NameLookupService<Species, SpeciesBody>

@@ -1,8 +1,8 @@
-﻿import { NameLookupService } from "./service";
+﻿import db from "../db/mysql";
+import { NameLookupService } from "./service";
 import { Ability, AbilityBody } from "../models/ability";
 import { AbilityAdapter } from "../adapters/ability-adapter";
 import { getMySQLForeignKeyErrorConstraint } from "../utils/error-handling";
-import db from "../db/mysql";
 import { RowDataPacket } from "mysql2";
 
 export class AbilityService extends NameLookupService<Ability, AbilityBody>
