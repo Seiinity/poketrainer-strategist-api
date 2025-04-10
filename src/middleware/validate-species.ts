@@ -51,6 +51,13 @@ const validationSchema = z.object
         .min(1, "Hidden Ability is required.")
         .max(32, "Hidden Ability must be shorter than 32 characters."),
 
+    baseStats: z.array(
+        z.number({ invalid_type_error: "Base stat value must be a number." })
+            .int("Base stat value must be a positive integer.")
+            .positive("Base stat value must be a positive integer."),
+        { required_error: "Field 'baseStats' is required.", invalid_type_error: "Base stats must be an array of numbers." }
+    ),
+
     generationId: z.number
     ({
         required_error: "Field 'generationId' is required.",
