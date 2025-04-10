@@ -68,28 +68,7 @@ class SpeciesService extends NameLookupService<Species, SpeciesBody>
 
         try
         {
-            const values = [];
-
-            if (!body.abilityNames || !body.hiddenAbilityName)
-            {
-                await connection.rollback();
-                connection.release();
-
-                return Promise.reject("Invalid request body.");
-            }
-
-            for (const abilityName of body.abilityNames)
-            {
-                const index = body.abilityNames.indexOf(abilityName);
-                const abilityId = await abilityService.getIdByName(abilityName);
-                values.push([id, abilityId, 0, index + 1]);
-            }
-
-            const hiddenAbilityId = await abilityService.getIdByName(body.hiddenAbilityName);
-            values.push([id, hiddenAbilityId, 1, 3]);
-
-            await connection.query("DELETE FROM species_abilities WHERE species_id = ?", [id]); // Failsafe.
-            await connection.query("INSERT INTO species_abilities VALUES ?", [values]);
+            await this.insertAbilityRelations(connection, id, body);
 
             connection.commit();
             connection.release();
@@ -126,32 +105,7 @@ class SpeciesService extends NameLookupService<Species, SpeciesBody>
 
         try
         {
-            const values = [];
-
-            if (body.abilityNames)
-            {
-                for (const abilityName of body.abilityNames)
-                {
-                    const index = body.abilityNames.indexOf(abilityName);
-                    const abilityId = await abilityService.getIdByName(abilityName);
-                    values.push([id, abilityId, 0, index + 1]);
-
-                    await connection.query("DELETE FROM species_abilities WHERE species_id = ? AND is_hidden = FALSE", [id]);
-                }
-            }
-
-            if (body.hiddenAbilityName)
-            {
-                const hiddenAbilityId = await abilityService.getIdByName(body.hiddenAbilityName);
-                values.push([id, hiddenAbilityId, 1, 3]);
-
-                await connection.query("DELETE FROM species_abilities WHERE species_id = ? AND is_hidden = TRUE", [id]);
-            }
-
-            if (values.length > 0)
-            {
-                await connection.query("INSERT INTO species_abilities VALUES ?", [values]);
-            }
+            await this.insertAbilityRelations(connection, id, body);
 
             connection.commit();
             connection.release();
@@ -163,6 +117,36 @@ class SpeciesService extends NameLookupService<Species, SpeciesBody>
             await connection.rollback();
             connection.release();
             throw this.handleError(error, body, MySQLOperation.Update, id);
+        }
+    }
+
+    private async insertAbilityRelations(connection: any, id: number, body: SpeciesBody)
+    {
+        const values = [];
+
+        if (body.abilityNames)
+        {
+            for (const abilityName of body.abilityNames)
+            {
+                const index = body.abilityNames.indexOf(abilityName);
+                const abilityId = await abilityService.getIdByName(abilityName);
+                values.push([id, abilityId, 0, index + 1]);
+
+                await connection.query("DELETE FROM species_abilities WHERE species_id = ? AND is_hidden = FALSE", [id]);
+            }
+        }
+
+        if (body.hiddenAbilityName)
+        {
+            const hiddenAbilityId = await abilityService.getIdByName(body.hiddenAbilityName);
+            values.push([id, hiddenAbilityId, 1, 3]);
+
+            await connection.query("DELETE FROM species_abilities WHERE species_id = ? AND is_hidden = TRUE", [id]);
+        }
+
+        if (values.length > 0)
+        {
+            await connection.query("INSERT INTO species_abilities VALUES ?", [values]);
         }
     }
 }
