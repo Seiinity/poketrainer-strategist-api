@@ -12,10 +12,10 @@ export class SpeciesAdapter extends Adapter<Species, SpeciesBody>
         ({
             id: row.species_id,
             name: row.name,
-            types: TypeReference.build([
-                { id: row.type1_id, name: row.type1_name },
-                { id: row.type2_id, name: row.type2_name }
-            ]),
+            types: [
+                new TypeReference(row.type1_name, row.type1_id),
+                ...(row.type2_id ? [new TypeReference(row.type2_name, row.type2_id)] : []),
+            ],
             genderRatio: `${row.male_rate}M:${row.female_rate}F`,
             height: Number(row.height),
             weight: Number(row.weight),
@@ -30,7 +30,7 @@ export class SpeciesAdapter extends Adapter<Species, SpeciesBody>
             species_id: requestBody.id,
             name: requestBody.name,
             type_1_id: requestBody.type1Id,
-            type_2_id: requestBody.type2Id || null,
+            type_2_id: requestBody.type2Id,
             gender_ratio_id: requestBody.genderRatioId,
             height: requestBody.height,
             weight: requestBody.weight,

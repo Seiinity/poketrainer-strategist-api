@@ -139,6 +139,8 @@ export abstract class Service<Model, ModelBody>
             const data = await this.adaptToDatabase(processedBody);
 
             const query = createUpdateQuery(this.tableName, this.idField, data);
+            if (!query) return await this.getById(id) as Model;
+
             query.params.push(id);
 
             const toQuery = connection ? connection : db;

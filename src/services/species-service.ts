@@ -37,7 +37,7 @@ class SpeciesService extends NameLookupService<Species, SpeciesBody>
         if (body.typeNames)
         {
             processed.type1Id = await typeService.getIdByName(body.typeNames[0]);
-            processed.type2Id = body.typeNames[1] ? await typeService.getIdByName(body.typeNames[1]) : null;
+            if (body.typeNames[1]) processed.type2Id = await typeService.getIdByName(body.typeNames[1]);
         }
 
         return processed;

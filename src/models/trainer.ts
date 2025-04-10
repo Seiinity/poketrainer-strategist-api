@@ -31,7 +31,7 @@ export class TrainerReference
     constructor(name: string, id: number)
     {
         this.name = name;
-        this.url = `${config.baseUrl}/api/${config.trainerPath}/${id}`;
+        this.url = `${config.baseUrl}/api${config.trainerPath}/${id}`;
     }
 }
 

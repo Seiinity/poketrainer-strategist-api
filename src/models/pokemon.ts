@@ -32,7 +32,7 @@ export class PokemonReference
     constructor(name: string, id: number)
     {
         this.name = name;
-        this.url = `${config.baseUrl}/api/${config.pokemonPath}/${id}`;
+        this.url = `${config.baseUrl}/api${config.pokemonPath}/${id}`;
     }
 }
 
