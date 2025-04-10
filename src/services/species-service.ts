@@ -171,7 +171,7 @@ class SpeciesService extends NameLookupService<Species, SpeciesBody>
             body.baseStats.forEach((stat, index) =>
             {
                 values.push([id, index + 1, stat]);
-            })
+            });
 
             await connection.query("DELETE FROM species_base_stats WHERE species_id = ?", [id]);
             await connection.query("INSERT INTO species_base_stats VALUES ?", [values]);

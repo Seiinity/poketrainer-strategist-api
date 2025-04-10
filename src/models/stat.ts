@@ -21,7 +21,7 @@ export class StatReference
     {
         name: string;
         url?: string;
-    }
+    };
 
     value: number;
 
@@ -31,7 +31,7 @@ export class StatReference
         {
             name: name,
             url: `${config.baseUrl}/api${config.statPath}/${id}`,
-        }
+        };
         this.value = value;
     }
 }

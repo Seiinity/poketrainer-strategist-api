@@ -5,6 +5,7 @@ import { TypeAdapter } from "../adapters/type-adapter";
 import { RowDataPacket } from "mysql2";
 import { MySQLOperation } from "../types/enums";
 import { getLastInsertId } from "../utils/mysql-generation";
+import { PoolConnection } from "mysql2/promise";
 
 class TypeService extends NameLookupService<Type, TypeBody>
 {
@@ -18,16 +19,8 @@ class TypeService extends NameLookupService<Type, TypeBody>
 
     protected async adaptToModel(row: RowDataPacket): Promise<Type>
     {
-        try
-        {
-            row.effectiveness = await this.getTypeEffectivenessById(row.type_id);
-            return super.adaptToModel(row);
-        }
-        catch (error)
-        {
-            throw error;
-        }
-
+        row.effectiveness = await this.getTypeEffectivenessById(row.type_id);
+        return super.adaptToModel(row);
     }
 
     async getTypeEffectivenessById(id: number): Promise<TypeEffectiveness>
@@ -124,7 +117,7 @@ class TypeService extends NameLookupService<Type, TypeBody>
         }
     }
 
-    private async insertEffectivenessRelations(connection: any, id: number, body: TypeBody): Promise<void>
+    private async insertEffectivenessRelations(connection: PoolConnection, id: number, body: TypeBody): Promise<void>
     {
         const values: string[] = [];
         const params: (number | string)[] = [];

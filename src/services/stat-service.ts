@@ -26,11 +26,11 @@ class StatService extends ReadOnlyService<Stat>
             `;
 
             const rows = await db.queryTyped<RowDataPacket>(query, [speciesId]);
-            return rows.map((row) => this.adapter.referenceFromMySQL(row));
+            return rows.map(row => this.adapter.referenceFromMySQL(row));
         }
         catch (error)
         {
-            throw error;
+            throw new Error(`Error fetching stat reference by species ID: ${(error as Error).message}`);
         }
     }
 }

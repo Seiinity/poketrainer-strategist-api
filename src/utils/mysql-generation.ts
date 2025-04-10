@@ -15,9 +15,7 @@ export function createInsertQuery(tableName: string, data: MySQLData): MySQLQuer
 
 export function createUpdateQuery(tableName: string, filter: string, data: MySQLData): MySQLQuery | null
 {
-    const entries = Object.entries(data).filter(([key, value]) =>
-        Object.prototype.hasOwnProperty.call(data, key) && value !== undefined
-    );
+    const entries = Object.entries(data).filter(([key, value]) => Object.prototype.hasOwnProperty.call(data, key) && value !== undefined);
 
     if (entries.length == 0)
     {

@@ -42,7 +42,6 @@ export class TypeAdapter extends Adapter<Type, TypeBody>
                 if (modifier == 2) effectiveness.weakTo.push(attackingType);
                 else if (modifier == 0.5) effectiveness.resistantTo.push(attackingType);
                 else if (modifier == 0) effectiveness.immuneTo.push(attackingType);
-
             }
 
             if (attackingId == id)

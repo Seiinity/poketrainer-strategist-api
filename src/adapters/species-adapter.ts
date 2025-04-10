@@ -14,7 +14,7 @@ export class SpeciesAdapter extends Adapter<Species, SpeciesBody>
             name: row.name,
             types: [
                 new TypeReference(row.type1_name, row.type1_id),
-                ...(row.type2_id ? [new TypeReference(row.type2_name, row.type2_id)] : []),
+                ...row.type2_id ? [new TypeReference(row.type2_name, row.type2_id)] : []
             ],
             genderRatio: `${row.male_rate}M:${row.female_rate}F`,
             height: Number(row.height),
