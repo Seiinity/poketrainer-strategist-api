@@ -6,6 +6,8 @@ import { Species, SpeciesBody } from "../models/species";
 import { SpeciesAdapter } from "../adapters/species-adapter";
 import { RowDataPacket } from "mysql2";
 import { MySQLOperation } from "../types/enums";
+import statService from "./stat-service";
+import { PoolConnection } from "mysql2/promise";
 
 class SpeciesService extends NameLookupService<Species, SpeciesBody>
 {
@@ -45,7 +47,8 @@ class SpeciesService extends NameLookupService<Species, SpeciesBody>
 
     protected async adaptToModel(row: RowDataPacket): Promise<Species>
     {
-        row.abilities = await abilityService.getReferencesFromSpeciesId(row.species_id);
+        row.abilities = await abilityService.getReferencesBySpeciesId(row.species_id);
+        row.base_stats = await statService.getReferencesBySpeciesId(row.species_id);
         return super.adaptToModel(row);
     }
 
@@ -69,6 +72,7 @@ class SpeciesService extends NameLookupService<Species, SpeciesBody>
         try
         {
             await this.insertAbilityRelations(connection, id, body);
+            await this.insertBaseStatRelations(connection, id, body);
 
             connection.commit();
             connection.release();
@@ -106,6 +110,7 @@ class SpeciesService extends NameLookupService<Species, SpeciesBody>
         try
         {
             await this.insertAbilityRelations(connection, id, body);
+            await this.insertBaseStatRelations(connection, id, body);
 
             connection.commit();
             connection.release();
@@ -120,7 +125,7 @@ class SpeciesService extends NameLookupService<Species, SpeciesBody>
         }
     }
 
-    private async insertAbilityRelations(connection: any, id: number, body: SpeciesBody)
+    private async insertAbilityRelations(connection: PoolConnection, id: number, body: SpeciesBody)
     {
         const values = [];
 
@@ -147,6 +152,29 @@ class SpeciesService extends NameLookupService<Species, SpeciesBody>
         if (values.length > 0)
         {
             await connection.query("INSERT INTO species_abilities VALUES ?", [values]);
+        }
+    }
+
+    private async insertBaseStatRelations(connection: PoolConnection, id: number, body: SpeciesBody)
+    {
+        const statCount = await statService.count();
+
+        if (body.baseStats)
+        {
+            if (body.baseStats.length != statCount)
+            {
+                throw new Error(`Base stat count must be exactly ${statCount}.`);
+            }
+
+            const values: number[][] = [];
+
+            body.baseStats.forEach((stat, index) =>
+            {
+                values.push([id, index + 1, stat]);
+            })
+
+            await connection.query("DELETE FROM species_base_stats WHERE species_id = ?", [id]);
+            await connection.query("INSERT INTO species_base_stats VALUES ?", [values]);
         }
     }
 }

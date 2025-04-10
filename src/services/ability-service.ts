@@ -32,7 +32,7 @@ export class AbilityService extends NameLookupService<Ability, AbilityBody>
         return null;
     }
 
-    async getReferencesFromSpeciesId(id: number)
+    async getReferencesBySpeciesId(id: number)
     {
         try
         {

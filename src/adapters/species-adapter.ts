@@ -20,6 +20,7 @@ export class SpeciesAdapter extends Adapter<Species, SpeciesBody>
             height: Number(row.height),
             weight: Number(row.weight),
             abilities: row.abilities,
+            baseStats: row.base_stats,
             generation: row.generation,
         });
     }

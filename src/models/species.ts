@@ -2,6 +2,7 @@
 import { TypeReference } from "./type";
 import { Request } from "express";
 import { SpeciesAbilityReference } from "./ability";
+import { StatReference } from "./stat";
 
 export class Species
 {
@@ -12,6 +13,7 @@ export class Species
     height: number;
     weight: number;
     abilities: SpeciesAbilityReference[];
+    baseStats: StatReference[];
     generation: string;
 
     constructor(data: {
@@ -22,6 +24,7 @@ export class Species
         height: number;
         weight: number;
         abilities: SpeciesAbilityReference[];
+        baseStats: StatReference[];
         generation: string;
     })
     {
@@ -32,6 +35,7 @@ export class Species
         this.height = data.height;
         this.weight = data.weight;
         this.abilities = data.abilities;
+        this.baseStats = data.baseStats;
         this.generation = data.generation;
     }
 }
@@ -60,6 +64,7 @@ export class SpeciesBody
     type2Id?: number;
     abilities?: string[];
     hiddenAbility?: string;
+    baseStats?: number[];
     generationId?: number;
 
     constructor(requestBody: Request["body"])
@@ -72,6 +77,7 @@ export class SpeciesBody
         this.weight = requestBody.weight;
         this.abilities = requestBody.abilities;
         this.hiddenAbility = requestBody.hiddenAbility;
+        this.baseStats = requestBody.baseStats;
         this.generationId = requestBody.generationId;
     }
 }

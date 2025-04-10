@@ -76,6 +76,20 @@ export abstract class ReadOnlyService<Model>
             throw this.handleError(error, id);
         }
     }
+
+    async count(): Promise<number>
+    {
+        try
+        {
+            const query = `SELECT COUNT(${this.tableAlias}.${this.idField}) AS count FROM ${this.tableName} ${this.tableAlias}`;
+            const row = await db.queryOne<RowDataPacket>(query, []);
+            return row ? row.count : 0;
+        }
+        catch (error)
+        {
+            throw this.handleError(error);
+        }
+    }
 }
 
 export abstract class Service<Model, ModelBody>

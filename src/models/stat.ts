@@ -17,12 +17,21 @@ export class Stat
 
 export class StatReference
 {
-    name: string;
-    url?: string;
-
-    constructor(name: string, id: number)
+    stat:
     {
-        this.name = name;
-        this.url = `${config.baseUrl}/api/${config.statPath}/${id}`;
+        name: string;
+        url?: string;
+    }
+
+    value: number;
+
+    constructor(name: string, id: number, value: number)
+    {
+        this.stat =
+        {
+            name: name,
+            url: `${config.baseUrl}/api${config.statPath}/${id}`,
+        }
+        this.value = value;
     }
 }
