@@ -1,5 +1,49 @@
-﻿import { NameLookupService, Service } from "../services/service";
+﻿import { NameLookupService, ReadOnlyService, Service } from "../services/service";
 import { Request, Response } from "express";
+
+export class ReadOnlyController<TModel>
+{
+    protected readonly service: ReadOnlyService<TModel>;
+
+    constructor(service: ReadOnlyService<TModel>)
+    {
+        this.service = service;
+    }
+
+    index = async (_req: Request, res: Response): Promise<void> =>
+    {
+        try
+        {
+            const data = await this.service.find();
+            res.json(data);
+        }
+        catch (error)
+        {
+            this.handleError(res, error);
+        }
+    };
+
+    show = async (req: Request, res: Response): Promise<void> =>
+    {
+        try
+        {
+            const id = parseInt(req.params.id);
+            const data = await this.service.getById(id);
+
+            if (!data) res.status(404).json({ error: "Not found." });
+            else res.json(data);
+        }
+        catch (error)
+        {
+            this.handleError(res, error);
+        }
+    };
+
+    protected handleError = (res: Response, error: unknown): void =>
+    {
+        res.status(500).json({ error: `${(error as Error).message}` });
+    };
+}
 
 export class Controller<TModel, TBody>
 {

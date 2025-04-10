@@ -15,6 +15,7 @@ interface Config
     abilityPath: string;
     pokemonPath: string;
     speciesPath: string;
+    statPath: string;
     teamPath: string;
     trainerPath: string;
     typePath: string;
@@ -33,6 +34,7 @@ const config: Config =
     abilityPath: "/abilities",
     pokemonPath: "/pokemon",
     speciesPath: "/species",
+    statPath: "/stats",
     teamPath: "/teams",
     trainerPath: "/trainers",
     typePath: "/types",

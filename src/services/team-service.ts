@@ -12,7 +12,7 @@ class TeamService extends Service<Team, TeamBody>
     protected tableName = "teams";
     protected tableAlias = "tm";
     protected idField = "team_id";
-    protected searchField = "t.name";
+    protected searchField = "name";
 
     protected baseSelectQuery = `
         SELECT

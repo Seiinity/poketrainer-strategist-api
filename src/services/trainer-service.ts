@@ -11,8 +11,8 @@ class TrainerService extends NameLookupService<Trainer, TrainerBody>
     protected tableAlias = "tr";
     protected idField = "trainer_id";
     protected searchField = "name";
-    protected baseSelectQuery = "SELECT * FROM trainers tr";
     protected nameField = "name";
+    protected baseSelectQuery = "SELECT * FROM trainers tr";
 
     protected async adaptToModel(row: RowDataPacket): Promise<Trainer>
     {

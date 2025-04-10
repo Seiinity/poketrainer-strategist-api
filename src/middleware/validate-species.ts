@@ -12,12 +12,12 @@ const validationSchema = z.object
         .min(1, "Species name is required.")
         .max(12, "Species name must be shorter than 12 characters."),
 
-    typeNames: z.array(
-        z.string({ invalid_type_error: "Type name must be a string." })
+    types: z.array(
+        z.string({ invalid_type_error: "Type must be a string." })
             .trim()
-            .min(1, "Type name is required.")
-            .max(12, "Each type name must be shorter than 12 characters."),
-        { required_error: "Field 'typeNames' is required.", invalid_type_error: "Type names must be an array of strings." }
+            .min(1, "Type is required.")
+            .max(12, "Each type must be shorter than 12 characters."),
+        { required_error: "Field 'types' is required.", invalid_type_error: "Types must be an array of strings." }
     )
         .max(2, "Species can have a maximum of two types.")
         .nonempty("Species must have at least one type."),
@@ -36,20 +36,20 @@ const validationSchema = z.object
         .max(999.9, "Weight must be between 0.1 and 999.9 kg.")
         .refine(n => Number(n.toFixed(1)) === n, "Weight must have at most one decimal place."),
 
-    abilityNames: z.array(
-        z.string({ invalid_type_error: "Ability name must be a string." })
+    abilities: z.array(
+        z.string({ invalid_type_error: "Ability must be a string." })
             .trim()
-            .min(1, "Ability name is required.")
-            .max(32, "Each type name must be shorter than 32 characters."),
-        { required_error: "Field 'abilityNames' is required.", invalid_type_error: "Type names must be an array of strings." }
+            .min(1, "Ability is required.")
+            .max(32, "Each type must be shorter than 32 characters."),
+        { required_error: "Field 'abilities' is required.", invalid_type_error: "Abilities must be an array of strings." }
     )
         .max(2, "Species can have a maximum of two abilities.")
         .nonempty("Species must have at least one ability."),
 
-    hiddenAbilityName: z.string({ required_error: "Field 'hiddenAbilityName' is required.", invalid_type_error: "Hidden Ability name must be a string." })
+    hiddenAbility: z.string({ required_error: "Field 'hiddenAbility' is required.", invalid_type_error: "Hidden Ability must be a string." })
         .trim()
-        .min(1, "Hidden Ability name is required.")
-        .max(32, "Hidden Ability name must be shorter than 32 characters."),
+        .min(1, "Hidden Ability is required.")
+        .max(32, "Hidden Ability must be shorter than 32 characters."),
 
     generationId: z.number
     ({
@@ -68,7 +68,7 @@ function validateSpeciesBody(req: Request, res: Response, next: NextFunction, sc
         const result = schema.parse(req.body);
 
         req.body.name = result.name;
-        req.body.typeNames = result.typeNames;
+        req.body.types = result.types;
 
         next();
     }

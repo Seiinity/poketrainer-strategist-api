@@ -1,13 +1,82 @@
 ﻿import db from "../db/mysql";
 import pluralize from "pluralize";
 import capitalize from "lodash.capitalize";
-import { Adapter } from "../adapters/adapter";
+import { Adapter, ReadOnlyAdapter } from "../adapters/adapter";
 import { ResultSetHeader, RowDataPacket } from "mysql2";
 import { MySQLCompatibleValue, MySQLData } from "../types/mysql-types";
-import { createInsertQuery, createUpdateQuery } from "../utils/mysql-generation";
-import { isErrorCode } from "../utils/error-handling";
 import { MySQLOperation } from "../types/enums";
 import { Connection } from "mysql2/promise";
+import { createInsertQuery, createUpdateQuery } from "../utils/mysql-generation";
+import { isErrorCode } from "../utils/error-handling";
+
+export abstract class ReadOnlyService<Model>
+{
+    protected abstract adapter: ReadOnlyAdapter<Model>;
+    protected abstract tableName: string;
+    protected abstract tableAlias: string;
+    protected abstract idField: string;
+    protected abstract baseSelectQuery: string;
+
+    protected searchField = "name";
+
+    protected async adaptToModel(row: RowDataPacket): Promise<Model>
+    {
+        return this.adapter.fromMySQL(row);
+    }
+
+    protected getSpecificErrorMessage(_error: unknown): string | null
+    {
+        // Intentionally empty, inherited classes can provide custom error handling.
+        return null;
+    }
+
+    protected handleError(error: unknown, id?: number): never
+    {
+        const singularName = pluralize.singular(this.tableName);
+        const prefix = `Error fetching ${singularName}${id ? ` with ID ${id}` : ""}: `;
+
+        const specificErrorMessage = this.getSpecificErrorMessage(error);
+        if (specificErrorMessage) throw new Error(`${prefix}${specificErrorMessage}`);
+
+        throw new Error(`${prefix}${(error as Error).message}`);
+    }
+
+    async find(search?: string): Promise<Model[]>
+    {
+        try
+        {
+            let query = this.baseSelectQuery;
+            const params: MySQLCompatibleValue[] = [];
+
+            if (search)
+            {
+                query += ` WHERE ${this.tableAlias}.${this.searchField} LIKE ?`;
+                params.push(`%${search}%`);
+            }
+
+            const rows = await db.queryTyped<RowDataPacket>(query + ` ORDER BY ${this.tableAlias}.${this.idField}`, params);
+            return Promise.all(rows.map(async row => await this.adaptToModel(row)));
+        }
+        catch (error)
+        {
+            throw this.handleError(error);
+        }
+    }
+
+    async getById(id: number): Promise<Model | null>
+    {
+        try
+        {
+            const query = `${this.baseSelectQuery} WHERE ${this.tableAlias}.${this.idField} = ?`;
+            const row = await db.queryOne<RowDataPacket>(query, [id]);
+            return row ? await this.adaptToModel(row) : null;
+        }
+        catch (error)
+        {
+            throw this.handleError(error, id);
+        }
+    }
+}
 
 export abstract class Service<Model, ModelBody>
 {

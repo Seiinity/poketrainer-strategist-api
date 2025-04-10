@@ -52,26 +52,26 @@ export class SpeciesBody
 {
     id?: number;
     name?: string;
-    typeNames?: string[];
+    types?: string[];
     genderRatioId?: number;
     height?: number;
     weight?: number;
     type1Id?: number;
     type2Id?: number;
-    abilityNames?: string[];
-    hiddenAbilityName?: string;
+    abilities?: string[];
+    hiddenAbility?: string;
     generationId?: number;
 
     constructor(requestBody: Request["body"])
     {
-        if (requestBody.id) this.id = requestBody.id;
-        if (requestBody.name) this.name = requestBody.name;
-        if (requestBody.typeNames) this.typeNames = requestBody.typeNames;
-        if (requestBody.genderRatioId) this.genderRatioId = requestBody.genderRatioId;
-        if (requestBody.height) this.height = requestBody.height;
-        if (requestBody.weight) this.weight = requestBody.weight;
-        if (requestBody.abilityNames) this.abilityNames = requestBody.abilityNames;
-        if (requestBody.hiddenAbilityName) this.hiddenAbilityName = requestBody.hiddenAbilityName;
-        if (requestBody.generationId) this.generationId = requestBody.generationId;
+        this.id = requestBody.id;
+        this.name = requestBody.name;
+        this.types = requestBody.types;
+        this.genderRatioId = requestBody.genderRatioId;
+        this.height = requestBody.height;
+        this.weight = requestBody.weight;
+        this.abilities = requestBody.abilities;
+        this.hiddenAbility = requestBody.hiddenAbility;
+        this.generationId = requestBody.generationId;
     }
 }
