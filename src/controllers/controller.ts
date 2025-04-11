@@ -45,45 +45,16 @@ export class ReadOnlyController<TModel>
     };
 }
 
-export class Controller<TModel, TBody>
+export class Controller<TModel, TBody> extends ReadOnlyController<TModel>
 {
-    protected readonly service: Service<TModel, TBody>;
+    protected declare readonly service: Service<TModel, TBody>;
     private readonly bodyClass: { new(requestBody: Request["body"]): TBody };
 
     constructor(service: Service<TModel, TBody>, bodyClass: { new(requestBody: Request["body"]): TBody })
     {
-        this.service = service;
+        super(service);
         this.bodyClass = bodyClass;
     }
-
-    index = async (_req: Request, res: Response): Promise<void> =>
-    {
-        try
-        {
-            const data = await this.service.find();
-            res.json(data);
-        }
-        catch (error)
-        {
-            this.handleError(res, error);
-        }
-    };
-
-    show = async (req: Request, res: Response): Promise<void> =>
-    {
-        try
-        {
-            const id = parseInt(req.params.id);
-            const data = await this.service.getById(id);
-
-            if (!data) res.status(404).json({ error: "Not found." });
-            else res.json(data);
-        }
-        catch (error)
-        {
-            this.handleError(res, error);
-        }
-    };
 
     store = async (req: Request, res: Response): Promise<void> =>
     {
@@ -131,21 +102,15 @@ export class Controller<TModel, TBody>
             this.handleError(res, error);
         }
     };
-
-    protected handleError = (res: Response, error: unknown): void =>
-    {
-        res.status(500).json({ error: `${(error as Error).message}` });
-    };
 }
 
 export class NameLookupController<TModel, TBody> extends Controller<TModel, TBody>
 {
-    protected service: NameLookupService<TModel, TBody>;
+    protected declare service: NameLookupService<TModel, TBody>;
 
     constructor(service: NameLookupService<TModel, TBody>, bodyClass: { new(requestBody: Request["body"]): TBody })
     {
         super(service, bodyClass);
-        this.service = service;
     }
 
     show = async (req: Request, res: Response): Promise<void> =>
