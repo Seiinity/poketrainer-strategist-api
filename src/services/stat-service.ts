@@ -41,8 +41,9 @@ class StatService extends ReadOnlyService<Stat>
         {
             const query = `
                 SELECT 
-                    pe.evs, pk.level, st.stat_id, st.name, ss.value as base_value
+                    pe.evs, pi.ivs, pk.level, st.stat_id, st.name, ss.value as base_value
                 FROM pokemon_evs pe
+                JOIN pokemon_ivs pi ON pe.stat_id = pi.stat_id AND pe.pokemon_id = pi.pokemon_id
                 JOIN pokemon pk ON pe.pokemon_id = pk.pokemon_id
                 JOIN stats st ON pe.stat_id = st.stat_id
                 JOIN species sp ON pk.species_id = sp.species_id

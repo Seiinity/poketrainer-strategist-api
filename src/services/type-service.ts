@@ -15,10 +15,15 @@ class TypeService extends NameLookupService<Type, TypeBody>
     protected nameField = "name";
     protected baseSelectQuery = "SELECT * FROM types tp";
 
-    protected async adaptToModel(row: RowDataPacket): Promise<Type>
+    protected override async adaptToModel(row: RowDataPacket): Promise<Type>
     {
         row.effectiveness = await this.getTypeEffectivenessById(row.type_id);
         return super.adaptToModel(row);
+    }
+
+    protected override async insertRelations(connection: PoolConnection, id: number, body: TypeBody): Promise<void>
+    {
+        await this.insertEffectivenessRelations(connection, id, body);
     }
 
     async getTypeEffectivenessById(id: number): Promise<TypeEffectiveness>
@@ -45,11 +50,6 @@ class TypeService extends NameLookupService<Type, TypeBody>
         {
             this.handleReadError(error, id);
         }
-    }
-
-    protected async insertRelations(connection: PoolConnection, id: number, body: TypeBody): Promise<void>
-    {
-        await this.insertEffectivenessRelations(connection, id, body);
     }
 
     private async insertEffectivenessRelations(connection: PoolConnection, id: number, body: TypeBody): Promise<void>

@@ -22,7 +22,7 @@ class TeamService extends Service<Team, TeamBody>
             LEFT JOIN trainers tr ON tm.trainer_id = tr.trainer_id
     `;
 
-    protected async processRequestBody(body: TeamBody): Promise<TeamBody>
+    protected override async processRequestBody(body: TeamBody): Promise<TeamBody>
     {
         const processed = { ...body };
         if (body.trainerName)
@@ -32,7 +32,7 @@ class TeamService extends Service<Team, TeamBody>
         return processed;
     }
 
-    protected async adaptToModel(row: RowDataPacket): Promise<Team>
+    protected override async adaptToModel(row: RowDataPacket): Promise<Team>
     {
         row.pokemon = await pokemonService.getReferencesByTeamId(row.team_id);
         return super.adaptToModel(row);

@@ -46,8 +46,9 @@ export class StatReference
 
     value: number;
     evs: number;
+    ivs: number;
 
-    constructor(name: string, id: number, baseValue: number, evs: number, level: number)
+    constructor(name: string, id: number, baseValue: number, evs: number, ivs: number, level: number)
     {
         this.stat =
         {
@@ -55,13 +56,14 @@ export class StatReference
             url: `${config.baseUrl}/api${config.statPath}/${id}`,
         };
         this.evs = evs;
+        this.ivs = ivs;
         this.value = this.calculateStat(baseValue, level);
     }
 
     private calculateStat(baseValue: number, level: number): number
     {
         return this.stat.name == "HP"
-            ? Math.floor(0.01 * (2 * baseValue + Math.floor(0.25 * this.evs)) * level) + level + 10
-            : Math.floor(0.01 * (2 * baseValue + Math.floor(0.25 * this.evs)) * level) + 5;
+            ? Math.floor((((this.ivs + (2 * baseValue) + (this.evs / 4) + 100) * level) / 100) + 10)
+            : Math.floor((((this.ivs + (2 * baseValue) + (this.evs / 4)) * level) / 100) + 5);
     }
 }

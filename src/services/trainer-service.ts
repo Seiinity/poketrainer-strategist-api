@@ -14,7 +14,7 @@ class TrainerService extends NameLookupService<Trainer, TrainerBody>
     protected nameField = "name";
     protected baseSelectQuery = "SELECT * FROM trainers tr";
 
-    protected async adaptToModel(row: RowDataPacket): Promise<Trainer>
+    protected override async adaptToModel(row: RowDataPacket): Promise<Trainer>
     {
         row.teams = await teamService.getReferencesByTrainerId(row.trainer_id);
         return super.adaptToModel(row);

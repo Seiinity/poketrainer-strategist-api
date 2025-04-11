@@ -20,6 +20,6 @@ export class StatAdapter extends ReadOnlyAdapter<Stat>
 
     referenceFromMySQL(row: RowDataPacket): StatReference
     {
-        return new StatReference(row.name, row.stat_id, row.base_value, row.evs, row.level);
+        return new StatReference(row.name, row.stat_id, row.base_value, row.evs, row.ivs, row.level);
     }
 }

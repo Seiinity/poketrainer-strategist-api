@@ -26,7 +26,7 @@ export class PokemonService extends Service<Pokemon, PokemonBody>
             LEFT JOIN teams tm ON pk.team_id = tm.team_id
     `;
 
-    protected async processRequestBody(body: PokemonBody): Promise<PokemonBody>
+    protected override async processRequestBody(body: PokemonBody): Promise<PokemonBody>
     {
         const processed = { ...body };
 
@@ -44,10 +44,16 @@ export class PokemonService extends Service<Pokemon, PokemonBody>
         return processed;
     }
 
-    protected async adaptToModel(row: RowDataPacket): Promise<Pokemon>
+    protected override async adaptToModel(row: RowDataPacket): Promise<Pokemon>
     {
         row.stats = await statService.getReferencesByPokemonId(row.pokemon_id);
         return super.adaptToModel(row);
+    }
+
+    protected override async insertRelations(connection: PoolConnection, id: number, body: PokemonBody): Promise<void>
+    {
+        await this.insertEVRelations(connection, id, body);
+        await this.insertIVRelations(connection, id, body);
     }
 
     async getReferencesByTeamId(teamId: number): Promise<PokemonReference[]>
@@ -73,11 +79,6 @@ export class PokemonService extends Service<Pokemon, PokemonBody>
         }
     }
 
-    protected async insertRelations(connection: PoolConnection, id: number, body: PokemonBody): Promise<void>
-    {
-        await this.insertEVRelations(connection, id, body);
-    }
-
     private async insertEVRelations(connection: PoolConnection, id: number, body: PokemonBody)
     {
         const evCount = await statService.count();
@@ -98,6 +99,29 @@ export class PokemonService extends Service<Pokemon, PokemonBody>
 
             await connection.query("DELETE FROM pokemon_evs WHERE pokemon_id = ?", [id]);
             await connection.query("INSERT INTO pokemon_evs VALUES ?", [values]);
+        }
+    }
+
+    private async insertIVRelations(connection: PoolConnection, id: number, body: PokemonBody)
+    {
+        const ivCount = await statService.count();
+
+        if (body.ivs)
+        {
+            if (body.ivs.length != ivCount)
+            {
+                throw new Error(`IV count must be exactly ${ivCount}.`);
+            }
+
+            const values: number[][] = [];
+
+            body.ivs.forEach((iv, index) =>
+            {
+                values.push([id, index + 1, iv]);
+            });
+
+            await connection.query("DELETE FROM pokemon_ivs WHERE pokemon_id = ?", [id]);
+            await connection.query("INSERT INTO pokemon_ivs VALUES ?", [values]);
         }
     }
 }

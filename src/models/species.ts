@@ -48,7 +48,7 @@ export class SpeciesReference
     constructor(name: string, id: number)
     {
         this.name = name;
-        this.url = `${config.baseUrl}/api/${config.speciesPath}/${id}`;
+        this.url = `${config.baseUrl}/api${config.speciesPath}/${id}`;
     }
 }
 

@@ -47,6 +47,7 @@ export class PokemonBody
     speciesId?: number;
     teamId?: number;
     evs?: number[];
+    ivs?: number[];
 
     constructor(requestBody: Request["body"])
     {
@@ -54,5 +55,6 @@ export class PokemonBody
         this.speciesName = requestBody.speciesName;
         this.teamId = requestBody.teamId;
         this.evs = requestBody.evs;
+        this.ivs = requestBody.ivs;
     }
 }

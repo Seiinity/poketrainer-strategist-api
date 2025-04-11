@@ -36,6 +36,13 @@ const validationSchema = z.object
             .min(0, "EV value must be at least 0."),
         { required_error: "Field 'evs' is required.", invalid_type_error: "EVs must be an array of numbers." }
     ),
+
+    ivs: z.array(
+        z.number({ invalid_type_error: "IV value must be a number." })
+            .int("IV value must be a positive integer.")
+            .min(0, "IV value must be at least 0."),
+        { required_error: "Field 'ivs' is required.", invalid_type_error: "IVs must be an array of numbers." }
+    ),
 });
 
 function validatePokemonBody(req: Request, res: Response, next: NextFunction, schema: z.Schema)

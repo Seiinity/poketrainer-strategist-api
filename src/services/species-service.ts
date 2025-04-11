@@ -30,7 +30,7 @@ class SpeciesService extends NameLookupService<Species, SpeciesBody>
             LEFT JOIN generations gn ON sp.generation_id = gn.generation_id
     `;
 
-    protected async processRequestBody(body: SpeciesBody): Promise<SpeciesBody>
+    protected override async processRequestBody(body: SpeciesBody): Promise<SpeciesBody>
     {
         const processed = { ...body };
 
@@ -43,14 +43,14 @@ class SpeciesService extends NameLookupService<Species, SpeciesBody>
         return processed;
     }
 
-    protected async adaptToModel(row: RowDataPacket): Promise<Species>
+    protected override async adaptToModel(row: RowDataPacket): Promise<Species>
     {
         row.abilities = await abilityService.getReferencesBySpeciesId(row.species_id);
         row.base_stats = await statService.getReferencesBySpeciesId(row.species_id);
         return super.adaptToModel(row);
     }
 
-    protected async insertRelations(connection: PoolConnection, id: number, body: SpeciesBody): Promise<void>
+    protected override async insertRelations(connection: PoolConnection, id: number, body: SpeciesBody): Promise<void>
     {
         await this.insertAbilityRelations(connection, id, body);
         await this.insertBaseStatRelations(connection, id, body);

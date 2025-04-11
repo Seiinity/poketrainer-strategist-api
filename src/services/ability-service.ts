@@ -22,7 +22,7 @@ export class AbilityService extends NameLookupService<Ability, AbilityBody>
             LEFT JOIN generations gn ON ab.generation_id = gn.generation_id
     `;
 
-    protected getSpecificWriteErrorMessage(error: unknown, body: AbilityBody): string | null
+    protected override getSpecificWriteErrorMessage(error: unknown, body: AbilityBody): string | null
     {
         if (getMySQLForeignKeyErrorConstraint(error) == "abilities_generations_generation_id_fk")
         {
