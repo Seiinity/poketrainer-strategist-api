@@ -5,43 +5,42 @@ import { Adapter, ReadOnlyAdapter } from "../adapters/adapter";
 import { ResultSetHeader, RowDataPacket } from "mysql2";
 import { MySQLCompatibleValue, MySQLData } from "../types/mysql-types";
 import { MySQLOperation } from "../types/enums";
-import { Connection, PoolConnection } from "mysql2/promise";
+import { PoolConnection } from "mysql2/promise";
 import { createInsertQuery, createUpdateQuery } from "../utils/mysql-generation";
 import { isErrorCode } from "../utils/error-handling";
 
-export abstract class ReadOnlyService<Model>
+export abstract class ReadOnlyService<TModel>
 {
-    protected abstract adapter: ReadOnlyAdapter<Model>;
+    protected abstract adapter: ReadOnlyAdapter<TModel>;
     protected abstract tableName: string;
     protected abstract tableAlias: string;
     protected abstract idField: string;
+    protected abstract searchField: string;
     protected abstract baseSelectQuery: string;
 
-    protected searchField = "name";
-
-    protected async adaptToModel(row: RowDataPacket): Promise<Model>
-    {
-        return this.adapter.fromMySQL(row);
-    }
-
-    protected getSpecificErrorMessage(_error: unknown): string | null
-    {
-        // Intentionally empty, inherited classes can provide custom error handling.
-        return null;
-    }
-
-    protected handleError(error: unknown, id?: number): never
+    protected handleReadError(error: unknown, id?: number): never
     {
         const singularName = pluralize.singular(this.tableName);
         const prefix = `Error fetching ${singularName}${id ? ` with ID ${id}` : ""}: `;
 
-        const specificErrorMessage = this.getSpecificErrorMessage(error);
+        const specificErrorMessage = this.getSpecificReadErrorMessage(error);
         if (specificErrorMessage) throw new Error(`${prefix}${specificErrorMessage}`);
 
         throw new Error(`${prefix}${(error as Error).message}`);
     }
 
-    async find(search?: string): Promise<Model[]>
+    protected getSpecificReadErrorMessage(_error: unknown): string | null
+    {
+        // Intentionally empty, inherited classes can provide custom error handling.
+        return null;
+    }
+
+    protected async adaptToModel(row: RowDataPacket): Promise<TModel>
+    {
+        return this.adapter.fromMySQL(row);
+    }
+
+    async find(search?: string): Promise<TModel[]>
     {
         try
         {
@@ -59,11 +58,11 @@ export abstract class ReadOnlyService<Model>
         }
         catch (error)
         {
-            throw this.handleError(error);
+            throw this.handleReadError(error);
         }
     }
 
-    async getById(id: number): Promise<Model | null>
+    async getById(id: number): Promise<TModel | null>
     {
         try
         {
@@ -73,7 +72,7 @@ export abstract class ReadOnlyService<Model>
         }
         catch (error)
         {
-            throw this.handleError(error, id);
+            throw this.handleReadError(error, id);
         }
     }
 
@@ -87,42 +86,16 @@ export abstract class ReadOnlyService<Model>
         }
         catch (error)
         {
-            throw this.handleError(error);
+            throw this.handleReadError(error);
         }
     }
 }
 
-export abstract class Service<Model, ModelBody>
+export abstract class Service<TModel, TBody> extends ReadOnlyService<TModel>
 {
-    protected abstract adapter: Adapter<Model, ModelBody>;
-    protected abstract tableName: string;
-    protected abstract tableAlias: string;
-    protected abstract idField: string;
-    protected abstract searchField: string;
-    protected abstract baseSelectQuery: string;
+    protected abstract override adapter: Adapter<TModel, TBody>;
 
-    protected async processRequestBody(body: ModelBody): Promise<ModelBody>
-    {
-        return body;
-    }
-
-    protected async adaptToModel(row: RowDataPacket): Promise<Model>
-    {
-        return this.adapter.fromMySQL(row);
-    }
-
-    protected async adaptToDatabase(body: ModelBody): Promise<MySQLData>
-    {
-        return this.adapter.toMySQL(body);
-    }
-
-    protected getSpecificErrorMessage(_error: unknown, _body: ModelBody): string | null
-    {
-        // Intentionally empty, inherited classes can provide custom error handling.
-        return null;
-    }
-
-    protected handleError(error: unknown, body: ModelBody, operation: MySQLOperation, id?: number): never
+    protected handleWriteError(error: unknown, body: TBody, operation: MySQLOperation, id?: number): never
     {
         const singularName = pluralize.singular(this.tableName);
         let prefix = "";
@@ -138,12 +111,9 @@ export abstract class Service<Model, ModelBody>
             case MySQLOperation.Delete:
                 prefix = `Error deleting ${singularName} with ID ${id}: `;
                 break;
-            case MySQLOperation.Fetch:
-                prefix = `Error fetching ${singularName}${id ? ` with ID ${id}` : ""}: `;
-                break;
         }
 
-        const specificErrorMessage = this.getSpecificErrorMessage(error, body);
+        const specificErrorMessage = this.getSpecificWriteErrorMessage(error, body);
         if (specificErrorMessage) throw new Error(`${prefix}${specificErrorMessage}`);
 
         if (isErrorCode(error, "ER_DUP_ENTRY"))
@@ -159,48 +129,28 @@ export abstract class Service<Model, ModelBody>
         throw new Error(`${prefix}${(error as Error).message}`);
     }
 
-    async find(search?: string): Promise<Model[]>
+    protected getSpecificWriteErrorMessage(_error: unknown, _body: TBody): string | null
     {
-        try
-        {
-            let query = this.baseSelectQuery;
-            const params: MySQLCompatibleValue[] = [];
-
-            if (search)
-            {
-                query += ` WHERE ${this.tableAlias}.${this.searchField} LIKE ?`;
-                params.push(`%${search}%`);
-            }
-
-            const rows = await db.queryTyped<RowDataPacket>(query + ` ORDER BY ${this.tableAlias}.${this.idField}`, params);
-            return Promise.all(rows.map(async row => await this.adaptToModel(row)));
-        }
-        catch (error)
-        {
-            throw this.handleError(error, {} as ModelBody, MySQLOperation.Fetch);
-        }
+        // Intentionally empty, inherited classes can provide custom error handling.
+        return null;
     }
 
-    async getById(id: number): Promise<Model | null>
+    protected async processRequestBody(body: TBody): Promise<TBody>
     {
-        try
-        {
-            const query = `${this.baseSelectQuery} WHERE ${this.tableAlias}.${this.idField} = ?`;
-            const row = await db.queryOne<RowDataPacket>(query, [id]);
-            return row ? await this.adaptToModel(row) : null;
-        }
-        catch (error)
-        {
-            throw this.handleError(error, {} as ModelBody, MySQLOperation.Fetch, id);
-        }
+        return body;
     }
 
-    protected async insertRelations(_connection: PoolConnection, _id: number, _body: ModelBody): Promise<void>
+    protected async adaptToDatabase(body: TBody): Promise<MySQLData>
+    {
+        return this.adapter.toMySQL(body);
+    }
+
+    protected async insertRelations(_connection: PoolConnection, _id: number, _body: TBody): Promise<void>
     {
         // Intentionally empty, inherited classes can provide additional relation inserts.
     }
 
-    async create(body: ModelBody): Promise<Model>
+    async create(body: TBody): Promise<TModel>
     {
         const connection = await db.getConnection();
 
@@ -219,18 +169,18 @@ export abstract class Service<Model, ModelBody>
             connection.commit();
             connection.release();
 
-            return await this.getById(result.insertId) as Model;
+            return await this.getById(result.insertId) as TModel;
         }
         catch (error)
         {
             await connection.rollback();
             connection.release();
 
-            throw this.handleError(error, body, MySQLOperation.Create);
+            throw this.handleWriteError(error, body, MySQLOperation.Create);
         }
     }
 
-    async update(id: number, body: ModelBody): Promise<Model | null>
+    async update(id: number, body: TBody): Promise<TModel | null>
     {
         const connection = await db.getConnection();
 
@@ -262,14 +212,14 @@ export abstract class Service<Model, ModelBody>
             connection.commit();
             connection.release();
 
-            return await this.getById(id) as Model;
+            return await this.getById(id) as TModel;
         }
         catch (error)
         {
             await connection.rollback();
             connection.release();
 
-            throw this.handleError(error, body, MySQLOperation.Update, id);
+            throw this.handleWriteError(error, body, MySQLOperation.Update, id);
         }
     }
 
@@ -282,16 +232,16 @@ export abstract class Service<Model, ModelBody>
         }
         catch (error)
         {
-            throw this.handleError(error, {} as ModelBody, MySQLOperation.Delete, id);
+            throw this.handleWriteError(error, {} as TBody, MySQLOperation.Delete, id);
         }
     }
 }
 
-export abstract class NameLookupService<Model, ModelBody> extends Service<Model, ModelBody>
+export abstract class NameLookupService<TModel, TBody> extends Service<TModel, TBody>
 {
     protected abstract nameField: string;
 
-    async getByName(name: string): Promise<Model | null>
+    async getByName(name: string): Promise<TModel | null>
     {
         try
         {

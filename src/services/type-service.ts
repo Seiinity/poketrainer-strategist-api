@@ -44,7 +44,7 @@ class TypeService extends NameLookupService<Type, TypeBody>
         }
         catch (error)
         {
-            this.handleError(error, {} as TypeBody, MySQLOperation.Fetch, id);
+            this.handleReadError(error, {} as TypeBody, MySQLOperation.Fetch, id);
         }
     }
 
