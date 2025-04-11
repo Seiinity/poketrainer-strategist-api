@@ -3,7 +3,6 @@ import { NameLookupService } from "./service";
 import { Type, TypeBody, TypeEffectiveness } from "../models/type";
 import { TypeAdapter } from "../adapters/type-adapter";
 import { RowDataPacket } from "mysql2";
-import { MySQLOperation } from "../types/enums";
 import { PoolConnection } from "mysql2/promise";
 
 class TypeService extends NameLookupService<Type, TypeBody>
@@ -44,7 +43,7 @@ class TypeService extends NameLookupService<Type, TypeBody>
         }
         catch (error)
         {
-            this.handleReadError(error, {} as TypeBody, MySQLOperation.Fetch, id);
+            this.handleReadError(error, id);
         }
     }
 

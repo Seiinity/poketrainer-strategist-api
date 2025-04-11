@@ -10,6 +10,7 @@ class StatService extends ReadOnlyService<Stat>
     protected tableName = "stats";
     protected tableAlias = "st";
     protected idField = "stat_id";
+    protected searchField = "name";
     protected baseSelectQuery = `SELECT * FROM ${this.tableName} ${this.tableAlias}`;
 
     async getReferencesBySpeciesId(speciesId: number): Promise<BaseStatReference[]>

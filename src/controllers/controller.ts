@@ -108,11 +108,6 @@ export class NameLookupController<TModel, TBody> extends Controller<TModel, TBod
 {
     protected declare service: NameLookupService<TModel, TBody>;
 
-    constructor(service: NameLookupService<TModel, TBody>, bodyClass: { new(requestBody: Request["body"]): TBody })
-    {
-        super(service, bodyClass);
-    }
-
     show = async (req: Request, res: Response): Promise<void> =>
     {
         try
