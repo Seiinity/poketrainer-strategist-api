@@ -2,7 +2,7 @@
 import { TypeReference } from "./type";
 import { Request } from "express";
 import { SpeciesAbilityReference } from "./ability";
-import { StatReference } from "./stat";
+import { BaseStatReference } from "./stat";
 
 export class Species
 {
@@ -13,7 +13,7 @@ export class Species
     height: number;
     weight: number;
     abilities: SpeciesAbilityReference[];
-    baseStats: StatReference[];
+    baseStats: BaseStatReference[];
     generation: string;
 
     constructor(data: {
@@ -24,7 +24,7 @@ export class Species
         height: number;
         weight: number;
         abilities: SpeciesAbilityReference[];
-        baseStats: StatReference[];
+        baseStats: BaseStatReference[];
         generation: string;
     })
     {

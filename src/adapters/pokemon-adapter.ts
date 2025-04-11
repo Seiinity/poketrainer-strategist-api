@@ -14,6 +14,7 @@ export class PokemonAdapter extends Adapter<Pokemon, PokemonBody>
             id: row.pokemon_id,
             ...row.nickname != null && { nickname: row.nickname },
             species: new SpeciesReference(row.species_name, row.species_id),
+            stats: row.stats,
             team: new TeamReference(row.team_name, row.team_id),
         });
     }

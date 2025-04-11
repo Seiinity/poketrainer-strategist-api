@@ -29,6 +29,13 @@ const validationSchema = z.object
         .min(1, "Nickname must be between 1 and 12 characters.")
         .max(12, "Nickname must be between 1 and 12 characters.")
         .optional(),
+
+    evs: z.array(
+        z.number({ invalid_type_error: "EV value must be a number." })
+            .int("EV value must be a positive integer.")
+            .min(0, "EV value must be at least 0."),
+        { required_error: "Field 'evs' is required.", invalid_type_error: "EVs must be an array of numbers." }
+    ),
 });
 
 function validatePokemonBody(req: Request, res: Response, next: NextFunction, schema: z.Schema)

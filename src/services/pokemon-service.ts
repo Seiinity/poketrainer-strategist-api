@@ -1,10 +1,14 @@
 ﻿import db from "../db/mysql";
 import speciesService from "./species-service";
 import teamService from "./team-service";
+import statService from "./stat-service";
 import { Service } from "./service";
 import { Pokemon, PokemonBody, PokemonReference } from "../models/pokemon";
 import { PokemonAdapter } from "../adapters/pokemon-adapter";
 import { RowDataPacket } from "mysql2";
+import { MySQLOperation } from "../types/enums";
+import { PoolConnection } from "mysql2/promise";
+import { getLastInsertId } from "../utils/mysql-generation";
 
 export class PokemonService extends Service<Pokemon, PokemonBody>
 {
@@ -42,6 +46,12 @@ export class PokemonService extends Service<Pokemon, PokemonBody>
         return processed;
     }
 
+    protected async adaptToModel(row: RowDataPacket): Promise<Pokemon>
+    {
+        row.stats = await statService.getReferencesByPokemonId(row.pokemon_id);
+        return super.adaptToModel(row);
+    }
+
     async getReferencesByTeamId(teamId: number): Promise<PokemonReference[]>
     {
         try
@@ -62,6 +72,97 @@ export class PokemonService extends Service<Pokemon, PokemonBody>
         catch (error)
         {
             throw new Error(`Error fetching Pokémon reference by team ID: ${(error as Error).message}`);
+        }
+    }
+
+    async create(body: PokemonBody): Promise<Pokemon>
+    {
+        const connection = await db.getConnection();
+        let id = 0;
+
+        try
+        {
+            await connection.beginTransaction();
+            await super.create(body, connection);
+            id = await getLastInsertId(connection);
+        }
+        catch (error)
+        {
+            await connection.rollback();
+            connection.release();
+            throw error;
+        }
+
+        try
+        {
+            await this.insertEVRelations(connection, id, body);
+
+            connection.commit();
+            connection.release();
+
+            return await this.getById(id) as Pokemon;
+        }
+        catch (error)
+        {
+            await connection.rollback();
+            connection.release();
+            throw this.handleError(error, body, MySQLOperation.Create);
+        }
+    }
+
+    async update(id: number, body: PokemonBody): Promise<Pokemon | null>
+    {
+        const connection = await db.getConnection();
+
+        try
+        {
+            await connection.beginTransaction();
+            await super.update(id, body, connection);
+        }
+        catch (error)
+        {
+            await connection.rollback();
+            connection.release();
+            throw error;
+        }
+
+        try
+        {
+            await this.insertEVRelations(connection, id, body);
+
+            connection.commit();
+            connection.release();
+
+            return await this.getById(id) as Pokemon;
+        }
+        catch (error)
+        {
+            await connection.rollback();
+            connection.release();
+            throw this.handleError(error, body, MySQLOperation.Update, id);
+        }
+    }
+
+    private async insertEVRelations(connection: PoolConnection, id: number, body: PokemonBody)
+    {
+        const evCount = await statService.count();
+
+        if (body.evs)
+        {
+            if (body.evs.length != evCount)
+            {
+                throw new Error(`EV count must be exactly ${evCount}.`);
+            }
+
+            const values: number[][] = [];
+
+            body.evs.forEach((ev, index) =>
+            {
+                values.push([id, index + 1, ev]);
+            });
+
+            await connection.query("DELETE FROM pokemon_evs WHERE pokemon_id = ?", [id]);
+            await connection.query("INSERT INTO pokemon_evs VALUES ?", [values]);
         }
     }
 }
