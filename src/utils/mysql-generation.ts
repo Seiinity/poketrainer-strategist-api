@@ -1,5 +1,4 @@
 ﻿import { MySQLData, MySQLQuery } from "../types/mysql-types";
-import { PoolConnection } from "mysql2/promise";
 
 export function createInsertQuery(tableName: string, data: MySQLData): MySQLQuery
 {

@@ -44,7 +44,6 @@ export default tseslint.config
             "@stylistic/no-extra-parens": ["error", "all", { ternaryOperandBinaryExpressions: false }],
             "@stylistic/no-extra-semi": ["error"],
             "@stylistic/no-floating-decimal": ["error"],
-            "@stylistic/no-mixed-operators": ["error"],
             "@stylistic/no-mixed-spaces-and-tabs": ["error"],
             "@stylistic/no-multi-spaces": ["error"],
             "@stylistic/no-multiple-empty-lines": ["error"],

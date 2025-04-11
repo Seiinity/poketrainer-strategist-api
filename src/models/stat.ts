@@ -60,8 +60,8 @@ export class StatReference
 
     private calculateStat(baseValue: number, level: number): number
     {
-        return this.stat.name == "HP" ?
-            Math.floor(0.01 * (2 * baseValue + Math.floor(0.25 * this.evs)) * level) + level + 10 :
-            Math.floor(0.01 * (2 * baseValue + Math.floor(0.25 * this.evs)) * level) + 5;
+        return this.stat.name == "HP"
+            ? Math.floor(0.01 * (2 * baseValue + Math.floor(0.25 * this.evs)) * level) + level + 10
+            : Math.floor(0.01 * (2 * baseValue + Math.floor(0.25 * this.evs)) * level) + 5;
     }
 }
