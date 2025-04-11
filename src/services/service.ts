@@ -5,7 +5,7 @@ import { Adapter, ReadOnlyAdapter } from "../adapters/adapter";
 import { ResultSetHeader, RowDataPacket } from "mysql2";
 import { MySQLCompatibleValue, MySQLData } from "../types/mysql-types";
 import { MySQLOperation } from "../types/enums";
-import { Connection } from "mysql2/promise";
+import { Connection, PoolConnection } from "mysql2/promise";
 import { createInsertQuery, createUpdateQuery } from "../utils/mysql-generation";
 import { isErrorCode } from "../utils/error-handling";
 
@@ -195,45 +195,80 @@ export abstract class Service<Model, ModelBody>
         }
     }
 
-    async create(body: ModelBody, connection?: Connection): Promise<Model>
+    protected async insertRelations(_connection: PoolConnection, _id: number, _body: ModelBody): Promise<void>
     {
+        // Intentionally empty, inherited classes can provide additional relation inserts.
+    }
+
+    async create(body: ModelBody): Promise<Model>
+    {
+        const connection = await db.getConnection();
+
         try
         {
+            await connection.beginTransaction();
+
             const processedBody = await this.processRequestBody(body);
             const data = await this.adaptToDatabase(processedBody);
 
             const query = createInsertQuery(this.tableName, data);
-            const toQuery = connection ? connection : db;
-            const [result] = await toQuery.query<ResultSetHeader>(query.sql, query.params);
+            const [result] = await connection.query<ResultSetHeader>(query.sql, query.params);
+
+            await this.insertRelations(connection, result.insertId, body);
+
+            connection.commit();
+            connection.release();
 
             return await this.getById(result.insertId) as Model;
         }
         catch (error)
         {
+            await connection.rollback();
+            connection.release();
+
             throw this.handleError(error, body, MySQLOperation.Create);
         }
     }
 
-    async update(id: number, body: ModelBody, connection?: Connection): Promise<Model | null>
+    async update(id: number, body: ModelBody): Promise<Model | null>
     {
+        const connection = await db.getConnection();
+
         try
         {
+            await connection.beginTransaction();
+
             const processedBody = await this.processRequestBody(body);
             const data = await this.adaptToDatabase(processedBody);
 
             const query = createUpdateQuery(this.tableName, this.idField, data);
-            if (!query) return await this.getById(id) as Model;
+            if (query)
+            {
+                query.params.push(id);
 
-            query.params.push(id);
+                const [result] = await connection.query<ResultSetHeader>(query.sql, query.params);
 
-            const toQuery = connection ? connection : db;
-            const [result] = await toQuery.query<ResultSetHeader>(query.sql, query.params);
+                if (result.affectedRows === 0)
+                {
+                    await connection.rollback();
+                    connection.release();
 
-            if (result.affectedRows === 0) return null;
+                    return null;
+                }
+            }
+
+            await this.insertRelations(connection, id, body);
+
+            connection.commit();
+            connection.release();
+
             return await this.getById(id) as Model;
         }
         catch (error)
         {
+            await connection.rollback();
+            connection.release();
+
             throw this.handleError(error, body, MySQLOperation.Update, id);
         }
     }

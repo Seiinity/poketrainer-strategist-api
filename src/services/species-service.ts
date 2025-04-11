@@ -52,77 +52,10 @@ class SpeciesService extends NameLookupService<Species, SpeciesBody>
         return super.adaptToModel(row);
     }
 
-    async create(body: SpeciesBody): Promise<Species>
+    protected async insertRelations(connection: PoolConnection, id: number, body: SpeciesBody): Promise<void>
     {
-        const connection = await db.getConnection();
-        const id = body.id as number;
-
-        try
-        {
-            await connection.beginTransaction();
-            await super.create(body, connection);
-        }
-        catch (error)
-        {
-            await connection.rollback();
-            connection.release();
-            throw error;
-        }
-
-        try
-        {
-            await this.insertAbilityRelations(connection, id, body);
-            await this.insertBaseStatRelations(connection, id, body);
-
-            connection.commit();
-            connection.release();
-
-            return await this.getById(id) as Species;
-        }
-        catch (error)
-        {
-            await connection.rollback();
-            connection.release();
-            throw this.handleError(error, body, MySQLOperation.Create);
-        }
-    }
-
-    async update(id: number, body: SpeciesBody): Promise<Species | null>
-    {
-        const connection = await db.getConnection();
-
-        // Prevent ID manipulation.
-        const { id: _, ...sanitisedBody } = body;
-        body = sanitisedBody;
-
-        try
-        {
-            await connection.beginTransaction();
-            await super.update(id, body, connection);
-        }
-        catch (error)
-        {
-            await connection.rollback();
-            connection.release();
-            throw error;
-        }
-
-        try
-        {
-            await this.insertAbilityRelations(connection, id, body);
-            await this.insertBaseStatRelations(connection, id, body);
-
-            connection.commit();
-            connection.release();
-
-            return await this.getById(id) as Species;
-        }
-        catch (error)
-        {
-            await connection.rollback();
-            connection.release();
-            throw this.handleError(error, body, MySQLOperation.Update, id);
-        }
+        await this.insertAbilityRelations(connection, id, body);
+        await this.insertBaseStatRelations(connection, id, body);
     }
 
     private async insertAbilityRelations(connection: PoolConnection, id: number, body: SpeciesBody)

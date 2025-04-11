@@ -4,7 +4,6 @@ import { Type, TypeBody, TypeEffectiveness } from "../models/type";
 import { TypeAdapter } from "../adapters/type-adapter";
 import { RowDataPacket } from "mysql2";
 import { MySQLOperation } from "../types/enums";
-import { getLastInsertId } from "../utils/mysql-generation";
 import { PoolConnection } from "mysql2/promise";
 
 class TypeService extends NameLookupService<Type, TypeBody>
@@ -49,72 +48,9 @@ class TypeService extends NameLookupService<Type, TypeBody>
         }
     }
 
-    async create(body: TypeBody): Promise<Type>
+    protected async insertRelations(connection: PoolConnection, id: number, body: TypeBody): Promise<void>
     {
-        const connection = await db.getConnection();
-        let id = 0;
-
-        try
-        {
-            await connection.beginTransaction();
-            await super.create(body, connection);
-            id = await getLastInsertId(connection);
-        }
-        catch (error)
-        {
-            await connection.rollback();
-            connection.release();
-            throw error;
-        }
-
-        try
-        {
-            await this.insertEffectivenessRelations(connection, id, body);
-
-            connection.commit();
-            connection.release();
-
-            return await this.getById(id) as Type;
-        }
-        catch (error)
-        {
-            await connection.rollback();
-            connection.release();
-            throw this.handleError(error, body, MySQLOperation.Create);
-        }
-    }
-
-    async update(id: number, body: TypeBody): Promise<Type | null>
-    {
-        const connection = await db.getConnection();
-
-        try
-        {
-            await connection.beginTransaction();
-            await super.update(id, body, connection);
-        }
-        catch (error)
-        {
-            await connection.rollback();
-            connection.release();
-            throw error;
-        }
-
-        try
-        {
-            await this.insertEffectivenessRelations(connection, id, body);
-
-            connection.commit();
-            connection.release();
-
-            return await this.getById(id) as Type;
-        }
-        catch (error)
-        {
-            await connection.rollback();
-            connection.release();
-            throw this.handleError(error, body, MySQLOperation.Update, id);
-        }
+        await this.insertEffectivenessRelations(connection, id, body);
     }
 
     private async insertEffectivenessRelations(connection: PoolConnection, id: number, body: TypeBody): Promise<void>

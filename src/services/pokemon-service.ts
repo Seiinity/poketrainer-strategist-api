@@ -6,9 +6,7 @@ import { Service } from "./service";
 import { Pokemon, PokemonBody, PokemonReference } from "../models/pokemon";
 import { PokemonAdapter } from "../adapters/pokemon-adapter";
 import { RowDataPacket } from "mysql2";
-import { MySQLOperation } from "../types/enums";
 import { PoolConnection } from "mysql2/promise";
-import { getLastInsertId } from "../utils/mysql-generation";
 
 export class PokemonService extends Service<Pokemon, PokemonBody>
 {
@@ -75,72 +73,9 @@ export class PokemonService extends Service<Pokemon, PokemonBody>
         }
     }
 
-    async create(body: PokemonBody): Promise<Pokemon>
+    protected async insertRelations(connection: PoolConnection, id: number, body: PokemonBody): Promise<void>
     {
-        const connection = await db.getConnection();
-        let id = 0;
-
-        try
-        {
-            await connection.beginTransaction();
-            await super.create(body, connection);
-            id = await getLastInsertId(connection);
-        }
-        catch (error)
-        {
-            await connection.rollback();
-            connection.release();
-            throw error;
-        }
-
-        try
-        {
-            await this.insertEVRelations(connection, id, body);
-
-            connection.commit();
-            connection.release();
-
-            return await this.getById(id) as Pokemon;
-        }
-        catch (error)
-        {
-            await connection.rollback();
-            connection.release();
-            throw this.handleError(error, body, MySQLOperation.Create);
-        }
-    }
-
-    async update(id: number, body: PokemonBody): Promise<Pokemon | null>
-    {
-        const connection = await db.getConnection();
-
-        try
-        {
-            await connection.beginTransaction();
-            await super.update(id, body, connection);
-        }
-        catch (error)
-        {
-            await connection.rollback();
-            connection.release();
-            throw error;
-        }
-
-        try
-        {
-            await this.insertEVRelations(connection, id, body);
-
-            connection.commit();
-            connection.release();
-
-            return await this.getById(id) as Pokemon;
-        }
-        catch (error)
-        {
-            await connection.rollback();
-            connection.release();
-            throw this.handleError(error, body, MySQLOperation.Update, id);
-        }
+        await this.insertEVRelations(connection, id, body);
     }
 
     private async insertEVRelations(connection: PoolConnection, id: number, body: PokemonBody)

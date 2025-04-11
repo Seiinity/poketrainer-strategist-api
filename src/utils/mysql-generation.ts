@@ -30,9 +30,3 @@ export function createUpdateQuery(tableName: string, filter: string, data: MySQL
         params,
     };
 }
-
-export async function getLastInsertId(connection: PoolConnection): Promise<number>
-{
-    const [rows] = await connection.query("SELECT LAST_INSERT_ID() AS insertId");
-    return (rows as { insertId: number }[])[0].insertId;
-}
