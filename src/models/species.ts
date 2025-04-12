@@ -1,8 +1,8 @@
 ﻿import config from "../config";
 import { TypeReference } from "./type";
 import { Request } from "express";
-import { SpeciesAbilityReference } from "./ability";
-import { BaseStatReference } from "./stat";
+import { AbilityReferenceForSpecies } from "./ability";
+import { StatReferenceForSpecies } from "./stat";
 
 export class Species
 {
@@ -12,8 +12,8 @@ export class Species
     genderRatio: string;
     height: number;
     weight: number;
-    abilities: SpeciesAbilityReference[];
-    baseStats: BaseStatReference[];
+    abilities: AbilityReferenceForSpecies[];
+    baseStats: StatReferenceForSpecies[];
     generation: string;
 
     constructor(data: {
@@ -23,8 +23,8 @@ export class Species
         genderRatio: string;
         height: number;
         weight: number;
-        abilities: SpeciesAbilityReference[];
-        baseStats: BaseStatReference[];
+        abilities: AbilityReferenceForSpecies[];
+        baseStats: StatReferenceForSpecies[];
         generation: string;
     })
     {
@@ -37,18 +37,6 @@ export class Species
         this.abilities = data.abilities;
         this.baseStats = data.baseStats;
         this.generation = data.generation;
-    }
-}
-
-export class SpeciesReference
-{
-    name: string;
-    url?: string;
-
-    constructor(name: string, id: number)
-    {
-        this.name = name;
-        this.url = `${config.baseUrl}/api${config.speciesPath}/${id}`;
     }
 }
 
@@ -79,5 +67,29 @@ export class SpeciesBody
         this.hiddenAbility = requestBody.hiddenAbility;
         this.baseStats = requestBody.baseStats;
         this.generationId = requestBody.generationId;
+    }
+}
+
+export class SpeciesReference
+{
+    name: string;
+    url?: string;
+
+    constructor(name: string, id: number)
+    {
+        this.name = name;
+        this.url = `${config.baseUrl}/api${config.speciesPath}/${id}`;
+    }
+}
+
+export class SpeciesReferenceForAbility
+{
+    species: SpeciesReference;
+    isHidden: boolean;
+
+    constructor(name: string, id: number, isHidden: Buffer)
+    {
+        this.species = new SpeciesReference(name, id);
+        this.isHidden = Boolean(isHidden.readUInt8());
     }
 }

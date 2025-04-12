@@ -27,46 +27,28 @@ export class StatReference
     }
 }
 
-export class BaseStatReference
+export class StatReferenceForSpecies
 {
-    stat:
-    {
-        name: string;
-        url?: string;
-    };
-
+    stat: StatReference;
     value: number;
 
     constructor(name: string, id: number, value: number)
     {
-        this.stat =
-        {
-            name: name,
-            url: `${config.baseUrl}/api${config.statPath}/${id}`,
-        };
+        this.stat = new StatReference(name, id);
         this.value = value;
     }
 }
 
-export class PokemonStatReference
+export class StatReferenceForPokemon
 {
-    stat:
-    {
-        name: string;
-        url?: string;
-    };
-
+    stat: StatReference;
     value: number;
     evs: number;
     ivs: number;
 
     constructor(name: string, id: number, baseValue: number, evs: number, ivs: number, level: number, raisedStatId: number, loweredStatId: number)
     {
-        this.stat =
-        {
-            name: name,
-            url: `${config.baseUrl}/api${config.statPath}/${id}`,
-        };
+        this.stat = new StatReference(name, id);
         this.evs = evs;
         this.ivs = ivs;
         this.value = this.calculateStat(baseValue, level, id, raisedStatId, loweredStatId);

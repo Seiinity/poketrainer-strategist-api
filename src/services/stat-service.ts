@@ -1,19 +1,19 @@
 ﻿import db from "../db/mysql";
+import statAdapter from "../adapters/stat-adapter";
 import { ReadOnlyService } from "./service";
-import { Stat, BaseStatReference, PokemonStatReference } from "../models/stat";
-import { StatAdapter } from "../adapters/stat-adapter";
+import { Stat } from "../models/stat";
 import { RowDataPacket } from "mysql2";
 
 class StatService extends ReadOnlyService<Stat>
 {
-    protected adapter = new StatAdapter();
+    protected adapter = statAdapter;
     protected tableName = "stats";
     protected tableAlias = "st";
     protected idField = "stat_id";
     protected searchField = "name";
     protected baseSelectQuery = `SELECT * FROM ${this.tableName} ${this.tableAlias}`;
 
-    async getReferencesBySpeciesId(speciesId: number): Promise<BaseStatReference[]>
+    async getBySpeciesId(speciesId: number): Promise<RowDataPacket[]>
     {
         try
         {
@@ -26,8 +26,7 @@ class StatService extends ReadOnlyService<Stat>
                 WHERE ss.species_id = ?
             `;
 
-            const rows = await db.queryTyped<RowDataPacket>(query, [speciesId]);
-            return rows.map(row => this.adapter.baseReferenceFromMySQL(row));
+            return await db.queryTyped<RowDataPacket>(query, [speciesId]);
         }
         catch (error)
         {
@@ -35,7 +34,7 @@ class StatService extends ReadOnlyService<Stat>
         }
     }
 
-    async getReferencesByPokemonId(pokemonId: number): Promise<PokemonStatReference[]>
+    async getByPokemonId(pokemonId: number): Promise<RowDataPacket[]>
     {
         try
         {
@@ -52,8 +51,7 @@ class StatService extends ReadOnlyService<Stat>
                 WHERE pe.pokemon_id = ?
             `;
 
-            const rows = await db.queryTyped<RowDataPacket>(query, [pokemonId]);
-            return rows.map(row => this.adapter.pokemonReferenceFromMySQL(row));
+            return await db.queryTyped<RowDataPacket>(query, [pokemonId]);
         }
         catch (error)
         {

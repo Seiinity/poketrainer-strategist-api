@@ -1,12 +1,12 @@
 ﻿import teamService from "./team-service";
+import trainerAdapter from "../adapters/trainer-adapter";
 import { Trainer, TrainerBody } from "../models/trainer";
 import { NameLookupService } from "./service";
-import { TrainerAdapter } from "../adapters/trainer-adapter";
 import { RowDataPacket } from "mysql2";
 
 class TrainerService extends NameLookupService<Trainer, TrainerBody>
 {
-    protected adapter = new TrainerAdapter();
+    protected adapter = trainerAdapter;
     protected tableName = "trainers";
     protected tableAlias = "tr";
     protected idField = "trainer_id";
@@ -16,7 +16,7 @@ class TrainerService extends NameLookupService<Trainer, TrainerBody>
 
     protected override async adaptToModel(row: RowDataPacket): Promise<Trainer>
     {
-        row.teams = await teamService.getReferencesByTrainerId(row.trainer_id);
+        row.teams = await teamService.getByTrainerId(row.trainer_id);
         return super.adaptToModel(row);
     }
 }

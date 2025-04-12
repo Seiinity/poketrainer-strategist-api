@@ -1,9 +1,10 @@
 ﻿import { RowDataPacket } from "mysql2";
 import { Adapter } from "./adapter";
 import { MySQLData } from "../types/mysql-types";
-import { Ability, AbilityBody, SpeciesAbilityReference } from "../models/ability";
+import { Ability, AbilityBody, AbilityReferenceForSpecies } from "../models/ability";
+import speciesAdapter from "./species-adapter";
 
-export class AbilityAdapter extends Adapter<Ability, AbilityBody>
+class AbilityAdapter extends Adapter<Ability, AbilityBody>
 {
     fromMySQL(row: RowDataPacket): Ability
     {
@@ -13,6 +14,7 @@ export class AbilityAdapter extends Adapter<Ability, AbilityBody>
             name: row.name,
             description: row.description,
             generation: row.generation,
+            species: row.species.map((sp: RowDataPacket) => speciesAdapter.referenceForAbilityFromMySQL(sp))
         });
     }
 
@@ -25,8 +27,10 @@ export class AbilityAdapter extends Adapter<Ability, AbilityBody>
         };
     }
 
-    speciesReferenceFromSQL(row: RowDataPacket): SpeciesAbilityReference
+    referenceForSpeciesFromMySQL(row: RowDataPacket): AbilityReferenceForSpecies
     {
-        return new SpeciesAbilityReference(row.name, row.ability_id, row.is_hidden);
+        return new AbilityReferenceForSpecies(row.name, row.ability_id, row.is_hidden);
     }
 }
+
+export default new AbilityAdapter();

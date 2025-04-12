@@ -23,18 +23,6 @@ export class Trainer
     }
 }
 
-export class TrainerReference
-{
-    name: string;
-    url?: string;
-
-    constructor(name: string, id: number)
-    {
-        this.name = name;
-        this.url = `${config.baseUrl}/api${config.trainerPath}/${id}`;
-    }
-}
-
 export class TrainerBody
 {
     name?: string;
@@ -46,5 +34,17 @@ export class TrainerBody
         this.name = requestBody.name;
         this.password = requestBody.password;
         this.passwordHash = passwordHash;
+    }
+}
+
+export class TrainerReference
+{
+    name: string;
+    url?: string;
+
+    constructor(name: string, id: number)
+    {
+        this.name = name;
+        this.url = `${config.baseUrl}/api${config.trainerPath}/${id}`;
     }
 }

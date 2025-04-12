@@ -1,10 +1,12 @@
-﻿import { Species, SpeciesBody } from "../models/species";
+﻿import { Species, SpeciesBody, SpeciesReferenceForAbility } from "../models/species";
 import { TypeReference } from "../models/type";
 import { RowDataPacket } from "mysql2";
 import { Adapter } from "./adapter";
 import { MySQLData } from "../types/mysql-types";
+import abilityAdapter from "./ability-adapter";
+import statAdapter from "./stat-adapter";
 
-export class SpeciesAdapter extends Adapter<Species, SpeciesBody>
+class SpeciesAdapter extends Adapter<Species, SpeciesBody>
 {
     fromMySQL(row: RowDataPacket): Species
     {
@@ -19,8 +21,8 @@ export class SpeciesAdapter extends Adapter<Species, SpeciesBody>
             genderRatio: `${row.male_rate}M:${row.female_rate}F`,
             height: Number(row.height),
             weight: Number(row.weight),
-            abilities: row.abilities,
-            baseStats: row.base_stats,
+            abilities: row.abilities.map((a: RowDataPacket) => abilityAdapter.referenceForSpeciesFromMySQL(a)),
+            baseStats: row.base_stats.map((s: RowDataPacket) => statAdapter.referenceForSpeciesFromMySQL(s)),
             generation: row.generation,
         });
     }
@@ -38,4 +40,11 @@ export class SpeciesAdapter extends Adapter<Species, SpeciesBody>
             generation_id: requestBody.generationId,
         };
     }
+
+    referenceForAbilityFromMySQL(data: RowDataPacket)
+    {
+        return new SpeciesReferenceForAbility(data.name, data.species_id, data.is_hidden);
+    }
 }
+
+export default new SpeciesAdapter();

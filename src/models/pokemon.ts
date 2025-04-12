@@ -2,7 +2,7 @@
 import { TeamReference } from "./team";
 import { SpeciesReference } from "./species";
 import { Request } from "express";
-import { PokemonStatReference } from "./stat";
+import { StatReferenceForPokemon } from "./stat";
 import { NatureReference } from "./nature";
 
 export class Pokemon
@@ -11,7 +11,7 @@ export class Pokemon
     nickname?: string;
     species: SpeciesReference;
     nature: NatureReference;
-    stats: PokemonStatReference[];
+    stats: StatReferenceForPokemon[];
     team: TeamReference;
 
     constructor(data: {
@@ -19,7 +19,7 @@ export class Pokemon
         nickname?: string;
         species: SpeciesReference;
         nature: NatureReference;
-        stats: PokemonStatReference[];
+        stats: StatReferenceForPokemon[];
         team: TeamReference;
     })
     {
@@ -29,18 +29,6 @@ export class Pokemon
         this.nature = data.nature;
         this.stats = data.stats;
         this.team = data.team;
-    }
-}
-
-export class PokemonReference
-{
-    name: string;
-    url?: string;
-
-    constructor(name: string, id: number)
-    {
-        this.name = name;
-        this.url = `${config.baseUrl}/api${config.pokemonPath}/${id}`;
     }
 }
 
@@ -63,5 +51,17 @@ export class PokemonBody
         this.evs = requestBody.evs;
         this.ivs = requestBody.ivs;
         this.teamId = requestBody.teamId;
+    }
+}
+
+export class PokemonReference
+{
+    name: string;
+    url?: string;
+
+    constructor(name: string, id: number)
+    {
+        this.name = name;
+        this.url = `${config.baseUrl}/api${config.pokemonPath}/${id}`;
     }
 }

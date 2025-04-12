@@ -4,7 +4,7 @@ import { TeamBody } from "../models/team";
 import { Adapter } from "./adapter";
 import { MySQLData } from "../types/mysql-types";
 
-export class TypeAdapter extends Adapter<Type, TypeBody>
+class TypeAdapter extends Adapter<Type, TypeBody>
 {
     fromMySQL(row: RowDataPacket): Type
     {
@@ -56,3 +56,5 @@ export class TypeAdapter extends Adapter<Type, TypeBody>
         return effectiveness;
     }
 }
+
+export default new TypeAdapter();

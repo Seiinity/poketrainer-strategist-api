@@ -29,18 +29,6 @@ export class TypeEffectiveness
     ineffectiveAgainst: TypeReference[] = [];
 }
 
-export class TypeReference
-{
-    name: string;
-    url?: string;
-
-    constructor(name: string, id: number)
-    {
-        this.name = name;
-        this.url = `${config.baseUrl}/api${config.typePath}/${id}`;
-    }
-}
-
 export class TypeBody
 {
     name?: string;
@@ -60,5 +48,17 @@ export class TypeBody
         this.weakAgainst = requestBody.weakAgainst;
         this.strongAgainst = requestBody.strongAgainst;
         this.ineffectiveAgainst = requestBody.ineffectiveAgainst;
+    }
+}
+
+export class TypeReference
+{
+    name: string;
+    url?: string;
+
+    constructor(name: string, id: number)
+    {
+        this.name = name;
+        this.url = `${config.baseUrl}/api${config.typePath}/${id}`;
     }
 }

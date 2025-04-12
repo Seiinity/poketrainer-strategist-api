@@ -1,8 +1,8 @@
 ﻿import { ReadOnlyAdapter } from "./adapter";
-import { Stat, BaseStatReference, PokemonStatReference } from "../models/stat";
+import { Stat, StatReferenceForSpecies, StatReferenceForPokemon } from "../models/stat";
 import { RowDataPacket } from "mysql2";
 
-export class StatAdapter extends ReadOnlyAdapter<Stat>
+class StatAdapter extends ReadOnlyAdapter<Stat>
 {
     fromMySQL(row: RowDataPacket): Stat
     {
@@ -13,13 +13,15 @@ export class StatAdapter extends ReadOnlyAdapter<Stat>
         });
     }
 
-    baseReferenceFromMySQL(row: RowDataPacket): BaseStatReference
+    referenceForSpeciesFromMySQL(row: RowDataPacket): StatReferenceForSpecies
     {
-        return new BaseStatReference(row.name, row.stat_id, row.value);
+        return new StatReferenceForSpecies(row.name, row.stat_id, row.value);
     }
 
-    pokemonReferenceFromMySQL(row: RowDataPacket): PokemonStatReference
+    referenceForPokemonFromMySQL(row: RowDataPacket): StatReferenceForPokemon
     {
-        return new PokemonStatReference(row.name, row.stat_id, row.base_value, row.evs, row.ivs, row.level, row.raised_stat_id, row.lowered_stat_id);
+        return new StatReferenceForPokemon(row.name, row.stat_id, row.base_value, row.evs, row.ivs, row.level, row.raised_stat_id, row.lowered_stat_id);
     }
 }
+
+export default new StatAdapter();

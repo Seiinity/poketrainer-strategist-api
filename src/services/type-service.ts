@@ -1,13 +1,13 @@
 ﻿import db from "../db/mysql";
+import typeAdapter from "../adapters/type-adapter";
 import { NameLookupService } from "./service";
 import { Type, TypeBody, TypeEffectiveness } from "../models/type";
-import { TypeAdapter } from "../adapters/type-adapter";
 import { RowDataPacket } from "mysql2";
 import { PoolConnection } from "mysql2/promise";
 
 class TypeService extends NameLookupService<Type, TypeBody>
 {
-    protected adapter = new TypeAdapter();
+    protected adapter = typeAdapter;
     protected tableName = "types";
     protected tableAlias = "tp";
     protected idField = "type_id";

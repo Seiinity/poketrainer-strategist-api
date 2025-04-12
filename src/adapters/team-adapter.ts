@@ -3,8 +3,9 @@ import { Team, TeamBody, TeamReference } from "../models/team";
 import { TrainerReference } from "../models/trainer";
 import { Adapter } from "./adapter";
 import { MySQLData } from "../types/mysql-types";
+import pokemonAdapter from "./pokemon-adapter";
 
-export class TeamAdapter extends Adapter<Team, TeamBody>
+class TeamAdapter extends Adapter<Team, TeamBody>
 {
     fromMySQL(row: RowDataPacket): Team
     {
@@ -13,7 +14,7 @@ export class TeamAdapter extends Adapter<Team, TeamBody>
             id: row.team_id,
             name: row.name,
             trainer: new TrainerReference(row.trainer_name, row.trainer_id),
-            pokemon: row.pokemon,
+            pokemon: row.pokemon.map((p: RowDataPacket) => pokemonAdapter.referenceFromMySQL(p)),
         });
     }
 
@@ -30,3 +31,5 @@ export class TeamAdapter extends Adapter<Team, TeamBody>
         };
     }
 }
+
+export default new TeamAdapter();

@@ -24,18 +24,6 @@ export class Team
     }
 }
 
-export class TeamReference
-{
-    name: string;
-    url?: string;
-
-    constructor(name: string, id: number)
-    {
-        this.name = name;
-        this.url = `${config.baseUrl}/api${config.teamPath}/${id}`;
-    }
-}
-
 export class TeamBody
 {
     name?: string;
@@ -47,5 +35,17 @@ export class TeamBody
         this.name = requestBody.name;
         this.trainerName = requestBody.trainerName;
         this.trainerId = requestBody.trainerId;
+    }
+}
+
+export class TeamReference
+{
+    name: string;
+    url?: string;
+
+    constructor(name: string, id: number)
+    {
+        this.name = name;
+        this.url = `${config.baseUrl}/api${config.teamPath}/${id}`;
     }
 }

@@ -2,13 +2,13 @@
 import pokemonService from "./pokemon-service";
 import trainerService from "./trainer-service";
 import { Service } from "./service";
-import { Team, TeamBody, TeamReference } from "../models/team";
-import { TeamAdapter } from "../adapters/team-adapter";
+import { Team, TeamBody } from "../models/team";
 import { RowDataPacket } from "mysql2";
+import teamAdapter from "../adapters/team-adapter";
 
 class TeamService extends Service<Team, TeamBody>
 {
-    protected adapter = new TeamAdapter();
+    protected adapter = teamAdapter;
     protected tableName = "teams";
     protected tableAlias = "tm";
     protected idField = "team_id";
@@ -34,23 +34,21 @@ class TeamService extends Service<Team, TeamBody>
 
     protected override async adaptToModel(row: RowDataPacket): Promise<Team>
     {
-        row.pokemon = await pokemonService.getReferencesByTeamId(row.team_id);
+        row.pokemon = await pokemonService.geByTeamId(row.team_id);
         return super.adaptToModel(row);
     }
 
-    async getReferencesByTrainerId(trainerId: number): Promise<TeamReference[]>
+    async getByTrainerId(trainerId: number): Promise<RowDataPacket[]>
     {
         try
         {
-            const rows = await db.queryTyped<RowDataPacket>
+            return await db.queryTyped<RowDataPacket>
             (
                 `SELECT team_id, name
                 FROM teams
                 WHERE trainer_id = ?`,
                 [trainerId]
             );
-
-            return rows.map(row => this.adapter.referenceFromMySQL(row));
         }
         catch (error)
         {

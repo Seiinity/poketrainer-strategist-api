@@ -1,15 +1,16 @@
-﻿import typeService from "./type-service";
+﻿import db from "../db/mysql";
+import typeService from "./type-service";
 import abilityService from "./ability-service";
 import statService from "./stat-service";
+import speciesAdapter from "../adapters/species-adapter";
 import { NameLookupService } from "./service";
 import { Species, SpeciesBody } from "../models/species";
-import { SpeciesAdapter } from "../adapters/species-adapter";
 import { RowDataPacket } from "mysql2";
 import { PoolConnection } from "mysql2/promise";
 
 class SpeciesService extends NameLookupService<Species, SpeciesBody>
 {
-    protected adapter = new SpeciesAdapter();
+    protected adapter = speciesAdapter;
     protected tableName = "species";
     protected tableAlias = "sp";
     protected idField = "species_id";
@@ -45,8 +46,8 @@ class SpeciesService extends NameLookupService<Species, SpeciesBody>
 
     protected override async adaptToModel(row: RowDataPacket): Promise<Species>
     {
-        row.abilities = await abilityService.getReferencesBySpeciesId(row.species_id);
-        row.base_stats = await statService.getReferencesBySpeciesId(row.species_id);
+        row.abilities = await abilityService.getBySpeciesId(row.species_id);
+        row.base_stats = await statService.getBySpeciesId(row.species_id);
         return super.adaptToModel(row);
     }
 
@@ -106,6 +107,24 @@ class SpeciesService extends NameLookupService<Species, SpeciesBody>
 
             await connection.query("DELETE FROM species_base_stats WHERE species_id = ?", [id]);
             await connection.query("INSERT INTO species_base_stats VALUES ?", [values]);
+        }
+    }
+
+    async getByAbilityId(abilityId: number): Promise<RowDataPacket[]>
+    {
+        try
+        {
+            const query = `
+                SELECT sp.species_id, sp.name, sa.is_hidden
+                FROM species_abilities sa
+                LEFT JOIN species sp ON sa.species_id = sp.species_id
+                WHERE sa.ability_id = ?
+            `;
+            return await db.queryTyped<RowDataPacket>(query, [abilityId]);
+        }
+        catch (error)
+        {
+            throw new Error(`Error fetching species by ability ID: ${(error as Error).message}`);
         }
     }
 }

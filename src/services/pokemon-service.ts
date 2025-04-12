@@ -2,16 +2,16 @@
 import speciesService from "./species-service";
 import teamService from "./team-service";
 import statService from "./stat-service";
+import natureService from "./nature-service";
+import pokemonAdapter from "../adapters/pokemon-adapter";
 import { Service } from "./service";
-import { Pokemon, PokemonBody, PokemonReference } from "../models/pokemon";
-import { PokemonAdapter } from "../adapters/pokemon-adapter";
+import { Pokemon, PokemonBody } from "../models/pokemon";
 import { RowDataPacket } from "mysql2";
 import { PoolConnection } from "mysql2/promise";
-import natureService from "./nature-service";
 
 export class PokemonService extends Service<Pokemon, PokemonBody>
 {
-    protected adapter = new PokemonAdapter();
+    protected adapter = pokemonAdapter;
     protected tableName = "pokemon";
     protected tableAlias = "pk";
     protected idField = "pokemon_id";
@@ -54,7 +54,7 @@ export class PokemonService extends Service<Pokemon, PokemonBody>
 
     protected override async adaptToModel(row: RowDataPacket): Promise<Pokemon>
     {
-        row.stats = await statService.getReferencesByPokemonId(row.pokemon_id);
+        row.stats = await statService.getByPokemonId(row.pokemon_id);
         return super.adaptToModel(row);
     }
 
@@ -64,22 +64,20 @@ export class PokemonService extends Service<Pokemon, PokemonBody>
         await this.insertIVRelations(connection, id, body);
     }
 
-    async getReferencesByTeamId(teamId: number): Promise<PokemonReference[]>
+    async geByTeamId(teamId: number): Promise<RowDataPacket[]>
     {
         try
         {
-            const rows = await db.queryTyped<RowDataPacket>
+            return await db.queryTyped<RowDataPacket>
             (
-                `SELECT
-                    p.pokemon_id, p.nickname,
-                    s.name AS species_name
-                FROM pokemon p
-                LEFT JOIN species s ON p.species_id = s.species_id
-                WHERE p.team_id = ?`,
+                `SELECT p.pokemon_id,
+                        p.nickname,
+                        s.name AS species_name
+                 FROM pokemon p
+                          LEFT JOIN species s ON p.species_id = s.species_id
+                 WHERE p.team_id = ?`,
                 [teamId]
             );
-
-            return rows.map(row => this.adapter.referenceFromMySQL(row));
         }
         catch (error)
         {
