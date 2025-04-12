@@ -40,6 +40,18 @@ export class AbilityBody
     }
 }
 
+export class AbilityReference
+{
+    name: string;
+    url?: string;
+
+    constructor(name: string, id: number)
+    {
+        this.name = name;
+        this.url = `${config.baseUrl}/api${config.abilityPath}/${id}`;
+    }
+}
+
 export class AbilityReferenceForSpecies
 {
     ability:
@@ -52,11 +64,7 @@ export class AbilityReferenceForSpecies
 
     constructor(name: string, id: number, isHidden: Buffer)
     {
-        this.ability =
-            {
-                name: name,
-                url: `${config.baseUrl}/api${config.abilityPath}/${id}`,
-            };
+        this.ability = new AbilityReference(name, id);
         this.isHidden = Boolean(isHidden.readUInt8());
     }
 }

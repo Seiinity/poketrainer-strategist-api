@@ -12,6 +12,15 @@ const validationSchema = z.object
         .min(1, "Species name cannot be empty.")
         .max(12, "Species name must be shorter than 12 characters."),
 
+    ability: z.string
+    ({
+        required_error: "Field 'ability' is required.",
+        invalid_type_error: "Ability name must be a string.",
+    })
+        .trim()
+        .min(1, "Ability name cannot be empty.")
+        .max(12, "Ability name must be shorter than 12 characters."),
+
     teamId: z.number
     ({
         required_error: "Field 'teamId' is required.",
@@ -40,9 +49,12 @@ const validationSchema = z.object
     evs: z.array(
         z.number({ invalid_type_error: "EV value must be a number." })
             .int("EV value must be a positive integer.")
-            .min(0, "EV value must be at least 0."),
+            .min(0, "EV value must be at least 0.")
+            .max(252, "EV value must not be higher than 252."),
         { required_error: "Field 'evs' is required.", invalid_type_error: "EVs must be an array of numbers." }
-    ),
+    ).refine(values => values.reduce((sum, value) => sum + value, 0) <= 510, {
+        message: "Total EVs must not exceed 510."
+    }),
 
     ivs: z.array(
         z.number({ invalid_type_error: "IV value must be a number." })

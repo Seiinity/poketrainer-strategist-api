@@ -4,6 +4,7 @@ import teamService from "./team-service";
 import statService from "./stat-service";
 import natureService from "./nature-service";
 import pokemonAdapter from "../adapters/pokemon-adapter";
+import abilityService from "./ability-service";
 import { Service } from "./service";
 import { Pokemon, PokemonBody } from "../models/pokemon";
 import { RowDataPacket } from "mysql2";
@@ -22,11 +23,13 @@ export class PokemonService extends Service<Pokemon, PokemonBody>
             pk.pokemon_id, pk.nickname,
             sp.species_id, sp.name AS species_name,
             tm.team_id, tm.name AS team_name,
-            nt.nature_id, nt.name AS nature_name
+            nt.nature_id, nt.name AS nature_name,
+            ab.ability_id, ab.name as ability_name
         FROM pokemon pk
         LEFT JOIN species sp ON pk.species_id = sp.species_id
         LEFT JOIN teams tm ON pk.team_id = tm.team_id
         LEFT JOIN natures nt ON pk.nature_id = nt.nature_id
+        LEFT JOIN abilities ab ON pk.ability_id = ab.ability_id
     `;
 
     protected override async processRequestBody(body: PokemonBody): Promise<PokemonBody>
@@ -36,6 +39,11 @@ export class PokemonService extends Service<Pokemon, PokemonBody>
         if (body.species)
         {
             processed.speciesId = await speciesService.nameLookup.getIdByName(body.species);
+        }
+
+        if (body.ability)
+        {
+            processed.abilityId = await abilityService.nameLookup.getIdByName(body.ability);
         }
 
         if (body.teamId)

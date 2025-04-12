@@ -46,10 +46,11 @@ const validationSchema = z.object
         .max(2, "Species can have a maximum of two abilities.")
         .nonempty("Species must have at least one ability."),
 
-    hiddenAbility: z.string({ required_error: "Field 'hiddenAbility' is required.", invalid_type_error: "Hidden Ability must be a string." })
+    hiddenAbility: z.string({ invalid_type_error: "Hidden Ability must be a string." })
         .trim()
-        .min(1, "Hidden Ability is required.")
-        .max(32, "Hidden Ability must be shorter than 32 characters."),
+        .min(1, "Hidden Ability must be between 1 and 32 characters long.")
+        .max(32, "Hidden Ability must be between 1 and 32 characters long.")
+        .optional(),
 
     baseStats: z.array(
         z.number({ invalid_type_error: "Base stat value must be a number." })

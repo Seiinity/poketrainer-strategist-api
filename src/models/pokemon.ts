@@ -4,12 +4,14 @@ import { SpeciesReference } from "./species";
 import { Request } from "express";
 import { StatReferenceForPokemon } from "./stat";
 import { NatureReference } from "./nature";
+import { AbilityReference } from "./ability";
 
 export class Pokemon
 {
     id: number;
     nickname?: string;
     species: SpeciesReference;
+    ability: AbilityReference;
     nature: NatureReference;
     stats: StatReferenceForPokemon[];
     team: TeamReference;
@@ -18,6 +20,7 @@ export class Pokemon
         id: number;
         nickname?: string;
         species: SpeciesReference;
+        ability: AbilityReference;
         nature: NatureReference;
         stats: StatReferenceForPokemon[];
         team: TeamReference;
@@ -26,6 +29,7 @@ export class Pokemon
         this.id = data.id;
         this.nickname = data.nickname;
         this.species = data.species;
+        this.ability = data.ability;
         this.nature = data.nature;
         this.stats = data.stats;
         this.team = data.team;
@@ -37,6 +41,8 @@ export class PokemonBody
     nickname?: string;
     species?: string;
     speciesId?: number;
+    ability?: string;
+    abilityId?: number;
     nature?: string;
     natureId?: number;
     evs?: number[];
@@ -47,6 +53,7 @@ export class PokemonBody
     {
         this.nickname = requestBody.nickname;
         this.species = requestBody.species;
+        this.ability = requestBody.ability;
         this.nature = requestBody.nature;
         this.evs = requestBody.evs;
         this.ivs = requestBody.ivs;
