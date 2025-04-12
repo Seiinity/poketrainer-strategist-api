@@ -25,10 +25,10 @@ class SpeciesService extends NameLookupService<Species, SpeciesBody>
             gr.male_rate, gr.female_rate,
             gn.name AS generation
         FROM species sp
-            LEFT JOIN types tp1 ON sp.type_1_id = tp1.type_id
-            LEFT JOIN types tp2 ON sp.type_2_id = tp2.type_id
-            LEFT JOIN gender_ratios gr ON sp.gender_ratio_id = gr.gender_ratio_id
-            LEFT JOIN generations gn ON sp.generation_id = gn.generation_id
+        LEFT JOIN types tp1 ON sp.type_1_id = tp1.type_id
+        LEFT JOIN types tp2 ON sp.type_2_id = tp2.type_id
+        LEFT JOIN gender_ratios gr ON sp.gender_ratio_id = gr.gender_ratio_id
+        LEFT JOIN generations gn ON sp.generation_id = gn.generation_id
     `;
 
     protected override async processRequestBody(body: SpeciesBody): Promise<SpeciesBody>

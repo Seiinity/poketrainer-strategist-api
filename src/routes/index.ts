@@ -2,6 +2,7 @@
 
 import abilityRoutes from "./ability-routes";
 import natureRoutes from "./nature-routes";
+import moveRoutes from "./move-routes";
 import pokemonRoutes from "./pokemon-routes";
 import statRoutes from "./stat-routes";
 import speciesRoutes from "./species-routes";
@@ -14,6 +15,7 @@ const router = express.Router();
 
 router.use(config.abilityPath, abilityRoutes);
 router.use(config.naturePath, natureRoutes);
+router.use(config.movePath, moveRoutes);
 router.use(config.pokemonPath, pokemonRoutes);
 router.use(config.statPath, statRoutes);
 router.use(config.speciesPath, speciesRoutes);
