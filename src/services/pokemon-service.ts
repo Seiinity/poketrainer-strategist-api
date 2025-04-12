@@ -7,6 +7,7 @@ import { Pokemon, PokemonBody, PokemonReference } from "../models/pokemon";
 import { PokemonAdapter } from "../adapters/pokemon-adapter";
 import { RowDataPacket } from "mysql2";
 import { PoolConnection } from "mysql2/promise";
+import natureService from "./nature-service";
 
 export class PokemonService extends Service<Pokemon, PokemonBody>
 {
@@ -20,25 +21,32 @@ export class PokemonService extends Service<Pokemon, PokemonBody>
         SELECT
             pk.pokemon_id, pk.nickname,
             sp.species_id, sp.name AS species_name,
-            tm.team_id, tm.name AS team_name
+            tm.team_id, tm.name AS team_name,
+            nt.nature_id, nt.name AS nature_name
         FROM pokemon pk
-            LEFT JOIN species sp ON pk.species_id = sp.species_id
-            LEFT JOIN teams tm ON pk.team_id = tm.team_id
+        LEFT JOIN species sp ON pk.species_id = sp.species_id
+        LEFT JOIN teams tm ON pk.team_id = tm.team_id
+        LEFT JOIN natures nt ON pk.nature_id = nt.nature_id
     `;
 
     protected override async processRequestBody(body: PokemonBody): Promise<PokemonBody>
     {
         const processed = { ...body };
 
-        if (body.speciesName)
+        if (body.species)
         {
-            processed.speciesId = await speciesService.getIdByName(body.speciesName);
+            processed.speciesId = await speciesService.nameLookup.getIdByName(body.species);
         }
 
         if (body.teamId)
         {
             const team = await teamService.getById(body.teamId);
             if (team == null) return Promise.reject(new Error(`No team found with ID ${body.teamId}.`));
+        }
+
+        if (body.nature)
+        {
+            processed.natureId = await natureService.nameLookup.getIdByName(body.nature);
         }
 
         return processed;

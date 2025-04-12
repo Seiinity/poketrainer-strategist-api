@@ -32,7 +32,7 @@ class TrainerController extends NameLookupController<Trainer, TrainerBody>
         {
             const newTrainer = new TrainerBody(req.body);
 
-            const trainer = await trainerService.getByName(newTrainer.name as string);
+            const trainer = await trainerService.nameLookup.getByName(newTrainer.name as string);
 
             if (!trainer)
             {

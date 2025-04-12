@@ -1,6 +1,6 @@
 ﻿import db from "../db/mysql";
 import { ReadOnlyService } from "./service";
-import { Stat, BaseStatReference, StatReference } from "../models/stat";
+import { Stat, BaseStatReference, PokemonStatReference } from "../models/stat";
 import { StatAdapter } from "../adapters/stat-adapter";
 import { RowDataPacket } from "mysql2";
 
@@ -35,24 +35,25 @@ class StatService extends ReadOnlyService<Stat>
         }
     }
 
-    async getReferencesByPokemonId(pokemonId: number): Promise<StatReference[]>
+    async getReferencesByPokemonId(pokemonId: number): Promise<PokemonStatReference[]>
     {
         try
         {
             const query = `
                 SELECT 
-                    pe.evs, pi.ivs, pk.level, st.stat_id, st.name, ss.value as base_value
+                    pe.evs, pi.ivs, pk.level, st.stat_id, st.name, ss.value as base_value, nt.raised_stat_id, nt.lowered_stat_id
                 FROM pokemon_evs pe
                 JOIN pokemon_ivs pi ON pe.stat_id = pi.stat_id AND pe.pokemon_id = pi.pokemon_id
                 JOIN pokemon pk ON pe.pokemon_id = pk.pokemon_id
                 JOIN stats st ON pe.stat_id = st.stat_id
                 JOIN species sp ON pk.species_id = sp.species_id
                 JOIN species_base_stats ss ON sp.species_id = ss.species_id AND pe.stat_id = ss.stat_id
+                JOIN natures nt ON pk.nature_id = nt.nature_id
                 WHERE pe.pokemon_id = ?
             `;
 
             const rows = await db.queryTyped<RowDataPacket>(query, [pokemonId]);
-            return rows.map(row => this.adapter.referenceFromMySQL(row));
+            return rows.map(row => this.adapter.pokemonReferenceFromMySQL(row));
         }
         catch (error)
         {

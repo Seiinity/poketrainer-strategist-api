@@ -13,6 +13,7 @@ interface Config
     baseUrl: string;
 
     abilityPath: string;
+    naturePath: string;
     pokemonPath: string;
     speciesPath: string;
     statPath: string;
@@ -32,6 +33,7 @@ const config: Config =
     baseUrl: `${process.env.BASE_URL}:${process.env.APP_PORT}`,
 
     abilityPath: "/abilities",
+    naturePath: "/natures",
     pokemonPath: "/pokemon",
     speciesPath: "/species",
     statPath: "/stats",

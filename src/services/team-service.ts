@@ -27,7 +27,7 @@ class TeamService extends Service<Team, TeamBody>
         const processed = { ...body };
         if (body.trainerName)
         {
-            processed.trainerId = await trainerService.getIdByName(body.trainerName);
+            processed.trainerId = await trainerService.nameLookup.getIdByName(body.trainerName);
         }
         return processed;
     }

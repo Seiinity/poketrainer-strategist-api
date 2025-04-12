@@ -36,8 +36,8 @@ class SpeciesService extends NameLookupService<Species, SpeciesBody>
 
         if (body.types)
         {
-            processed.type1Id = await typeService.getIdByName(body.types[0]);
-            if (body.types[1]) processed.type2Id = await typeService.getIdByName(body.types[1]);
+            processed.type1Id = await typeService.nameLookup.getIdByName(body.types[0]);
+            if (body.types[1]) processed.type2Id = await typeService.nameLookup.getIdByName(body.types[1]);
         }
 
         return processed;
@@ -65,7 +65,7 @@ class SpeciesService extends NameLookupService<Species, SpeciesBody>
             for (const abilityName of body.abilities)
             {
                 const index = body.abilities.indexOf(abilityName);
-                const abilityId = await abilityService.getIdByName(abilityName);
+                const abilityId = await abilityService.nameLookup.getIdByName(abilityName);
                 values.push([id, abilityId, 0, index + 1]);
 
                 await connection.query("DELETE FROM species_abilities WHERE species_id = ? AND is_hidden = FALSE", [id]);
@@ -74,7 +74,7 @@ class SpeciesService extends NameLookupService<Species, SpeciesBody>
 
         if (body.hiddenAbility)
         {
-            const hiddenAbilityId = await abilityService.getIdByName(body.hiddenAbility);
+            const hiddenAbilityId = await abilityService.nameLookup.getIdByName(body.hiddenAbility);
             values.push([id, hiddenAbilityId, 1, 3]);
 
             await connection.query("DELETE FROM species_abilities WHERE species_id = ? AND is_hidden = TRUE", [id]);

@@ -76,7 +76,7 @@ class TypeService extends NameLookupService<Type, TypeBody>
 
             for (const type of types)
             {
-                const otherTypeId = await this.getIdByName(type);
+                const otherTypeId = await this.nameLookup.getIdByName(type);
                 if (isAttacking) addEffectiveness(id, otherTypeId, modifier);
                 else addEffectiveness(otherTypeId, id, modifier);
             }

@@ -237,9 +237,16 @@ export abstract class Service<TModel, TBody> extends ReadOnlyService<TModel>
     }
 }
 
-export abstract class NameLookupService<TModel, TBody> extends Service<TModel, TBody>
+export class NameLookup<TModel>
 {
-    protected abstract nameField: string;
+    constructor(
+        private readonly tableName: string,
+        private readonly tableAlias: string,
+        private readonly idField: string,
+        private readonly nameField: string,
+        private readonly baseSelectQuery: string,
+        private readonly adaptToModel: (row: RowDataPacket) => Promise<TModel>
+    ) {}
 
     async getByName(name: string): Promise<TModel | null>
     {
@@ -267,5 +274,37 @@ export abstract class NameLookupService<TModel, TBody> extends Service<TModel, T
         {
             throw new Error(`Error fetching ${this.tableName} ID for ${name}: ${(error as Error).message}`);
         }
+    }
+}
+
+export abstract class NameLookupReadOnlyService<TModel> extends ReadOnlyService<TModel>
+{
+    protected abstract nameField: string;
+    get nameLookup(): NameLookup<TModel>
+    {
+        return new NameLookup(
+            this.tableName,
+            this.tableAlias,
+            this.idField,
+            this.nameField,
+            this.baseSelectQuery,
+            this.adaptToModel.bind(this)
+        );
+    }
+}
+
+export abstract class NameLookupService<TModel, TBody> extends Service<TModel, TBody>
+{
+    protected abstract nameField: string;
+    get nameLookup(): NameLookup<TModel>
+    {
+        return new NameLookup(
+            this.tableName,
+            this.tableAlias,
+            this.idField,
+            this.nameField,
+            this.baseSelectQuery,
+            this.adaptToModel.bind(this)
+        );
     }
 }

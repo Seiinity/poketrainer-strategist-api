@@ -3,15 +3,14 @@ import { z } from "zod";
 
 const validationSchema = z.object
 ({
-    speciesName: z.string
+    species: z.string
     ({
-        required_error: "Field 'speciesName' is required.",
+        required_error: "Field 'species' is required.",
         invalid_type_error: "Species name must be a string.",
     })
         .trim()
-        .min(1, "Species name is required.")
-        .max(12, "Species name must be shorter than 12 characters.")
-        .nonempty("Field 'speciesName' cannot be empty."),
+        .min(1, "Species name cannot be empty.")
+        .max(12, "Species name must be shorter than 12 characters."),
 
     teamId: z.number
     ({
@@ -29,6 +28,14 @@ const validationSchema = z.object
         .min(1, "Nickname must be between 1 and 12 characters.")
         .max(12, "Nickname must be between 1 and 12 characters.")
         .optional(),
+
+    nature: z.string
+    ({
+        invalid_type_error: "Nature must be a string.",
+    })
+        .trim()
+        .min(1, "Nature must not be empty.")
+        .max(12, "Nature must be between 1 and 12 characters."),
 
     evs: z.array(
         z.number({ invalid_type_error: "EV value must be a number." })

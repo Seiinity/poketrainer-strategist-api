@@ -115,7 +115,7 @@ export class NameLookupController<TModel, TBody> extends Controller<TModel, TBod
             const idName = req.params.idName;
             const data = !isNaN(Number(idName))
                 ? await this.service.getById(parseInt(idName))
-                : await this.service.getByName(idName);
+                : await this.service.nameLookup.getByName(idName);
 
             if (!data) res.status(404).json({ error: "Not found." });
             else res.json(data);
