@@ -1,5 +1,5 @@
 ﻿import { Adapter } from "./adapter";
-import { Move, MoveBody } from "../models/move";
+import { Move, MoveBody, MoveReference } from "../models/move";
 import { RowDataPacket } from "mysql2";
 import { TypeReference } from "../models/type";
 import { MySQLData } from "../types/mysql-types";
@@ -33,6 +33,11 @@ class MoveAdapter extends Adapter<Move, MoveBody>
             pp: requestBody.pp,
             generation_id: requestBody.generation
         };
+    }
+
+    referenceFromMySQL(row: RowDataPacket): MoveReference
+    {
+        return new MoveReference(row.name, row.move_id);
     }
 }
 

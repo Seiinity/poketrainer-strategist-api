@@ -5,6 +5,7 @@ import { Adapter } from "./adapter";
 import { MySQLData } from "../types/mysql-types";
 import abilityAdapter from "./ability-adapter";
 import statAdapter from "./stat-adapter";
+import moveAdapter from "./move-adapter";
 
 class SpeciesAdapter extends Adapter<Species, SpeciesBody>
 {
@@ -23,6 +24,7 @@ class SpeciesAdapter extends Adapter<Species, SpeciesBody>
             weight: Number(row.weight),
             abilities: row.abilities.map((a: RowDataPacket) => abilityAdapter.referenceForSpeciesFromMySQL(a)),
             baseStats: row.base_stats.map((s: RowDataPacket) => statAdapter.referenceForSpeciesFromMySQL(s)),
+            learnset: row.learnset.map((m: RowDataPacket) => moveAdapter.referenceFromMySQL(m)),
             generation: row.generation,
         });
     }

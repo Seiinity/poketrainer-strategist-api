@@ -1,13 +1,16 @@
 ﻿import moveAdapter from "../adapters/move-adapter";
-import { Service } from "./service";
+import { NameLookupService } from "./service";
 import { Move, MoveBody } from "../models/move";
+import db from "../db/mysql";
+import { RowDataPacket } from "mysql2";
 
-class MoveService extends Service<Move, MoveBody>
+class MoveService extends NameLookupService<Move, MoveBody>
 {
     protected adapter = moveAdapter;
     protected tableName = "moves";
     protected tableAlias = "mv";
     protected idField = "move_id";
+    protected nameField = "name";
     protected searchField = "name";
 
     protected baseSelectQuery = `
@@ -21,6 +24,24 @@ class MoveService extends Service<Move, MoveBody>
         LEFT JOIN move_categories mc ON mv.move_category_id = mc.move_category_id
         LEFT JOIN generations gn ON mv.generation_id = gn.generation_id
     `;
+
+    async getBySpeciesId(speciesId: number)
+    {
+        try
+        {
+            const query = `
+                SELECT mv.move_id, mv.name
+                FROM moves mv
+                LEFT JOIN species_learnsets sl ON mv.move_id = sl.move_id
+                WHERE sl.species_id = ?
+            `;
+            return await db.queryTyped<RowDataPacket>(query, [speciesId]);
+        }
+        catch (error)
+        {
+            throw new Error(`Error fetching moves by species ID: ${(error as Error).message}`);
+        }
+    }
 }
 
 export default new MoveService();

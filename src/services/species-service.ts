@@ -7,6 +7,7 @@ import { NameLookupService } from "./service";
 import { Species, SpeciesBody } from "../models/species";
 import { RowDataPacket } from "mysql2";
 import { PoolConnection } from "mysql2/promise";
+import moveService from "./move-service";
 
 class SpeciesService extends NameLookupService<Species, SpeciesBody>
 {
@@ -48,6 +49,7 @@ class SpeciesService extends NameLookupService<Species, SpeciesBody>
     {
         row.abilities = await abilityService.getBySpeciesId(row.species_id);
         row.base_stats = await statService.getBySpeciesId(row.species_id);
+        row.learnset = await moveService.getBySpeciesId(row.species_id);
         return super.adaptToModel(row);
     }
 
@@ -55,9 +57,10 @@ class SpeciesService extends NameLookupService<Species, SpeciesBody>
     {
         await this.insertAbilityRelations(connection, id, body);
         await this.insertBaseStatRelations(connection, id, body);
+        await this.insertLearnsetRelations(connection, id, body);
     }
 
-    private async insertAbilityRelations(connection: PoolConnection, id: number, body: SpeciesBody)
+    private async insertAbilityRelations(connection: PoolConnection, id: number, body: SpeciesBody): Promise<void>
     {
         const values = [];
 
@@ -87,27 +90,41 @@ class SpeciesService extends NameLookupService<Species, SpeciesBody>
         }
     }
 
-    private async insertBaseStatRelations(connection: PoolConnection, id: number, body: SpeciesBody)
+    private async insertBaseStatRelations(connection: PoolConnection, id: number, body: SpeciesBody): Promise<void>
     {
+        if (!body.baseStats) return;
+
         const statCount = await statService.count();
 
-        if (body.baseStats)
+        if (body.baseStats.length != statCount)
         {
-            if (body.baseStats.length != statCount)
-            {
-                throw new Error(`Base stat count must be exactly ${statCount}.`);
-            }
-
-            const values: number[][] = [];
-
-            body.baseStats.forEach((stat, index) =>
-            {
-                values.push([id, index + 1, stat]);
-            });
-
-            await connection.query("DELETE FROM species_base_stats WHERE species_id = ?", [id]);
-            await connection.query("INSERT INTO species_base_stats VALUES ?", [values]);
+            throw new Error(`Base stat count must be exactly ${statCount}.`);
         }
+
+        const values: number[][] = [];
+
+        body.baseStats.forEach((stat, index) =>
+        {
+            values.push([id, index + 1, stat]);
+        });
+
+        await connection.query("DELETE FROM species_base_stats WHERE species_id = ?", [id]);
+        await connection.query("INSERT INTO species_base_stats VALUES ?", [values]);
+    }
+
+    private async insertLearnsetRelations(connection: PoolConnection, id: number, body: SpeciesBody): Promise<void>
+    {
+        if (!body.learnset) return;
+
+        const values: number[][] = [];
+
+        for (const move of body.learnset)
+        {
+            values.push([id, await moveService.nameLookup.getIdByName(move)]);
+        }
+
+        await connection.query("DELETE FROM species_learnsets WHERE species_id = ?", [id]);
+        await connection.query("INSERT INTO species_learnsets VALUES ?", [values]);
     }
 
     async getByAbilityId(abilityId: number): Promise<RowDataPacket[]>

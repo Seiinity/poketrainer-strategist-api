@@ -3,6 +3,7 @@ import { TypeReference } from "./type";
 import { Request } from "express";
 import { AbilityReferenceForSpecies } from "./ability";
 import { StatReferenceForSpecies } from "./stat";
+import { MoveReference } from "./move";
 
 export class Species
 {
@@ -14,6 +15,7 @@ export class Species
     weight: number;
     abilities: AbilityReferenceForSpecies[];
     baseStats: StatReferenceForSpecies[];
+    learnset: MoveReference[];
     generation: string;
 
     constructor(data: {
@@ -25,6 +27,7 @@ export class Species
         weight: number;
         abilities: AbilityReferenceForSpecies[];
         baseStats: StatReferenceForSpecies[];
+        learnset: MoveReference[];
         generation: string;
     })
     {
@@ -36,6 +39,7 @@ export class Species
         this.weight = data.weight;
         this.abilities = data.abilities;
         this.baseStats = data.baseStats;
+        this.learnset = data.learnset;
         this.generation = data.generation;
     }
 }
@@ -53,6 +57,7 @@ export class SpeciesBody
     abilities?: string[];
     hiddenAbility?: string;
     baseStats?: number[];
+    learnset?: string[];
     generationId?: number;
 
     constructor(requestBody: Request["body"])
@@ -66,6 +71,7 @@ export class SpeciesBody
         this.abilities = requestBody.abilities;
         this.hiddenAbility = requestBody.hiddenAbility;
         this.baseStats = requestBody.baseStats;
+        this.learnset = requestBody.learnset;
         this.generationId = requestBody.generationId;
     }
 }

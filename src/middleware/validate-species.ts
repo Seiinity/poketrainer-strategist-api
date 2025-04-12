@@ -40,7 +40,7 @@ const validationSchema = z.object
         z.string({ invalid_type_error: "Ability must be a string." })
             .trim()
             .min(1, "Ability is required.")
-            .max(32, "Each type must be shorter than 32 characters."),
+            .max(32, "Each ability must be shorter than 32 characters."),
         { required_error: "Field 'abilities' is required.", invalid_type_error: "Abilities must be an array of strings." }
     )
         .max(2, "Species can have a maximum of two abilities.")
@@ -58,6 +58,15 @@ const validationSchema = z.object
             .positive("Base stat value must be a positive integer."),
         { required_error: "Field 'baseStats' is required.", invalid_type_error: "Base stats must be an array of numbers." }
     ),
+
+    learnset: z.array(
+        z.string({ invalid_type_error: "Move must be a string." })
+            .trim()
+            .min(1, "Each move must be between 1 and 32 characters long.")
+            .max(32, "Each move must be between 1 and 32 characters long."),
+        { required_error: "Field 'learnset' is required.", invalid_type_error: "Learnset must be an array of strings." }
+    )
+        .nonempty("Species must have at least one move in its learnset."),
 
     generationId: z.number
     ({
@@ -77,6 +86,8 @@ function validateSpeciesBody(req: Request, res: Response, next: NextFunction, sc
 
         req.body.name = result.name;
         req.body.types = result.types;
+        req.body.abilities = result.abilities;
+        req.body.learnset = result.learnset;
 
         next();
     }
