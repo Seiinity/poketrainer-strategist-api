@@ -12,6 +12,22 @@ const validationSchema = z.object
         .min(1, "Species name cannot be empty.")
         .max(12, "Species name must be shorter than 12 characters."),
 
+    level: z.number
+    ({
+        required_error: "Field 'level' is required.",
+        invalid_type_error: "Level must be a number.",
+    })
+        .int("Level must be a positive integer.")
+        .positive("Level must be a positive integer.")
+        .max(100, "Level must be no higher than 100."),
+
+    gender: z.string
+    ({
+        required_error: "Field 'gender' is required.",
+        invalid_type_error: "Gender must be a string.",
+    })
+        .trim(),
+
     ability: z.string
     ({
         required_error: "Field 'ability' is required.",
@@ -72,6 +88,8 @@ function validatePokemonBody(req: Request, res: Response, next: NextFunction, sc
 
         req.body.speciesName = result.speciesName;
         req.body.teamId = result.teamId;
+        req.body.gender = result.gender;
+        req.body.ability = result.ability;
         if (result.nickname) req.body.nickname = result.nickname;
 
         next();

@@ -16,6 +16,8 @@ class PokemonAdapter extends Adapter<Pokemon, PokemonBody>
         ({
             id: row.pokemon_id,
             ...row.nickname != null && { nickname: row.nickname },
+            level: row.level,
+            gender: row.gender_name,
             species: new SpeciesReference(row.species_name, row.species_id),
             ability: new AbilityReference(row.ability_name, row.ability_id),
             nature: new NatureReference(row.nature_name, row.nature_id),
@@ -32,11 +34,13 @@ class PokemonAdapter extends Adapter<Pokemon, PokemonBody>
     toMySQL(requestBody: PokemonBody): MySQLData
     {
         return {
+            nickname: requestBody.nickname,
+            level: requestBody.level,
+            gender_id: requestBody.genderId,
             species_id: requestBody.speciesId,
             ability_id: requestBody.abilityId,
             nature_id: requestBody.natureId,
             team_id: requestBody.teamId,
-            nickname: requestBody.nickname,
         };
     }
 }

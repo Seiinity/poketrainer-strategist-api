@@ -10,6 +10,8 @@ export class Pokemon
 {
     id: number;
     nickname?: string;
+    level: number;
+    gender: string;
     species: SpeciesReference;
     ability: AbilityReference;
     nature: NatureReference;
@@ -19,6 +21,8 @@ export class Pokemon
     constructor(data: {
         id: number;
         nickname?: string;
+        gender: string;
+        level: number;
         species: SpeciesReference;
         ability: AbilityReference;
         nature: NatureReference;
@@ -28,6 +32,8 @@ export class Pokemon
     {
         this.id = data.id;
         this.nickname = data.nickname;
+        this.level = data.level;
+        this.gender = data.gender;
         this.species = data.species;
         this.ability = data.ability;
         this.nature = data.nature;
@@ -39,6 +45,9 @@ export class Pokemon
 export class PokemonBody
 {
     nickname?: string;
+    level?: number;
+    gender?: string;
+    genderId?: number;
     species?: string;
     speciesId?: number;
     ability?: string;
@@ -52,6 +61,8 @@ export class PokemonBody
     constructor(requestBody: Request["body"])
     {
         this.nickname = requestBody.nickname;
+        this.level = requestBody.level;
+        this.gender = requestBody.gender;
         this.species = requestBody.species;
         this.ability = requestBody.ability;
         this.nature = requestBody.nature;

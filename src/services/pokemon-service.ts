@@ -9,6 +9,7 @@ import { Service } from "./service";
 import { Pokemon, PokemonBody } from "../models/pokemon";
 import { RowDataPacket } from "mysql2";
 import { PoolConnection } from "mysql2/promise";
+import genderService from "./gender-service";
 
 export class PokemonService extends Service<Pokemon, PokemonBody>
 {
@@ -20,16 +21,18 @@ export class PokemonService extends Service<Pokemon, PokemonBody>
 
     protected baseSelectQuery = `
         SELECT
-            pk.pokemon_id, pk.nickname,
+            pk.pokemon_id, pk.nickname, pk.level,
             sp.species_id, sp.name AS species_name,
             tm.team_id, tm.name AS team_name,
             nt.nature_id, nt.name AS nature_name,
-            ab.ability_id, ab.name as ability_name
+            ab.ability_id, ab.name as ability_name,
+            gn.name as gender_name
         FROM pokemon pk
         LEFT JOIN species sp ON pk.species_id = sp.species_id
         LEFT JOIN teams tm ON pk.team_id = tm.team_id
         LEFT JOIN natures nt ON pk.nature_id = nt.nature_id
         LEFT JOIN abilities ab ON pk.ability_id = ab.ability_id
+        LEFT JOIN genders gn ON pk.gender_id = gn.gender_id
     `;
 
     protected override async processRequestBody(body: PokemonBody): Promise<PokemonBody>
@@ -55,6 +58,11 @@ export class PokemonService extends Service<Pokemon, PokemonBody>
         if (body.nature)
         {
             processed.natureId = await natureService.nameLookup.getIdByName(body.nature);
+        }
+
+        if (body.gender)
+        {
+            processed.genderId = await genderService.getIdByName(body.gender);
         }
 
         return processed;
