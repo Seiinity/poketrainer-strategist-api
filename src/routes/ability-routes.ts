@@ -2,7 +2,7 @@
 
 import abilityController from "../controllers/ability-controller";
 import { sanitiseIdOrName, validateId } from "../middleware/validate-id";
-import { validateAbilityBodyOptional, validateAbilityBodyRequired } from "../middleware/validate-ability";
+import { validateAbilityBodyOptional, validateAbilityBodyRequired } from "../middleware/ability-validator";
 
 const router = express.Router();
 
