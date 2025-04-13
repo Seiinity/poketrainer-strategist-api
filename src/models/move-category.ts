@@ -1,9 +1,11 @@
 ﻿import config from "../config";
+import { getSpriteUrl } from "../utils/helpers";
 
 export class MoveCategory
 {
     id: number;
     name: string;
+    spriteUrl: string;
 
     constructor(data: {
         id: number;
@@ -12,6 +14,7 @@ export class MoveCategory
     {
         this.id = data.id;
         this.name = data.name;
+        this.spriteUrl = getSpriteUrl(config.moveCategoryPath, this.id.toString());
     }
 }
 

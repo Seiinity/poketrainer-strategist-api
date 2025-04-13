@@ -1,11 +1,13 @@
 ﻿import config from "../config";
 import { Request } from "express";
+import { getSpriteUrl } from "../utils/helpers";
 
 export class Type
 {
     id: number;
     name: string;
     effectiveness: TypeEffectiveness;
+    spriteUrl: string;
 
     constructor(data: {
         id: number;
@@ -16,6 +18,7 @@ export class Type
         this.id = data.id;
         this.name = data.name;
         this.effectiveness = data.effectiveness;
+        this.spriteUrl = getSpriteUrl(config.typePath, this.id.toString());
     }
 }
 

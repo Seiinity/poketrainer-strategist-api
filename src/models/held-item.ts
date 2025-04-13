@@ -1,21 +1,25 @@
 ﻿import { Request } from "express";
 import config from "../config";
+import { getSpriteUrl } from "../utils/helpers";
+import slugify from "slugify";
 
-export class HeldItem
-{
+export class HeldItem {
     id: number;
     name: string;
     description: string;
+    spriteUrl: string;
 
     constructor(data: {
         id: number;
         name: string;
         description: string;
-    })
-    {
+    }) {
         this.id = data.id;
         this.name = data.name;
         this.description = data.description;
+
+        const imageName = slugify(this.name, { lower: true, trim: true, strict: true });
+        this.spriteUrl = getSpriteUrl(config.heldItemPath, imageName);
     }
 }
 

@@ -4,6 +4,7 @@ import { Request } from "express";
 import { AbilityReferenceForSpecies } from "./ability";
 import { StatReferenceForSpecies } from "./stat";
 import { MoveReference } from "./move";
+import { getSpriteUrl } from "../utils/helpers";
 
 export class Species
 {
@@ -17,9 +18,10 @@ export class Species
     baseStats: StatReferenceForSpecies[];
     learnset: MoveReference[];
     generation: string;
+    spriteUrl: string;
 
     constructor(data: {
-        id?: number;
+        id: number;
         name: string;
         types: TypeReference[];
         genderRatio: string;
@@ -41,6 +43,7 @@ export class Species
         this.baseStats = data.baseStats;
         this.learnset = data.learnset;
         this.generation = data.generation;
+        this.spriteUrl = getSpriteUrl(config.speciesPath, this.id.toString());
     }
 }
 
