@@ -2,6 +2,7 @@
 import { TrainerReference } from "./trainer";
 import { PokemonReference } from "./pokemon";
 import { Request } from "express";
+import { buildReferencePath } from "../utils/helpers";
 
 export class Team
 {
@@ -46,6 +47,6 @@ export class TeamReference
     constructor(name: string, id: number)
     {
         this.name = name;
-        this.url = `${config.baseUrl}/api${config.teamPath}/${id}`;
+        this.url = this.url = buildReferencePath(config.teamPath, id);
     }
 }

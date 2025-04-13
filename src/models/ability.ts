@@ -1,6 +1,7 @@
 ﻿import config from "../config";
 import { Request } from "express";
 import { SpeciesReference } from "./species";
+import { buildReferencePath } from "../utils/helpers";
 
 export class Ability
 {
@@ -48,7 +49,7 @@ export class AbilityReference
     constructor(name: string, id: number)
     {
         this.name = name;
-        this.url = `${config.baseUrl}/api${config.abilityPath}/${id}`;
+        this.url = this.url = buildReferencePath(config.abilityPath, id);
     }
 }
 

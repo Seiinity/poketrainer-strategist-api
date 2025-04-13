@@ -1,6 +1,6 @@
 ﻿import config from "../config";
 import { Request } from "express";
-import { getSpriteUrl } from "../utils/helpers";
+import { buildReferencePath, getSpriteUrl } from "../utils/helpers";
 
 export class Type
 {
@@ -62,6 +62,6 @@ export class TypeReference
     constructor(name: string, id: number)
     {
         this.name = name;
-        this.url = `${config.baseUrl}/api${config.typePath}/${id}`;
+        this.url = this.url = buildReferencePath(config.typePath, id);
     }
 }

@@ -1,5 +1,6 @@
 ﻿import { StatReference } from "./stat";
 import config from "../config";
+import { buildReferencePath } from "../utils/helpers";
 
 export class Nature
 {
@@ -30,6 +31,6 @@ export class NatureReference
     constructor(name: string, id: number)
     {
         this.name = name;
-        this.url = `${config.baseUrl}/api${config.naturePath}/${id}`;
+        this.url = this.url = buildReferencePath(config.naturePath, id);
     }
 }

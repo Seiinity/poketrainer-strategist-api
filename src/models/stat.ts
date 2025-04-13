@@ -1,4 +1,5 @@
 ﻿import config from "../config";
+import { buildReferencePath } from "../utils/helpers";
 
 export class Stat
 {
@@ -23,7 +24,7 @@ export class StatReference
     constructor(name: string, id: number)
     {
         this.name = name;
-        this.url = `${config.baseUrl}/api${config.statPath}/${id}`;
+        this.url = this.url = buildReferencePath(config.statPath, id);
     }
 }
 

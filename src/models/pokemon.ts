@@ -7,6 +7,7 @@ import { NatureReference } from "./nature";
 import { AbilityReference } from "./ability";
 import { MoveReference } from "./move";
 import { HeldItemReference } from "./held-item";
+import { buildReferencePath } from "../utils/helpers";
 
 export class Pokemon
 {
@@ -93,6 +94,6 @@ export class PokemonReference
     constructor(name: string, id: number)
     {
         this.name = name;
-        this.url = `${config.baseUrl}/api${config.pokemonPath}/${id}`;
+        this.url = buildReferencePath(config.pokemonPath, id);
     }
 }

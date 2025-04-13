@@ -1,5 +1,5 @@
 ﻿import config from "../config";
-import { getSpriteUrl } from "../utils/helpers";
+import { buildReferencePath, getSpriteUrl } from "../utils/helpers";
 
 export class MoveCategory
 {
@@ -26,6 +26,6 @@ export class MoveCategoryReference
     constructor(name: string, id: number)
     {
         this.name = name;
-        this.url = `${config.baseUrl}/api${config.moveCategoryPath}/${id}`;
+        this.url = this.url = buildReferencePath(config.moveCategoryPath, id);
     }
 }

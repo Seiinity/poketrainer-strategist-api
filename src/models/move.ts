@@ -2,6 +2,7 @@
 import { TypeReference } from "./type";
 import { Request } from "express";
 import { MoveCategoryReference } from "./move-category";
+import { buildReferencePath } from "../utils/helpers";
 
 export class Move
 {
@@ -71,9 +72,9 @@ export class MoveReference
     name: string;
     url: string;
 
-    constructor(name: string, id: string)
+    constructor(name: string, id: number)
     {
         this.name = name;
-        this.url = `${config.baseUrl}/api${config.movePath}/${id}`;
+        this.url = this.url = buildReferencePath(config.movePath, id);
     }
 }

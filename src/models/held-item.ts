@@ -1,6 +1,6 @@
 ﻿import { Request } from "express";
 import config from "../config";
-import { getSpriteUrl } from "../utils/helpers";
+import { buildReferencePath, getSpriteUrl } from "../utils/helpers";
 import slugify from "slugify";
 
 export class HeldItem {
@@ -43,6 +43,6 @@ export class HeldItemReference
     constructor(name: string, id: number)
     {
         this.name = name;
-        this.url = `${config.baseUrl}/api${config.heldItemPath}/${id}`;
+        this.url = this.url = buildReferencePath(config.heldItemPath, id);
     }
 }

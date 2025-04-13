@@ -4,7 +4,7 @@ import { Request } from "express";
 import { AbilityReferenceForSpecies } from "./ability";
 import { StatReferenceForSpecies } from "./stat";
 import { MoveReference } from "./move";
-import { getSpriteUrl } from "../utils/helpers";
+import { buildReferencePath, getSpriteUrl } from "../utils/helpers";
 
 export class Species
 {
@@ -87,7 +87,7 @@ export class SpeciesReference
     constructor(name: string, id: number)
     {
         this.name = name;
-        this.url = `${config.baseUrl}/api${config.speciesPath}/${id}`;
+        this.url = buildReferencePath(config.speciesPath, id);
     }
 }
 

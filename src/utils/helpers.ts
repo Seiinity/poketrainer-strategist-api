@@ -8,8 +8,6 @@ export const sanitiseTableTableSingular = (tableName: string): string => plurali
 
 export const capitaliseTableNameSingular = (tableName: string): string => capitalize(sanitiseTableTableSingular(tableName));
 
-export const buildStaticPath = (resource: string): string => `${config.baseUrl}/sprites${resource}`;
-
 export function buildPathForJSON(...parts: string[])
 {
     return parts
@@ -19,6 +17,11 @@ export function buildPathForJSON(...parts: string[])
             return part.replace(/^\/+|\/+$/g, ""); // Trims both slashes for middle parts.
         })
         .join("/");
+}
+
+export function buildReferencePath(path: string, id: number): string
+{
+    return buildPathForJSON(config.baseUrl, "api", path, id.toString());
 }
 
 export function getSpriteUrl(basePath: string, name: string): string
