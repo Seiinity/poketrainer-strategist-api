@@ -3,7 +3,8 @@ import config from "../config";
 import { buildReferencePath, getSpriteUrl } from "../utils/helpers";
 import slugify from "slugify";
 
-export class HeldItem {
+export class HeldItem
+{
     id: number;
     name: string;
     description: string;
@@ -13,7 +14,8 @@ export class HeldItem {
         id: number;
         name: string;
         description: string;
-    }) {
+    })
+    {
         this.id = data.id;
         this.name = data.name;
         this.description = data.description;
