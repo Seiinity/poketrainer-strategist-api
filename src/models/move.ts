@@ -1,6 +1,7 @@
 ﻿import config from "../config";
 import { TypeReference } from "./type";
 import { Request } from "express";
+import { MoveCategoryReference } from "./move-category";
 
 export class Move
 {
@@ -8,6 +9,7 @@ export class Move
     name: string;
     description: string;
     type: TypeReference;
+    category: MoveCategoryReference;
     power: number | null;
     accuracy: number | null;
     pp: number;
@@ -18,6 +20,7 @@ export class Move
         name: string;
         description: string;
         type: TypeReference;
+        category: MoveCategoryReference;
         power: number | null;
         accuracy: number | null;
         pp: number;
@@ -28,6 +31,7 @@ export class Move
         this.name = data.name;
         this.description = data.description;
         this.type = data.type;
+        this.category = data.category;
         this.power = data.power;
         this.accuracy = data.accuracy;
         this.pp = data.pp;
@@ -41,7 +45,9 @@ export class MoveBody
     name?: string;
     description?: string;
     type?: string;
-    typeId?: string;
+    typeId?: number;
+    category?: string;
+    categoryId?: number;
     power?: number;
     accuracy?: number;
     pp?: number;
@@ -52,6 +58,7 @@ export class MoveBody
         this.name = requestBody.name;
         this.description = requestBody.description;
         this.type = requestBody.type;
+        this.category = requestBody.category;
         this.power = requestBody.power;
         this.accuracy = requestBody.accuracy;
         this.pp = requestBody.pp;

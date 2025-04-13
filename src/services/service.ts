@@ -1,6 +1,5 @@
 ﻿import db from "../db/mysql";
 import pluralize from "pluralize";
-import capitalize from "lodash.capitalize";
 import { Adapter, ReadOnlyAdapter } from "../adapters/adapter";
 import { ResultSetHeader, RowDataPacket } from "mysql2";
 import { MySQLCompatibleValue, MySQLData } from "../types/mysql-types";
@@ -8,6 +7,7 @@ import { MySQLOperation } from "../types/enums";
 import { PoolConnection } from "mysql2/promise";
 import { createInsertQuery, createUpdateQuery } from "../utils/mysql-generation";
 import { isErrorCode } from "../utils/error-handling";
+import { capitaliseTableName } from "../utils/helpers";
 
 export abstract class ReadOnlyService<TModel>
 {
@@ -268,7 +268,7 @@ export class NameLookup<TModel>
         {
             const query = `SELECT ${this.idField} AS id FROM ${this.tableName} ${this.tableAlias} WHERE LOWER(${this.tableAlias}.${this.nameField}) = LOWER(?)`;
             const result = await db.queryOne<{ id: number }>(query, [name]);
-            return (!result || !result.id) ? Promise.reject(new Error(`${capitalize(pluralize.singular(this.tableName))} '${name}' does not exist.`)) : result.id;
+            return (!result || !result.id) ? Promise.reject(new Error(`${capitaliseTableName(this.tableName)} '${name}' does not exist.`)) : result.id;
         }
         catch (error)
         {

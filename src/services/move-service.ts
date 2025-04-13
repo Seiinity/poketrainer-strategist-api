@@ -1,7 +1,9 @@
-﻿import moveAdapter from "../adapters/move-adapter";
+﻿import db from "../db/mysql";
+import moveCategoryService from "./move-category-service";
+import moveAdapter from "../adapters/move-adapter";
+import typeService from "./type-service";
 import { NameLookupService } from "./service";
 import { Move, MoveBody } from "../models/move";
-import db from "../db/mysql";
 import { RowDataPacket } from "mysql2";
 
 class MoveService extends NameLookupService<Move, MoveBody>
@@ -24,6 +26,23 @@ class MoveService extends NameLookupService<Move, MoveBody>
         LEFT JOIN move_categories mc ON mv.move_category_id = mc.move_category_id
         LEFT JOIN generations gn ON mv.generation_id = gn.generation_id
     `;
+
+    protected override async processRequestBody(body: MoveBody): Promise<MoveBody>
+    {
+        const processed = { ...body };
+
+        if (body.type)
+        {
+            processed.typeId = await typeService.nameLookup.getIdByName(body.type)
+        }
+
+        if (body.category)
+        {
+            processed.categoryId = await moveCategoryService.nameLookup.getIdByName(body.category)
+        }
+
+        return processed;
+    }
 
     async getBySpeciesId(speciesId: number)
     {

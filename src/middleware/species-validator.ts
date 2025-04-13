@@ -28,7 +28,7 @@ class SpeciesValidator extends Validator
             .int("Gender ratio ID must be a positive integer.")
             .positive("Gender ratio ID must be a positive integer."),
 
-        height: z.number({ required_error: "Field 'height' is required.", invalid_type_error: "Height name must be a number." })
+        height: z.number({ required_error: "Field 'height' is required.", invalid_type_error: "Height must be a number." })
             .min(0.1, "Height must be between 0.1 and 999.9 metres.")
             .max(999.9, "Height must be between 0.1 and 999.9 metres.")
             .refine(n => Number(n.toFixed(1)) === n, "Height must have at most one decimal place."),
