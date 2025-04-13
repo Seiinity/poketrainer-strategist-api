@@ -2,12 +2,12 @@
 
 import typeController from "../controllers/type-controller";
 import typeValidator from "../middleware/type-validator";
-import { sanitiseIdOrName, validateId } from "../middleware/validate-id";
+import idValidator from "../middleware/id-validator";
 
 const router = express.Router();
 
-router.param("id", validateId);
-router.param("idName", sanitiseIdOrName);
+router.param("id", idValidator.validate);
+router.param("idName", idValidator.sanitise);
 
 router.get("/", typeController.index);
 router.get("/:idName", typeController.show);

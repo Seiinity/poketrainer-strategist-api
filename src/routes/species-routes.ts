@@ -1,13 +1,13 @@
 ﻿import express from "express";
 
 import speciesController from "../controllers/species-controller";
-import { sanitiseIdOrName, validateId } from "../middleware/validate-id";
+import idValidator from "../middleware/id-validator";
 import speciesValidator from "../middleware/species-validator";
 
 const router = express.Router();
 
-router.param("id", validateId);
-router.param("idName", sanitiseIdOrName);
+router.param("id", idValidator.validate);
+router.param("idName", idValidator.sanitise);
 
 router.get("/", speciesController.index);
 router.get("/:idName", speciesController.show);

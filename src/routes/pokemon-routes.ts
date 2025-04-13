@@ -1,12 +1,12 @@
 ﻿import express from "express";
 
 import pokemonController from "../controllers/pokemon-controller";
-import { validateId } from "../middleware/validate-id";
+import idValidator from "../middleware/id-validator";
 import pokemonValidator from "../middleware/pokemon-validator";
 
 const router = express.Router();
 
-router.param("id", validateId);
+router.param("id", idValidator.validate);
 
 router.get("/", pokemonController.index);
 router.get("/:id", pokemonController.show);

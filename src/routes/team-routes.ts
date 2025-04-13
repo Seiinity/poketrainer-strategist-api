@@ -1,12 +1,12 @@
 ﻿import express from "express";
 
 import teamController from "../controllers/team-controller";
-import { validateId } from "../middleware/validate-id";
+import idValidator from "../middleware/id-validator";
 import teamValidator from "../middleware/team-validator";
 
 const router = express.Router();
 
-router.param("id", validateId);
+router.param("id", idValidator.validate);
 
 router.get("/", teamController.index);
 router.get("/:id", teamController.show);

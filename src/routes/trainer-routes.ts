@@ -1,13 +1,13 @@
 ﻿import express from "express";
 
 import trainerController from "../controllers/trainer-controller";
-import { validateId, sanitiseIdOrName } from "../middleware/validate-id";
+import idValidator from "../middleware/id-validator";
 import trainerValidator from "../middleware/trainer-validator";
 
 const router = express.Router();
 
-router.param("id", validateId);
-router.param("idName", sanitiseIdOrName);
+router.param("id", idValidator.validate);
+router.param("idName", idValidator.sanitise);
 
 router.get("/", trainerController.index);
 router.get("/login", trainerValidator.validateLogin, trainerController.login);

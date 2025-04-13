@@ -1,11 +1,11 @@
 ﻿import express from "express";
 
-import { validateId } from "../middleware/validate-id";
+import idValidator from "../middleware/id-validator";
 import moveController from "../controllers/move-controller";
 
 const router = express.Router();
 
-router.param("id", validateId);
+router.param("id", idValidator.validate);
 
 router.get("/", moveController.index);
 router.get("/:id", moveController.show);
