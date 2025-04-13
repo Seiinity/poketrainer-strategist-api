@@ -5,12 +5,13 @@ import statService from "./stat-service";
 import natureService from "./nature-service";
 import pokemonAdapter from "../adapters/pokemon-adapter";
 import abilityService from "./ability-service";
+import genderService from "./gender-service";
+import moveService from "./move-service";
+import heldItemService from "./held-item-service";
 import { Service } from "./service";
 import { Pokemon, PokemonBody } from "../models/pokemon";
 import { RowDataPacket } from "mysql2";
 import { PoolConnection } from "mysql2/promise";
-import genderService from "./gender-service";
-import moveService from "./move-service";
 
 export class PokemonService extends Service<Pokemon, PokemonBody>
 {
@@ -26,14 +27,16 @@ export class PokemonService extends Service<Pokemon, PokemonBody>
             sp.species_id, sp.name AS species_name,
             tm.team_id, tm.name AS team_name,
             nt.nature_id, nt.name AS nature_name,
-            ab.ability_id, ab.name as ability_name,
-            gn.name as gender_name
+            ab.ability_id, ab.name AS ability_name,
+            gn.name AS gender_name,
+            hi.held_item_id, hi.name AS held_item_name
         FROM pokemon pk
         LEFT JOIN species sp ON pk.species_id = sp.species_id
         LEFT JOIN teams tm ON pk.team_id = tm.team_id
         LEFT JOIN natures nt ON pk.nature_id = nt.nature_id
         LEFT JOIN abilities ab ON pk.ability_id = ab.ability_id
         LEFT JOIN genders gn ON pk.gender_id = gn.gender_id
+        LEFT JOIN held_items hi ON pk.held_item_id = hi.held_item_id
     `;
 
     protected override async processRequestBody(body: PokemonBody): Promise<PokemonBody>
@@ -64,6 +67,11 @@ export class PokemonService extends Service<Pokemon, PokemonBody>
         if (body.gender)
         {
             processed.genderId = await genderService.getIdByName(body.gender);
+        }
+
+        if (body.heldItem)
+        {
+            processed.heldItemId = await heldItemService.nameLookup.getIdByName(body.heldItem);
         }
 
         return processed;

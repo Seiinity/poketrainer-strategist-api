@@ -7,7 +7,7 @@ import { MySQLOperation } from "../types/enums";
 import { PoolConnection } from "mysql2/promise";
 import { createInsertQuery, createUpdateQuery } from "../utils/mysql-generation";
 import { isErrorCode } from "../utils/error-handling";
-import { capitaliseTableName } from "../utils/helpers";
+import { capitaliseTableNameSingular, sanitiseTableTableSingular } from "../utils/helpers";
 
 export abstract class ReadOnlyService<TModel>
 {
@@ -20,7 +20,7 @@ export abstract class ReadOnlyService<TModel>
 
     protected handleReadError(error: unknown, id?: number): never
     {
-        const singularName = pluralize.singular(this.tableName);
+        const singularName = sanitiseTableTableSingular(this.tableName);
         const prefix = `Error fetching ${singularName}${id ? ` with ID ${id}` : ""}: `;
 
         const specificErrorMessage = this.getSpecificReadErrorMessage(error);
@@ -268,7 +268,7 @@ export class NameLookup<TModel>
         {
             const query = `SELECT ${this.idField} AS id FROM ${this.tableName} ${this.tableAlias} WHERE LOWER(${this.tableAlias}.${this.nameField}) = LOWER(?)`;
             const result = await db.queryOne<{ id: number }>(query, [name]);
-            return (!result || !result.id) ? Promise.reject(new Error(`${capitaliseTableName(this.tableName)} '${name}' does not exist.`)) : result.id;
+            return (!result || !result.id) ? Promise.reject(new Error(`${capitaliseTableNameSingular(this.tableName)} '${name}' does not exist.`)) : result.id;
         }
         catch (error)
         {

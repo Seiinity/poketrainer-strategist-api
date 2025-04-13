@@ -58,11 +58,21 @@ class PokemonValidator extends Validator
 
         nature: z.string
         ({
+            required_error: "Field 'nature' is required.",
             invalid_type_error: "Nature must be a string.",
         })
             .trim()
             .min(1, "Nature must not be empty.")
-            .max(12, "Nature must be between 1 and 12 characters."),
+            .max(12, "Nature must be between 1 and 12 characters long."),
+
+        heldItem: z.string
+        ({
+            required_error: "Field 'heldItem' is required.",
+            invalid_type_error: "Held item must be a string.",
+        })
+            .trim()
+            .min(1, "Held item not be empty.")
+            .max(32, "Held item be between 1 and 32 characters long."),
 
         evs: z.array(
             z.number({ invalid_type_error: "EV value must be a number." })

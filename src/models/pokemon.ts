@@ -6,6 +6,7 @@ import { StatReferenceForPokemon } from "./stat";
 import { NatureReference } from "./nature";
 import { AbilityReference } from "./ability";
 import { MoveReference } from "./move";
+import { HeldItemReference } from "./held-item";
 
 export class Pokemon
 {
@@ -16,8 +17,9 @@ export class Pokemon
     species: SpeciesReference;
     ability: AbilityReference;
     nature: NatureReference;
-    stats: StatReferenceForPokemon[];
+    heldItem: HeldItemReference;
     moves: MoveReference[];
+    stats: StatReferenceForPokemon[];
     team: TeamReference;
 
     constructor(data: {
@@ -28,8 +30,9 @@ export class Pokemon
         species: SpeciesReference;
         ability: AbilityReference;
         nature: NatureReference;
-        stats: StatReferenceForPokemon[];
+        heldItem: HeldItemReference;
         moves: MoveReference[];
+        stats: StatReferenceForPokemon[];
         team: TeamReference;
     })
     {
@@ -40,8 +43,9 @@ export class Pokemon
         this.species = data.species;
         this.ability = data.ability;
         this.nature = data.nature;
-        this.stats = data.stats;
+        this.heldItem = data.heldItem;
         this.moves = data.moves;
+        this.stats = data.stats;
         this.team = data.team;
     }
 }
@@ -58,6 +62,8 @@ export class PokemonBody
     abilityId?: number;
     nature?: string;
     natureId?: number;
+    heldItem?: string;
+    heldItemId?: number;
     evs?: number[];
     ivs?: number[];
     moves?: string[];
@@ -71,6 +77,7 @@ export class PokemonBody
         this.species = requestBody.species;
         this.ability = requestBody.ability;
         this.nature = requestBody.nature;
+        this.heldItem = requestBody.heldItem;
         this.evs = requestBody.evs;
         this.ivs = requestBody.ivs;
         this.moves = requestBody.moves;

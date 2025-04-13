@@ -1,6 +1,7 @@
 ﻿import express from "express";
 
 import abilityRoutes from "./ability-routes";
+import heldItemRoutes from "./held-item-routes";
 import natureRoutes from "./nature-routes";
 import moveCategoryRoutes from "./move-category-routes";
 import moveRoutes from "./move-routes";
@@ -15,6 +16,7 @@ import config from "../config";
 const router = express.Router();
 
 router.use(config.abilityPath, abilityRoutes);
+router.use(config.heldItemPath, heldItemRoutes);
 router.use(config.naturePath, natureRoutes);
 router.use(config.moveCategoryPath, moveCategoryRoutes);
 router.use(config.movePath, moveRoutes);
