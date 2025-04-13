@@ -19,7 +19,7 @@ class SpeciesAdapter extends Adapter<Species, SpeciesBody>
                 new TypeReference(row.type1_name, row.type1_id),
                 ...row.type2_id ? [new TypeReference(row.type2_name, row.type2_id)] : []
             ],
-            genderRatio: `${row.male_rate}M:${row.female_rate}F`,
+            genderRatio: row.male_rate == null ? "Genderless" : `${row.male_rate}M:${row.female_rate}F`,
             height: Number(row.height),
             weight: Number(row.weight),
             abilities: row.abilities.map((a: RowDataPacket) => abilityAdapter.referenceForSpeciesFromMySQL(a)),
