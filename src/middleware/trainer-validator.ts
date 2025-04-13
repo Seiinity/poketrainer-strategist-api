@@ -67,7 +67,7 @@ class TrainerValidator extends Validator
 
             res.status(500).json({ error: "An unexpected error occurred during validation." });
         }
-    }
+    };
 }
 
 export default new TrainerValidator();

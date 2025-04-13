@@ -58,7 +58,7 @@ export class StatReferenceForPokemon
     {
         const natureModifier = id == raisedStatId ? 1.1 : id == loweredStatId ? 0.9 : 1;
         return this.stat.name == "HP"
-            ? Math.floor((((this.ivs + (2 * baseValue) + (this.evs / 4) + 100) * level) / 100) + 10)
-            : Math.floor(Math.floor((((this.ivs + (2 * baseValue) + (this.evs / 4)) * level) / 100) + 5) * natureModifier);
+            ? Math.floor((this.ivs + 2 * baseValue + this.evs / 4 + 100) * level / 100 + 10)
+            : Math.floor(Math.floor((this.ivs + 2 * baseValue + this.evs / 4) * level / 100 + 5) * natureModifier);
     }
 }

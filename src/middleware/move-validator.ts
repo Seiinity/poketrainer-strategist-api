@@ -67,7 +67,7 @@ class MoveValidator extends Validator
 
         accuracy: z.number
         ({
-            invalid_type_error: "Accuracy must be a number."
+            invalid_type_error: "Accuracy must be a number.",
         })
             .min(0.01, "Accuracy must be between 0.01 and 1.00.")
             .max(1.00, "Accuracy must be between 0.01 and 1.00.")

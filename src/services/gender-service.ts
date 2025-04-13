@@ -6,7 +6,7 @@ class GenderService
     {
         try
         {
-            const query = `SELECT gender_id AS id FROM genders WHERE LOWER(name) = LOWER(?)`;
+            const query = "SELECT gender_id AS id FROM genders WHERE LOWER(name) = LOWER(?)";
             const result = await db.queryOne<{ id: number }>(query, [name]);
             return (!result || !result.id) ? Promise.reject(new Error(`Gender '${name}' does not exist.`)) : result.id;
         }

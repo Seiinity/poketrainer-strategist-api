@@ -33,12 +33,12 @@ class MoveService extends NameLookupService<Move, MoveBody>
 
         if (body.type)
         {
-            processed.typeId = await typeService.nameLookup.getIdByName(body.type)
+            processed.typeId = await typeService.nameLookup.getIdByName(body.type);
         }
 
         if (body.category)
         {
-            processed.categoryId = await moveCategoryService.nameLookup.getIdByName(body.category)
+            processed.categoryId = await moveCategoryService.nameLookup.getIdByName(body.category);
         }
 
         return processed;

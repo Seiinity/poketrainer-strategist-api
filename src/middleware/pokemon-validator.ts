@@ -81,7 +81,7 @@ class PokemonValidator extends Validator
                 .max(252, "EV value must not be higher than 252."),
             { required_error: "Field 'evs' is required.", invalid_type_error: "EVs must be an array of numbers." }
         ).refine(values => values.reduce((sum, value) => sum + value, 0) <= 510, {
-            message: "Total EVs must not exceed 510."
+            message: "Total EVs must not exceed 510.",
         }),
 
         ivs: z.array(

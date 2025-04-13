@@ -14,7 +14,7 @@ class AbilityAdapter extends Adapter<Ability, AbilityBody>
             name: row.name,
             description: row.description,
             generation: row.generation,
-            species: row.species.map((sp: RowDataPacket) => speciesAdapter.referenceForAbilityFromMySQL(sp))
+            species: row.species.map((sp: RowDataPacket) => speciesAdapter.referenceForAbilityFromMySQL(sp)),
         });
     }
 

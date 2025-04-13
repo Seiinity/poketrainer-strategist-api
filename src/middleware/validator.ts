@@ -1,9 +1,9 @@
-﻿import { z, ZodObject } from "zod";
+﻿import { z, ZodObject, ZodRawShape } from "zod";
 import { NextFunction, Request, Response } from "express";
 
 export abstract class Validator
 {
-    protected abstract validationSchema: ZodObject<any>;
+    protected abstract validationSchema: ZodObject<ZodRawShape>;
 
     private validate = (req: Request, res: Response, next: NextFunction, schema: z.Schema): void =>
     {
@@ -23,15 +23,15 @@ export abstract class Validator
 
             res.status(500).json({ error: "An unexpected error occurred during validation." });
         }
-    }
+    };
 
     validateRequired = (req: Request, res: Response, next: NextFunction): void =>
     {
         this.validate(req, res, next, this.validationSchema);
-    }
+    };
 
     validateOptional = (req: Request, res: Response, next: NextFunction): void =>
     {
         this.validate(req, res, next, this.validationSchema.partial());
-    }
+    };
 }

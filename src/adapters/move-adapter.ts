@@ -19,7 +19,7 @@ class MoveAdapter extends Adapter<Move, MoveBody>
             power: Number(row.power),
             accuracy: Number(row.accuracy),
             pp: Number(row.pp),
-            generation: row.generation
+            generation: row.generation,
         });
     }
 
@@ -34,7 +34,7 @@ class MoveAdapter extends Adapter<Move, MoveBody>
             power: requestBody.power,
             accuracy: requestBody.accuracy,
             pp: requestBody.pp,
-            generation_id: requestBody.generation
+            generation_id: requestBody.generation,
         };
     }
 

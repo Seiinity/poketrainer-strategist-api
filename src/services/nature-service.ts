@@ -1,4 +1,4 @@
-﻿import { NameLookupReadOnlyService, ReadOnlyService } from "./service";
+﻿import { NameLookupReadOnlyService } from "./service";
 import { Nature } from "../models/nature";
 import natureAdapter from "../adapters/nature-adapter";
 

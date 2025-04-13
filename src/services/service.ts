@@ -245,8 +245,9 @@ export class NameLookup<TModel>
         private readonly idField: string,
         private readonly nameField: string,
         private readonly baseSelectQuery: string,
-        private readonly adaptToModel: (row: RowDataPacket) => Promise<TModel>
-    ) {}
+        private readonly adaptToModel: (row: RowDataPacket)=> Promise<TModel>
+    )
+    {}
 
     async getByName(name: string): Promise<TModel | null>
     {
