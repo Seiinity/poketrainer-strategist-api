@@ -5,6 +5,7 @@ import { Request } from "express";
 import { StatReferenceForPokemon } from "./stat";
 import { NatureReference } from "./nature";
 import { AbilityReference } from "./ability";
+import { MoveReference } from "./move";
 
 export class Pokemon
 {
@@ -16,6 +17,7 @@ export class Pokemon
     ability: AbilityReference;
     nature: NatureReference;
     stats: StatReferenceForPokemon[];
+    moves: MoveReference[];
     team: TeamReference;
 
     constructor(data: {
@@ -27,6 +29,7 @@ export class Pokemon
         ability: AbilityReference;
         nature: NatureReference;
         stats: StatReferenceForPokemon[];
+        moves: MoveReference[];
         team: TeamReference;
     })
     {
@@ -38,6 +41,7 @@ export class Pokemon
         this.ability = data.ability;
         this.nature = data.nature;
         this.stats = data.stats;
+        this.moves = data.moves;
         this.team = data.team;
     }
 }
@@ -56,6 +60,7 @@ export class PokemonBody
     natureId?: number;
     evs?: number[];
     ivs?: number[];
+    moves?: string[];
     teamId?: number;
 
     constructor(requestBody: Request["body"])
@@ -68,6 +73,7 @@ export class PokemonBody
         this.nature = requestBody.nature;
         this.evs = requestBody.evs;
         this.ivs = requestBody.ivs;
+        this.moves = requestBody.moves;
         this.teamId = requestBody.teamId;
     }
 }

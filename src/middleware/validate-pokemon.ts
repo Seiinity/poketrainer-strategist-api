@@ -78,20 +78,22 @@ const validationSchema = z.object
             .min(0, "IV value must be at least 0."),
         { required_error: "Field 'ivs' is required.", invalid_type_error: "IVs must be an array of numbers." }
     ),
+
+    moves: z.array(
+        z.string({ invalid_type_error: "Move must be a string." })
+            .trim()
+            .min(1, "Each move must be between 1 and 32 characters long.")
+            .max(32, "Each move must be between 1 and 32 characters long."),
+        { required_error: "Field 'moves' is required.", invalid_type_error: "Moves must be an array of strings." }
+    )
+        .nonempty("Pokémon must have at least one move."),
 });
 
 function validatePokemonBody(req: Request, res: Response, next: NextFunction, schema: z.Schema)
 {
     try
     {
-        const result = schema.parse(req.body);
-
-        req.body.speciesName = result.speciesName;
-        req.body.teamId = result.teamId;
-        req.body.gender = result.gender;
-        req.body.ability = result.ability;
-        if (result.nickname) req.body.nickname = result.nickname;
-
+        req.body = schema.parse(req.body);
         next();
     }
     catch (error)

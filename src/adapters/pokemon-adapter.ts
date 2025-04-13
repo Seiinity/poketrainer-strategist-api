@@ -1,4 +1,5 @@
 ﻿import statAdapter from "./stat-adapter";
+import moveAdapter from "./move-adapter";
 import { Pokemon, PokemonBody, PokemonReference } from "../models/pokemon";
 import { SpeciesReference } from "../models/species";
 import { TeamReference } from "../models/team";
@@ -22,13 +23,14 @@ class PokemonAdapter extends Adapter<Pokemon, PokemonBody>
             ability: new AbilityReference(row.ability_name, row.ability_id),
             nature: new NatureReference(row.nature_name, row.nature_id),
             stats: row.stats.map((s: RowDataPacket) => statAdapter.referenceForPokemonFromMySQL(s)),
+            moves: row.moves.map((m: RowDataPacket) => moveAdapter.referenceFromMySQL(m)),
             team: new TeamReference(row.team_name, row.team_id),
         });
     }
 
     referenceFromMySQL(row: RowDataPacket): PokemonReference
     {
-        return new PokemonReference(row.nickname ?? row.species_name, row.id);
+        return new PokemonReference(row.nickname ?? row.species_name, row.pokemon_id);
     }
 
     toMySQL(requestBody: PokemonBody): MySQLData

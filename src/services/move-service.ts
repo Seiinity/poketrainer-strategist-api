@@ -42,6 +42,25 @@ class MoveService extends NameLookupService<Move, MoveBody>
             throw new Error(`Error fetching moves by species ID: ${(error as Error).message}`);
         }
     }
+
+    async getByPokemonId(pokemonId: number)
+    {
+        try
+        {
+            const query = `
+                SELECT mv.move_id, mv.name
+                FROM moves mv
+                LEFT JOIN pokemon_moves pm ON mv.move_id = pm.move_id
+                WHERE pm.pokemon_id = ?
+                ORDER BY pm.slot
+            `;
+            return await db.queryTyped<RowDataPacket>(query, [pokemonId]);
+        }
+        catch (error)
+        {
+            throw new Error(`Error fetching moves by Pokémon ID: ${(error as Error).message}`);
+        }
+    }
 }
 
 export default new MoveService();
