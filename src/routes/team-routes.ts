@@ -3,10 +3,13 @@
 import teamController from "../controllers/team-controller";
 import idValidator from "../middleware/id-validator";
 import teamValidator from "../middleware/team-validator";
+import { authenticateTeamOwner, authenticateTrainer } from "../middleware/authenticator";
 
 const router = express.Router();
 
 router.param("id", idValidator.validate);
+router.param("id", authenticateTrainer);
+router.param("id", authenticateTeamOwner);
 
 router.get("/", teamController.index);
 router.get("/:id", teamController.show);

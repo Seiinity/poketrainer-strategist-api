@@ -1,8 +1,10 @@
 ﻿import trainerService from "../services/trainer-service";
 import * as argon2 from "argon2";
+import jwt from "jsonwebtoken";
 import { Request, Response } from "express";
 import { NameLookupController } from "./controller";
-import { Trainer, TrainerBody } from "../models/trainer";
+import { Trainer, TrainerBody, TrainerVerification } from "../models/trainer";
+import config from "../config";
 
 class TrainerController extends NameLookupController<Trainer, TrainerBody>
 {
@@ -52,7 +54,14 @@ class TrainerController extends NameLookupController<Trainer, TrainerBody>
                 return;
             }
 
-            res.status(200).json({ message: `Welcome, ${trainer.name}!` });
+            const token = jwt.sign
+            (
+                new TrainerVerification(trainer.name).get(),
+                config.jwtSecret,
+                { expiresIn: "15m" }
+            )
+
+            res.status(200).json({ token: token});
         }
         catch (error)
         {

@@ -55,6 +55,27 @@ class TeamService extends Service<Team, TeamBody>
             throw new Error(`Error fetching team reference by trainer ID: ${(error as Error).message}`);
         }
     }
+
+    async isAuthorised(teamId: number, trainerName: string): Promise<boolean>
+    {
+        try
+        {
+            const row = await db.queryOne<RowDataPacket>
+            (
+                `SELECT tr.name
+                FROM teams tm
+                LEFT JOIN trainers tr ON tm.trainer_id = tr.trainer_id
+                WHERE team_id = ?`,
+                [teamId]
+            );
+
+            return row ? trainerName == row.name : false;
+        }
+        catch (error)
+        {
+            throw new Error(`Error fetching team authorisation: ${(error as Error).message}`);
+        }
+    }
 }
 
 export default new TeamService();

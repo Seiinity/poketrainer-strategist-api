@@ -49,3 +49,19 @@ export class TrainerReference
         this.url = this.url = buildReferencePath(config.trainerPath, id);
     }
 }
+
+export class TrainerVerification
+{
+    sub: string;
+
+    constructor(sub: string)
+    {
+        this.sub = sub;
+    }
+
+    get()
+    {
+        const {...object} = this;
+        return {...object};
+    }
+}

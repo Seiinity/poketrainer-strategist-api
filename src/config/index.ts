@@ -11,6 +11,7 @@ interface Config
     dbUser: string;
     dbPass: string;
     baseUrl: string;
+    jwtSecret: string;
 
     abilityPath: string;
     formPath: string;
@@ -35,6 +36,7 @@ const config: Config =
     dbUser: String(process.env.DB_USER),
     dbPass: String(process.env.DB_PASS),
     baseUrl: `${process.env.BASE_URL}:${process.env.APP_PORT}`,
+    jwtSecret: String(process.env.JWT_SECRET),
 
     abilityPath: "/abilities",
     formPath: "/forms",
