@@ -1,20 +1,22 @@
-﻿import { Species, SpeciesBody, SpeciesReferenceForAbility } from "../models/species";
-import { TypeReference } from "../models/type";
+﻿import { Adapter } from "./adapter";
+import { Form, FormBody } from "../models/form";
 import { RowDataPacket } from "mysql2";
-import { Adapter } from "./adapter";
-import { MySQLData } from "../types/mysql-types";
+import { SpeciesReference } from "../models/species";
+import { TypeReference } from "../models/type";
 import abilityAdapter from "./ability-adapter";
 import statAdapter from "./stat-adapter";
 import moveAdapter from "./move-adapter";
+import { MySQLData } from "../types/mysql-types";
 
-class SpeciesAdapter extends Adapter<Species, SpeciesBody>
+class FormAdapter extends Adapter<Form, FormBody>
 {
-    fromMySQL(row: RowDataPacket): Species
+    fromMySQL(row: RowDataPacket): Form
     {
-        return new Species
+        return new Form
         ({
-            id: row.species_id,
+            id: row.form_id,
             name: row.name,
+            species: new SpeciesReference(row.species_name, row.species_id),
             types: [
                 new TypeReference(row.type_1_name, row.type_1_id),
                 ...row.type_2_id ? [new TypeReference(row.type_2_name, row.type_2_id)] : []
@@ -29,7 +31,7 @@ class SpeciesAdapter extends Adapter<Species, SpeciesBody>
         });
     }
 
-    toMySQL(requestBody: SpeciesBody): MySQLData
+    toMySQL(requestBody: FormBody): MySQLData
     {
         return {
             species_id: requestBody.id,
@@ -42,11 +44,6 @@ class SpeciesAdapter extends Adapter<Species, SpeciesBody>
             generation_id: requestBody.generationId,
         };
     }
-
-    referenceForAbilityFromMySQL(data: RowDataPacket)
-    {
-        return new SpeciesReferenceForAbility(data.name, data.species_id, data.is_hidden);
-    }
 }
 
-export default new SpeciesAdapter();
+export default new FormAdapter();

@@ -8,8 +8,9 @@ import { buildReferencePath, getSpriteUrl } from "../utils/helpers";
 
 export class Species
 {
-    id?: number;
+    id: number;
     name: string;
+    species?: SpeciesReference; // Used for forms!
     types: TypeReference[];
     genderRatio: string;
     height: number;
@@ -23,6 +24,7 @@ export class Species
     constructor(data: {
         id: number;
         name: string;
+        species?: SpeciesReference;
         types: TypeReference[];
         genderRatio: string;
         height: number;
@@ -35,6 +37,7 @@ export class Species
     {
         this.id = data.id;
         this.name = data.name;
+        this.species = data.species;
         this.types = data.types;
         this.genderRatio = data.genderRatio;
         this.height = data.height;

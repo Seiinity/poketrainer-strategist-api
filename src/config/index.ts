@@ -13,6 +13,7 @@ interface Config
     baseUrl: string;
 
     abilityPath: string;
+    formPath: string;
     heldItemPath: string;
     moveCategoryPath: string;
     movePath: string;
@@ -36,6 +37,7 @@ const config: Config =
     baseUrl: `${process.env.BASE_URL}:${process.env.APP_PORT}`,
 
     abilityPath: "/abilities",
+    formPath: "/forms",
     heldItemPath: "/held-items",
     moveCategoryPath: "/move-categories",
     movePath: "/moves",

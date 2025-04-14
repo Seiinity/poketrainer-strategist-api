@@ -21,8 +21,8 @@ class SpeciesService extends NameLookupService<Species, SpeciesBody>
     protected baseSelectQuery = `
         SELECT
             sp.*,
-            tp1.type_id AS type1_id, tp1.name AS type1_name,
-            tp2.type_id AS type2_id, tp2.name AS type2_name,
+            tp1.type_id AS type_1_id, tp1.name AS type_1_name,
+            tp2.type_id AS type_2_id, tp2.name AS type_2_name,
             gr.male_rate, gr.female_rate,
             gn.name AS generation
         FROM species sp
