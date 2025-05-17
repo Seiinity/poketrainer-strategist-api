@@ -18,7 +18,7 @@ export class Pokemon
     species: SpeciesReference;
     ability: AbilityReference;
     nature: NatureReference;
-    heldItem: HeldItemReference;
+    heldItem?: HeldItemReference;
     moves: MoveReference[];
     stats: StatReferenceForPokemon[];
     team: TeamReference;
@@ -31,7 +31,7 @@ export class Pokemon
         species: SpeciesReference;
         ability: AbilityReference;
         nature: NatureReference;
-        heldItem: HeldItemReference;
+        heldItem?: HeldItemReference;
         moves: MoveReference[];
         stats: StatReferenceForPokemon[];
         team: TeamReference;

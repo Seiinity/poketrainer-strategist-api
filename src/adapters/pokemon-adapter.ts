@@ -23,7 +23,7 @@ class PokemonAdapter extends Adapter<Pokemon, PokemonBody>
             species: new SpeciesReference(row.species_name, row.species_id),
             ability: new AbilityReference(row.ability_name, row.ability_id),
             nature: new NatureReference(row.nature_name, row.nature_id),
-            heldItem: new HeldItemReference(row.held_item_name, row.held_item_id),
+            ...row.held_item_id != null && { heldItem: new HeldItemReference(row.held_item_name, row.held_item_id) },
             stats: row.stats.map((s: RowDataPacket) => statAdapter.referenceForPokemonFromMySQL(s)),
             moves: row.moves.map((m: RowDataPacket) => moveAdapter.referenceFromMySQL(m)),
             team: new TeamReference(row.team_name, row.team_id),
