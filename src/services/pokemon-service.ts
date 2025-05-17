@@ -162,11 +162,12 @@ export class PokemonService extends Service<Pokemon, PokemonBody>
 
         const values: number[][] = [];
 
+        let index = 0;
+
         for (const move of body.moves)
         {
-            const index = body.moves.indexOf(move);
             const moveId = await moveService.nameLookup.getIdByName(move);
-            values.push([id, moveId, index + 1]);
+            values.push([id, moveId, ++index]);
         }
 
         await connection.query("DELETE FROM pokemon_moves WHERE pokemon_id = ?", [id]);
